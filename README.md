@@ -171,7 +171,7 @@ Everything is written for people who play Archipelago, not for programmers, unle
 | [Editing options](docs/guide/editing-options.md) | [Settings and files](docs/reference/settings-and-files.md) | [Building and running](docs/development/building-and-running.md) |
 | [Checking your work](docs/guide/checking-your-work.md) | [Keyboard shortcuts](docs/reference/keyboard-shortcuts.md) | [Testing](docs/development/testing.md) |
 | [Files and saving](docs/guide/files-and-saving.md) | [Problem checker rules](docs/reference/validator-rules.md) | [Contributing](CONTRIBUTING.md) |
-| [Ideas and shortcuts](docs/guide/ideas-and-shortcuts.md) | | [Security](SECURITY.md) |
+| [Ideas and shortcuts](docs/guide/ideas-and-shortcuts.md) | | [Security](SECURITY.md), [Privacy](PRIVACY.md), [Code signing](docs/development/code-signing.md) |
 | [The helper](docs/guide/helper.md) | | [Code of conduct](CODE_OF_CONDUCT.md) |
 | [Custom worlds](docs/guide/custom-worlds.md) | | [Changelog](CHANGELOG.md) |
 | [Archipelago's settings](docs/guide/archipelago-settings-host-yaml.md) | | |

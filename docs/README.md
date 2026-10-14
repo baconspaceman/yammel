@@ -47,4 +47,6 @@ For people who want to change the app.
 
 - [Contributing](../CONTRIBUTING.md): how to propose changes, what must pass, and how to add difficulty and feel profiles.
 - [Security policy](../SECURITY.md): how to report a vulnerability privately and what the app's security model is.
+- [Privacy policy](../PRIVACY.md): what the app stores, and the only things that can leave your computer.
+- [Code signing](development/code-signing.md): the plan for signing release files (not active yet).
 - [Code of Conduct](../CODE_OF_CONDUCT.md): how we treat each other.

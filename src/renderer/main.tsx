@@ -9,6 +9,6 @@ import './styles/host.css';
 
 // The same page serves both windows: the editor, and the helper chat when it has its own window (?view=helper).
 const popout = new URLSearchParams(window.location.search).get('view') === 'helper';
-document.title = popout ? 'Helper - Archipelago YAML Editor' : document.title;
+document.title = popout ? 'Helper - Yammel' : document.title;
 
 createRoot(document.getElementById('root')!).render(<StrictMode>{popout ? <HelperPopout api={window.api} /> : <App />}</StrictMode>);

@@ -110,7 +110,7 @@ export async function askOpenRouter(prompt: string, model: string | null, key: s
     const response = await doFetch(OPENROUTER_URL, {
       method: 'POST',
       signal: controller.signal,
-      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'X-Title': 'Archipelago YAML Editor' },
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'X-Title': 'Yammel' },
       body: JSON.stringify({
         model: model ?? OPENROUTER_DEFAULT_MODEL,
         messages: [

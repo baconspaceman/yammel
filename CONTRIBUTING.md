@@ -1,6 +1,6 @@
-# Contributing to Archipelago YAML Editor
+# Contributing to Yammel
 
-How to propose a change to Archipelago YAML Editor, what must pass first, and how to extend the difficulty and recommendation data.
+How to propose a change to Yammel, what must pass first, and how to extend the difficulty and recommendation data.
 
 Contents:
 

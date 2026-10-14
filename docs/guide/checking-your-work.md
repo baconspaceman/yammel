@@ -103,7 +103,7 @@ The **Seed** tab runs Archipelago's own generator on your YAML. It is the same g
 The tab has two buttons:
 
 - **Check it** tests that Archipelago accepts the YAML and can place every item. It writes nothing to your computer. When it works, the tab says **It generates.** and the time it took.
-- **Make the seed** writes a real seed. It creates a new folder in your Documents folder, inside **Archipelago YAML Editor** and then **Seeds**. Each seed gets its own folder, named with the date and time it was made. The tab shows the file name, the folder path and a **Show in folder** button.
+- **Make the seed** writes a real seed. It creates a new folder in your Documents folder, inside **Yammel** and then **Seeds**. Each seed gets its own folder, named with the date and time it was made. The tab shows the file name, the folder path and a **Show in folder** button.
 
 While a check or a seed is running, a **Stop** button appears. It stops the run. A run that takes longer than five minutes is stopped automatically. A check usually takes about ten seconds, and longer for large games.
 

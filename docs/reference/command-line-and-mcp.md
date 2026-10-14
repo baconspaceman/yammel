@@ -1,6 +1,6 @@
 # Command line and MCP server (`apyaml`)
 
-`apyaml` is the command line tool of Archipelago YAML Editor: it makes, varies, checks and rates player YAMLs without opening the window, and the same commands are available as an MCP server.
+`apyaml` is the command line tool of Yammel: it makes, varies, checks and rates player YAMLs without opening the window, and the same commands are available as an MCP server.
 
 Contents:
 

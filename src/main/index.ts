@@ -67,7 +67,7 @@ let generating: AbortController | null = null;
 let scanning: AbortController | null = null;
 const approvedPlayerFiles = new Set<string>();
 const seedFolders = new Set<string>();
-const seedsRoot = () => process.env['ARCHIPELAGO_YAML_SEEDS'] ?? join(app.getPath('documents'), 'Archipelago YAML Editor', 'Seeds');
+const seedsRoot = () => process.env['ARCHIPELAGO_YAML_SEEDS'] ?? join(app.getPath('documents'), 'Yammel', 'Seeds');
 
 /** Folders and programs the user picked in a dialog. Settings may only point at these, never at a path the page made up. */
 const approvedSettingPaths = new Set<string>();
@@ -118,7 +118,7 @@ function openHelperWindow(): void {
     minWidth: 340,
     minHeight: 420,
     show: false,
-    title: 'Helper - Archipelago YAML Editor',
+    title: 'Helper - Yammel',
     ...appIcon(),
     webPreferences: { preload: join(__dirname, '../preload/index.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
@@ -562,7 +562,7 @@ function createWindow(): void {
     minWidth: 900,
     minHeight: 600,
     show: false,
-    title: 'Archipelago YAML Editor',
+    title: 'Yammel',
     ...appIcon(),
     webPreferences: {
       preload: join(__dirname, '../preload/index.cjs'),

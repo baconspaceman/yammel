@@ -1,17 +1,17 @@
 {
-  "name": "archipelago-yaml-editor",
-  "productName": "Archipelago YAML Editor",
-  "version": "0.1.0",
-  "description": "A desktop editor for Archipelago player YAMLs: every option, a live check count, a difficulty estimate, randomize, and an agent toolkit.",
+  "name": "yammel",
+  "productName": "Yammel",
+  "version": "0.1.1",
+  "description": "Yammel, a desktop editor for Archipelago player YAMLs: every option, a live check count, a difficulty estimate, randomize, and an agent toolkit.",
   "license": "MIT",
   "author": "baconspaceman",
-  "homepage": "https://github.com/baconspaceman/archipelago-yaml-editor#readme",
+  "homepage": "https://github.com/baconspaceman/yammel#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/baconspaceman/archipelago-yaml-editor.git"
+    "url": "git+https://github.com/baconspaceman/yammel.git"
   },
   "bugs": {
-    "url": "https://github.com/baconspaceman/archipelago-yaml-editor/issues"
+    "url": "https://github.com/baconspaceman/yammel/issues"
   },
   "keywords": [
     "archipelago",
@@ -62,8 +62,8 @@
     "vitest": "^5.0.3"
   },
   "build": {
-    "appId": "io.github.baconspaceman.archipelago-yaml-editor",
-    "productName": "Archipelago YAML Editor",
+    "appId": "io.github.baconspaceman.yammel",
+    "productName": "Yammel",
     "copyright": "Copyright (c) 2026 baconspaceman. MIT licence.",
     "asar": false,
     "npmRebuild": false,
@@ -91,16 +91,16 @@
       ]
     },
     "portable": {
-      "artifactName": "Archipelago-YAML-Editor-Portable-${version}.${ext}"
+      "artifactName": "Yammel-Portable-${version}.${ext}"
     },
     "nsis": {
-      "artifactName": "Archipelago-YAML-Editor-Setup-${version}.${ext}",
+      "artifactName": "Yammel-Setup-${version}.${ext}",
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "installerIcon": "assets/icon/icon.ico",
       "uninstallerIcon": "assets/icon/icon.ico",
-      "shortcutName": "Archipelago YAML Editor"
+      "shortcutName": "Yammel"
     }
   }
 }

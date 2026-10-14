@@ -1,6 +1,6 @@
 # Documentation
 
-An index of every document for Archipelago YAML Editor, grouped by who it is for.
+An index of every document for Yammel, grouped by who it is for.
 
 Contents:
 

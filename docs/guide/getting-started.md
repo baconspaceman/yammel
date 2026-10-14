@@ -1,6 +1,6 @@
-# Getting started with Archipelago YAML Editor
+# Getting started with Yammel
 
-Archipelago YAML Editor helps you make player files (YAMLs) for Archipelago without hand-editing text: pick a game, flip switches and set numbers, and the YAML writes itself.
+Yammel helps you make player files (YAMLs) for Archipelago without hand-editing text: pick a game, flip switches and set numbers, and the YAML writes itself.
 
 Contents:
 
@@ -32,10 +32,10 @@ Without these extras, everything else still works.
 
 ## Running it
 
-The easiest way is to download it from the [Releases page](https://github.com/baconspaceman/archipelago-yaml-editor/releases/latest):
+The easiest way is to download it from the [Releases page](https://github.com/baconspaceman/yammel/releases/latest):
 
-- **The installer** (`Archipelago-YAML-Editor-Setup-<version>.exe`) installs it for your own account. It does not need administrator rights.
-- **The portable file** (`Archipelago-YAML-Editor-Portable-<version>.exe`) is one file you can run from anywhere. Nothing is installed.
+- **The installer** (`Yammel-Setup-<version>.exe`) installs it for your own account. It does not need administrator rights.
+- **The portable file** (`Yammel-Portable-<version>.exe`) is one file you can run from anywhere. Nothing is installed.
 
 Windows may warn about an "unknown publisher", because the downloads are not code-signed. Choose **More info**, then **Run anyway**.
 

@@ -74,7 +74,7 @@ Everything is stored in the app's own data folder on your computer, which the op
 - **Settings** are saved in one small file, `settings.json`. It holds folder paths, switches, your appearance choice and any model names. It never holds a password or a key. Nothing is written until you change a setting.
 - **Your OpenRouter key** is kept in a separate file, `secrets.json`. The operating system encrypts it, and the app never reads it back into the window.
 - **Other things the app remembers** are kept in the same folder: recent files, your saved presets, the Games to mix memory, the results of a custom worlds scan, and backups made before saves.
-- **Make a seed** writes its output to a folder named **Archipelago YAML Editor**, with a **Seeds** folder inside it, in your Documents folder.
+- **Make a seed** writes its output to a folder named **Yammel**, with a **Seeds** folder inside it, in your Documents folder.
 
 If a settings file is damaged or cannot be read, the app starts with the defaults.
 

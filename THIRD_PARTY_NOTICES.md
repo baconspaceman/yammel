@@ -1,6 +1,6 @@
 # Third-party notices
 
-Archipelago YAML Editor is released under the [MIT licence](LICENSE). The app includes the following open-source
+Yammel is released under the [MIT licence](LICENSE). The app includes the following open-source
 software. Their licences are reproduced below, as they require.
 
 The Windows downloads also contain **Electron** (MIT licence) and **Chromium** with its own components. Their licence

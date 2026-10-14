@@ -553,7 +553,7 @@ export default function App() {
 
   const fileName = fileNameOf(session?.filePath ?? null);
   useEffect(() => {
-    document.title = `${session?.dirty ? '• ' : ''}${session ? fileName : 'Archipelago YAML Editor'}`;
+    document.title = `${session?.dirty ? '• ' : ''}${session ? fileName : 'Yammel'}`;
   });
 
   // The helper can be in its own window. This window keeps the conversation and the YAML: it gives the pop-out a copy whenever

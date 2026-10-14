@@ -51,7 +51,7 @@ export function Toolbar(props: ToolbarProps) {
         </button>
       </div>
       <p className="toolbar__file" title={fileName}>
-        {hasDocument ? fileName : 'Archipelago YAML Editor'}
+        {hasDocument ? fileName : 'Yammel'}
         {hasDocument && dirty && (
           <span className="toolbar__dirty" role="img" aria-label="Unsaved changes">
             {' ●'}

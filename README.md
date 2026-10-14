@@ -2,7 +2,7 @@
   <img src="docs/images/logo.png" alt="The logo: a letter Y made of seven small squares in rainbow colours" width="112">
 </p>
 
-<h1 align="center">Archipelago YAML Editor</h1>
+<h1 align="center">Yammel</h1>
 
 <p align="center">
   <strong>Make Archipelago player files without ever hand-editing text.</strong><br>
@@ -10,8 +10,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/baconspaceman/archipelago-yaml-editor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/baconspaceman/archipelago-yaml-editor/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://github.com/baconspaceman/archipelago-yaml-editor/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/baconspaceman/archipelago-yaml-editor?include_prereleases&label=release"></a>
+  <a href="https://github.com/baconspaceman/yammel/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/baconspaceman/yammel/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/baconspaceman/yammel/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/baconspaceman/yammel?include_prereleases&label=release"></a>
   <a href="LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-8aa0ff"></a>
   <img alt="Platform: Windows" src="https://img.shields.io/badge/platform-Windows-3550d6">
   <img alt="Works with Archipelago 0.6.7" src="https://img.shields.io/badge/Archipelago-0.6.7-5ad48a">
@@ -21,7 +21,7 @@
   <img src="docs/images/03-editor-overview.jpg" alt="The editor: option cards on the left, the YAML writing itself on the right, a check count of 259, a difficulty of 4.4 and the message 'No problems found'" width="900">
 </p>
 
-Archipelago YAML Editor is a free, open-source desktop app for making the player files (YAMLs) that
+Yammel is a free, open-source desktop app for making the player files (YAMLs) that
 [Archipelago](https://archipelago.gg), the multiworld randomizer, uses to build a game. Pick a game, flip switches, set
 numbers, and watch the YAML write itself. It tells you what would go wrong in plain words **before** Archipelago stops
 with an error, and it can even make a test seed to prove the file works.
@@ -46,12 +46,12 @@ switch them on.
 
 ## Download
 
-Get the latest version from the **[Releases page](https://github.com/baconspaceman/archipelago-yaml-editor/releases/latest)**.
+Get the latest version from the **[Releases page](https://github.com/baconspaceman/yammel/releases/latest)**.
 
 | File | What it is |
 | --- | --- |
-| `Archipelago-YAML-Editor-Setup-<version>.exe` | A normal installer. It installs for your own account and does not need administrator rights. |
-| `Archipelago-YAML-Editor-Portable-<version>.exe` | One file you can run from anywhere, for example a USB stick. Nothing is installed. |
+| `Yammel-Setup-<version>.exe` | A normal installer. It installs for your own account and does not need administrator rights. |
+| `Yammel-Portable-<version>.exe` | One file you can run from anywhere, for example a USB stick. Nothing is installed. |
 | `SHA256SUMS.txt` | Checksums, so you can confirm a download is the one that was built. |
 
 > **Windows may say "unknown publisher" (SmartScreen).** The downloads are not code-signed, because a signing
@@ -183,8 +183,8 @@ You need [Node.js](https://nodejs.org) 22 or newer. For the optional extras you 
 with its Python environment (see [What needs what](#what-needs-what)).
 
 ```bash
-git clone https://github.com/baconspaceman/archipelago-yaml-editor.git
-cd archipelago-yaml-editor
+git clone https://github.com/baconspaceman/yammel.git
+cd yammel
 npm ci
 npm run dev
 ```
@@ -240,6 +240,8 @@ screen has no overlapping text and passes an accessibility audit in both looks.
 
 ## Credits and disclaimer
 
+- **The name:** Yammel is a play on YAML, the file format Archipelago uses for player files. Version 0.1.0 was published
+  as "Archipelago YAML Editor"; it is the same project under its new name.
 - This is an independent tool. It is **not affiliated with, endorsed by or part of the Archipelago project**.
   "Archipelago" and the names of games and worlds belong to their owners.
 - It reads Archipelago's own option definitions (Archipelago is MIT licensed) so that what you edit matches what the

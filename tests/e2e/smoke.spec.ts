@@ -2,7 +2,7 @@ import { expect, test } from './fixtures';
 
 test('the app window opens, renders, and is locked down', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Make a YAML for Archipelago' })).toBeVisible();
-  expect(await page.title()).toBe('Archipelago YAML Editor');
+  expect(await page.title()).toBe('Yammel');
 
   // The only door to the main process is the small api object; Node itself is not reachable.
   const exposed = await page.evaluate(() => ({

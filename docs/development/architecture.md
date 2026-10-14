@@ -1,6 +1,6 @@
 # Architecture
 
-A developer's map of Archipelago YAML Editor: the layers, the Python pieces, the data files, the typed IPC and its security model, the document model, and how two of the trickier flows work.
+A developer's map of Yammel: the layers, the Python pieces, the data files, the typed IPC and its security model, the document model, and how two of the trickier flows work.
 
 Contents:
 

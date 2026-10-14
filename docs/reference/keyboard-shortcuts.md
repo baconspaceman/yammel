@@ -1,6 +1,6 @@
 # Keyboard shortcuts
 
-This page lists every keyboard shortcut in Archipelago YAML Editor and the keys that act inside individual text boxes.
+This page lists every keyboard shortcut in Yammel and the keys that act inside individual text boxes.
 
 Contents:
 

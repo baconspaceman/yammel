@@ -1,6 +1,6 @@
 # Code of Conduct
 
-The rules for how people treat each other in the Archipelago YAML Editor project: its issues, pull requests, discussions and any other space run in its name.
+The rules for how people treat each other in the Yammel project: its issues, pull requests, discussions and any other space run in its name.
 
 ## Our approach
 
@@ -29,7 +29,7 @@ This project exists to make a hobby easier for people. We want everyone, whateve
 
 If someone is behaving in a way that breaks these rules, or you feel unsafe, please tell the maintainer privately.
 
-- Open a private security advisory on the repository (the **Security** tab, then **Report a vulnerability**: `https://github.com/baconspaceman/archipelago-yaml-editor/security/advisories/new`). Say in the first line that it is a conduct report, not a vulnerability.
+- Open a private security advisory on the repository (the **Security** tab, then **Report a vulnerability**: `https://github.com/baconspaceman/yammel/security/advisories/new`). Say in the first line that it is a conduct report, not a vulnerability.
 - Or contact the maintainer through their GitHub profile, `https://github.com/baconspaceman`.
 
 Please include what happened, where (a link if it is public), and who was involved. Reports are handled privately, and the person who reports will not be named to the person reported without their agreement.

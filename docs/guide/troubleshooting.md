@@ -1,6 +1,6 @@
 # Troubleshooting
 
-This page lists the problems people run into with the Archipelago YAML Editor, what each message means, and what to do about it.
+This page lists the problems people run into with the Yammel, what each message means, and what to do about it.
 
 Contents:
 

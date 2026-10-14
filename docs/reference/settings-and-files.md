@@ -1,6 +1,6 @@
 # Settings and files
 
-This page lists every saved setting of Archipelago YAML Editor, every file the app keeps in its data folder, the environment variables it reads, and how it finds Archipelago and Python.
+This page lists every saved setting of Yammel, every file the app keeps in its data folder, the environment variables it reads, and how it finds Archipelago and Python.
 
 Contents:
 
@@ -57,7 +57,7 @@ The optional helpers use only what you set up: Claude Code and Codex are found a
 
 ## 2. The data folder and its files
 
-The data folder is Electron's `userData` folder for the app. On Windows that is normally `%APPDATA%\Archipelago YAML Editor` (the app's `productName` in `package.json`); the exact name is chosen by Electron and was not confirmed by reading the code, so check it from the app if you need certainty. Every file below is created only when first needed.
+The data folder is Electron's `userData` folder for the app. On Windows that is normally `%APPDATA%\Yammel` (the app's `productName` in `package.json`); the exact name is chosen by Electron and was not confirmed by reading the code, so check it from the app if you need certainty. Every file below is created only when first needed.
 
 | File or folder | Holds | Notes |
 |---|---|---|
@@ -120,4 +120,4 @@ If `host.yaml` does not exist the app does not create it; it asks you to open th
 
 ## 5. Where seeds are written
 
-When you make a seed (not only check), the app creates a folder named by the start time, `YYYY-MM-DDTHH-MM-SS` (UTC, from the ISO date with `:` and `.` replaced by `-`), inside the seeds folder, and passes it to the generator as `--outputpath`. The seeds folder is `ARCHIPELAGO_YAML_SEEDS` if set, otherwise `<Documents>\Archipelago YAML Editor\Seeds`. The app looks for the `AP_*.zip` seed file and the `*Spoiler.txt` file in that folder. If the run fails or produces no seed, an empty folder is removed again. A check-only run (`--skip_output`) writes its output to a temporary folder that is deleted.
+When you make a seed (not only check), the app creates a folder named by the start time, `YYYY-MM-DDTHH-MM-SS` (UTC, from the ISO date with `:` and `.` replaced by `-`), inside the seeds folder, and passes it to the generator as `--outputpath`. The seeds folder is `ARCHIPELAGO_YAML_SEEDS` if set, otherwise `<Documents>\Yammel\Seeds`. The app looks for the `AP_*.zip` seed file and the `*Spoiler.txt` file in that folder. If the run fails or produces no seed, an empty folder is removed again. A check-only run (`--skip_output`) writes its output to a temporary folder that is deleted.

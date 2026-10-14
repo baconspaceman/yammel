@@ -1,6 +1,6 @@
 # Problem checker rules
 
-This page lists everything the problem checker of Archipelago YAML Editor looks for, which findings are errors or warnings, and which come with a one-click fix.
+This page lists everything the problem checker of Yammel looks for, which findings are errors or warnings, and which come with a one-click fix.
 
 Contents:
 

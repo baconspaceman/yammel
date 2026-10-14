@@ -1,6 +1,6 @@
 # FAQ
 
-Short answers to the questions people ask most about the Archipelago YAML Editor.
+Short answers to the questions people ask most about the Yammel.
 
 Contents:
 
@@ -44,7 +44,7 @@ Not by itself. Editing, checking and saving all happen on your computer. Your YA
 
 ### Where are my files kept?
 
-Your YAML files are wherever you save them. A new YAML starts the save window in your Documents folder. Seeds you make go in your Documents folder too, in a folder named **Archipelago YAML Editor**, with a **Seeds** folder inside it. Each seed gets its own folder named with the date and time.
+Your YAML files are wherever you save them. A new YAML starts the save window in your Documents folder. Seeds you make go in your Documents folder too, in a folder named **Yammel**, with a **Seeds** folder inside it. Each seed gets its own folder named with the date and time.
 
 ### Where are my settings and backups?
 

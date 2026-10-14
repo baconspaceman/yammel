@@ -1,6 +1,6 @@
 # Security policy
 
-How to report a vulnerability in Archipelago YAML Editor privately, what is in scope, and how the app is built to keep its risks small.
+How to report a vulnerability in Yammel privately, what is in scope, and how the app is built to keep its risks small.
 
 Contents:
 
@@ -15,7 +15,7 @@ Contents:
 
 Please report security problems privately. Do not open a public issue, discussion or pull request for a vulnerability.
 
-1. Open the repository on GitHub, go to the **Security** tab and choose **Report a vulnerability** (GitHub's private vulnerability reporting). The direct link is `https://github.com/baconspaceman/archipelago-yaml-editor/security/advisories/new`.
+1. Open the repository on GitHub, go to the **Security** tab and choose **Report a vulnerability** (GitHub's private vulnerability reporting). The direct link is `https://github.com/baconspaceman/yammel/security/advisories/new`.
 2. Say what the problem is, which version you tested (the installer file name shows it), how to reproduce it, and what you think an attacker could do with it. A small example file or a short list of steps is enough.
 3. Do not include real API keys, passwords or private files. If you need to show where a secret leaks, use a fake one.
 

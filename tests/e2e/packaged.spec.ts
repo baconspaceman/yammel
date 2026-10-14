@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 // Runs the packaged app (npm run dist:dir first). Skipped when there is no build, so the normal test run is unaffected.
-const EXE = join(process.cwd(), 'dist', 'win-unpacked', 'Archipelago YAML Editor.exe');
+const EXE = join(process.cwd(), 'dist', 'win-unpacked', 'Yammel.exe');
 const CLONE = join(process.cwd(), '..', 'archipelago-dev', 'Archipelago');
 
 test.skip(!existsSync(EXE), 'no packaged build: run npm run dist:dir first');

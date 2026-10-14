@@ -33,6 +33,6 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            dist/Archipelago-YAML-Editor-Setup-*.exe
-            dist/Archipelago-YAML-Editor-Portable-*.exe
+            dist/Yammel-Setup-*.exe
+            dist/Yammel-Portable-*.exe
             dist/SHA256SUMS.txt

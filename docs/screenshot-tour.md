@@ -1,6 +1,6 @@
 # Screenshot tour
 
-Every screen of Archipelago YAML Editor, in the order you would meet them. The pictures show the dark look unless a caption says light. Click a picture to see it full size.
+Every screen of Yammel, in the order you would meet them. The pictures show the dark look unless a caption says light. Click a picture to see it full size.
 
 ## Getting started
 

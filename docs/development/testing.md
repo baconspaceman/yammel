@@ -1,6 +1,6 @@
 # Testing
 
-The test layers of Archipelago YAML Editor, how to run each one, and the traps that cost time.
+The test layers of Yammel, how to run each one, and the traps that cost time.
 
 Contents:
 

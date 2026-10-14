@@ -1,6 +1,6 @@
 # Building and running
 
-How to set up a development copy of Archipelago YAML Editor, run it, build it, regenerate its data and run the Python tests.
+How to set up a development copy of Yammel, run it, build it, regenerate its data and run the Python tests.
 
 Contents:
 
@@ -145,7 +145,7 @@ npm run dist:dir   # an unpacked app in dist/win-unpacked, for a quick check
 npm run dist       # the installer and the portable exe in dist/
 ```
 
-Both scripts run `electron-vite build` first. `npm run dist` produces, in `dist/`, `Archipelago-YAML-Editor-Setup-<version>.exe` (an NSIS installer that lets the person choose the install folder and installs per user) and `Archipelago-YAML-Editor-Portable-<version>.exe`. The packaged files are `out/`, `data/`, `engine/`, `extractor/`, `assets/icon/`, `package.json` and `LICENSE`; the Python tests and `__pycache__` folders are left out. `asar` is turned off, so the Python scripts in `engine/` and `extractor/` sit in the package as ordinary files and can be run by the Archipelago Python.
+Both scripts run `electron-vite build` first. `npm run dist` produces, in `dist/`, `Yammel-Setup-<version>.exe` (an NSIS installer that lets the person choose the install folder and installs per user) and `Yammel-Portable-<version>.exe`. The packaged files are `out/`, `data/`, `engine/`, `extractor/`, `assets/icon/`, `package.json` and `LICENSE`; the Python tests and `__pycache__` folders are left out. `asar` is turned off, so the Python scripts in `engine/` and `extractor/` sit in the package as ordinary files and can be run by the Archipelago Python.
 
 To check a packaged build, run `npm run dist:dir` and then the Playwright test `tests/e2e/packaged.spec.ts`; it skips itself when `dist/win-unpacked` does not exist.
 

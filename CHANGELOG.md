@@ -2,7 +2,16 @@
 
 All notable changes to this project are written here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] - first public release
+## [0.1.1] - renamed to Yammel
+
+The project is now called **Yammel**. Nothing else about how it works changed.
+
+- The window, installer, portable file and repository are named Yammel. The downloads are `Yammel-Setup-<version>.exe` and `Yammel-Portable-<version>.exe`.
+- The app's data folder is now `%APPDATA%\Yammel` and seeds are written to `Documents\Yammel\Seeds`. If you used 0.1.0, your settings, presets and recent files are in the old `Archipelago YAML Editor` folders; copy them across if you want them.
+- The screenshots in the documentation show the new name.
+- The repository moved to `github.com/baconspaceman/yammel`; the old address redirects.
+
+## [0.1.0] - first public release (as "Archipelago YAML Editor")
 
 The first release. Everything below is new.
 

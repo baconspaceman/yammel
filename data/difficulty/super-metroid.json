@@ -1,0 +1,69 @@
+{
+  "format": 1,
+  "game": "Super Metroid",
+  "apVersion": "0.6.7",
+  "status": "drafted",
+  "base": 5,
+  "options": {
+    "max_difficulty": {
+      "why": "The hardest tricks the seed may require of you.",
+      "values": { "easy": -1.6, "medium": -1.2, "hard": -0.8, "harder": -0.4, "mania": 0.6, "infinity": 1.4 }
+    },
+    "preset": {
+      "why": "Sets which tricks the logic expects you to know.",
+      "values": { "newbie": -1.5, "casual": -1, "veteran": 0.7, "expert": 1.4, "master": 2, "season_races": 1 }
+    },
+    "energy_qty": {
+      "why": "Fewer Energy and Reserve Tanks leave less room for mistakes.",
+      "values": { "ultra_sparse": 1.5, "sparse": 0.8, "medium": 0.3 }
+    },
+    "area_randomization": {
+      "why": "Areas are connected in a different order.",
+      "values": { "light": 0.6, "full": 1.2 }
+    },
+    "boss_randomization": {
+      "why": "Access to the Golden 4 bosses is shuffled.",
+      "values": { "true": 0.5 }
+    },
+    "escape_rando": {
+      "why": "Leaving Tourian drops you somewhere else, and you must find your way back to the ship.",
+      "values": { "true": 0.5 }
+    },
+    "fun_combat": {
+      "why": "Can remove strong beams such as Plasma and Screw Attack.",
+      "values": { "true": 0.6 }
+    },
+    "fun_movement": {
+      "why": "Can remove movement items such as Space Jump or Speed Booster.",
+      "values": { "true": 0.8 }
+    },
+    "fun_suits": {
+      "why": "Can remove the Varia or Gravity Suit.",
+      "values": { "true": 0.8 }
+    },
+    "nerfed_charge": {
+      "why": "The starting Charge Beam does a third of its damage.",
+      "values": { "true": 0.6 }
+    },
+    "gravity_behaviour": {
+      "why": "Vanilla gives the Gravity Suit full protection; progressive changes how much each suit protects on its own, which is a judgement call.",
+      "values": { "vanilla": -0.3, "progressive": 0.2 }
+    },
+    "morph_placement": {
+      "why": "With normal placement the Morphing Ball can turn up later.",
+      "values": { "normal": 0.3 }
+    },
+    "tourian": {
+      "why": "A faster Tourian skips Metroids and other obstacles.",
+      "values": { "fast": -0.2, "disabled": -0.4 }
+    },
+    "death_link": {
+      "why": "When someone else dies, you die; Enable Survive lets a reserve tank save you.",
+      "values": { "enable": 0.5, "enable_survive": 0.3 }
+    },
+    "accessibility": {
+      "why": "Minimal accessibility only promises the goal can be finished.",
+      "values": { "minimal": 0.4 }
+    }
+  }
+}

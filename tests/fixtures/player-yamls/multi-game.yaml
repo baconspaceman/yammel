@@ -1,0 +1,15 @@
+# One file, two possible games
+name: Either
+game:
+  Demo Game: 50
+  Other Game: 50
+
+# used when the roll picks Demo Game
+Demo Game:
+  lives: 4
+  hard_mode: false
+
+# used when the roll picks Other Game
+Other Game:
+  speed: fast # quick please
+  rings: 20

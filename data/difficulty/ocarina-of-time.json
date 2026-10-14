@@ -1,0 +1,69 @@
+{
+  "format": 1,
+  "game": "Ocarina of Time",
+  "apVersion": "0.6.7",
+  "status": "drafted",
+  "base": 4.5,
+  "options": {
+    "logic_rules": {
+      "why": "Glitched logic expects powerful glitches; no logic does not promise the seed can be finished.",
+      "values": { "glitched": 2.5, "no_logic": 3 }
+    },
+    "damage_multiplier": {
+      "why": "Controls how much damage Link takes; ohko means one hit ends it.",
+      "values": { "half": -0.8, "double": 0.8, "quadruple": 1.6, "ohko": 2.5 }
+    },
+    "deadly_bonks": {
+      "why": "Bonking into walls hurts Link.",
+      "values": { "half": 0.1, "normal": 0.3, "double": 0.7, "quadruple": 1.2, "ohko": 2 }
+    },
+    "item_pool_value": {
+      "why": "A scarcer item pool means fewer extra copies of major items.",
+      "values": { "plentiful": -0.6, "scarce": 0.8, "minimal": 1.5 }
+    },
+    "junk_ice_traps": {
+      "why": "More ice traps mean more freezes at bad moments.",
+      "values": { "off": -0.3, "on": 0.3, "mayhem": 0.8, "onslaught": 1.4 }
+    },
+    "shuffle_bosses": {
+      "why": "Boss entrances are shuffled, so you can meet a boss without the usual setup.",
+      "values": { "limited": 0.2, "full": 0.4 }
+    },
+    "shuffle_dungeon_entrances": {
+      "why": "Dungeon entrances lead somewhere else.",
+      "values": { "simple": 0.5, "all": 0.8 }
+    },
+    "shuffle_interior_entrances": {
+      "why": "Houses and other interiors lead somewhere else.",
+      "values": { "simple": 0.3, "all": 0.6 }
+    },
+    "shuffle_overworld_entrances": {
+      "why": "The loading zones between areas are shuffled.",
+      "values": { "true": 0.8 }
+    },
+    "no_collectible_hearts": {
+      "why": "Hearts no longer drop from enemies or objects.",
+      "values": { "true": 0.8 }
+    },
+    "trials": {
+      "why": "Each required trial adds a challenge inside Ganon's Castle.",
+      "curve": [[0, 0], [6, 0.8]]
+    },
+    "mq_dungeons_mode": {
+      "why": "Master Quest dungeon layouts are harder than the vanilla ones.",
+      "values": { "mq": 1, "specific": 0.5, "count": 0.5 }
+    },
+    "warp_songs": {
+      "why": "Warp song destinations are randomized.",
+      "values": { "true": 0.3 }
+    },
+    "death_link": {
+      "why": "When any player dies, everyone dies.",
+      "values": { "true": 0.5 }
+    },
+    "accessibility": {
+      "why": "Minimal accessibility only promises the goal can be finished.",
+      "values": { "minimal": 0.4 }
+    }
+  }
+}

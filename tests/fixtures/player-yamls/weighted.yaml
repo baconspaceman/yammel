@@ -1,0 +1,20 @@
+# Weighted player file
+name: Roller
+game: Demo Game
+
+Demo Game:
+  # most runs easy, sometimes hard
+  difficulty:
+    easy: 70
+    hard: 30
+  lives: random-range-low-1-10
+  hard_mode: false
+
+# turn on hard mode when the dice pick hard
+triggers:
+  - option_category: Demo Game
+    option_name: difficulty
+    option_result: hard
+    options:
+      Demo Game:
+        hard_mode: true

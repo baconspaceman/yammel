@@ -1,0 +1,522 @@
+/* ---------- side panel (YAML preview and helper) ---------- */
+.side {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+}
+.side .preview {
+  flex: 1 1 0;
+  border-left: 0;
+}
+.side__tabs {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.side__tab {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: var(--radius-1) var(--radius-1) 0 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+.side__tab[aria-selected="true"] {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: -1px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- helper chat ---------- */
+.chat {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3);
+  gap: var(--space-2);
+}
+.chat__head {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.chat__title {
+  margin: 0;
+  font-size: var(--text-lg);
+  flex: 1 1 auto;
+}
+.chat__who select {
+  max-width: 100%;
+}
+.chat__note {
+  flex: none;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.chat__log {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
+}
+.chat__msg {
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-2);
+  overflow-wrap: anywhere;
+}
+.chat__msg--user {
+  align-self: flex-end;
+  background: var(--accent-soft);
+}
+.chat__msg--assistant {
+  align-self: stretch;
+  border: 1px solid var(--border);
+}
+.chat__text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.chat__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+.chat__empty p {
+  margin: 0;
+  color: var(--text-muted);
+}
+.chat__proposals {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.chat__proposal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  min-width: 0;
+}
+.chat__proposal[data-state="applied"] {
+  background: var(--accent-soft);
+}
+.chat__proposal[data-state="skipped"] {
+  opacity: 0.6;
+}
+.chat__proposal-title {
+  font-weight: 600;
+}
+.chat__proposal-detail,
+.chat__proposal-done {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.chat__proposal-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+.chat__thinking {
+  margin: 0;
+  color: var(--text-muted);
+}
+.chat__form {
+  flex: none;
+  display: flex;
+  gap: var(--space-2);
+}
+.chat__input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* ---------- settings: optional AI helpers ---------- */
+.settings__helper {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  min-width: 0;
+}
+.settings__subheading {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-md);
+}
+.settings__check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+}
+.settings__input {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+.settings__helper input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+/* ---------- raw YAML editor ---------- */
+.raw {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3);
+  gap: var(--space-2);
+}
+.raw__head {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.raw__title {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.raw__meta,
+.raw__note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.raw__text {
+  flex: 1 1 8rem;
+  min-height: 8rem;
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  font-family: var(--font-mono, ui-monospace, Consolas, monospace);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  background: var(--bg);
+  color: var(--text);
+  white-space: pre;
+  overflow: auto;
+}
+.raw__issues {
+  flex: none;
+  margin: 0;
+  padding-left: var(--space-4);
+  color: var(--danger);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.raw__error {
+  flex: none;
+  margin: 0;
+  color: var(--danger);
+  overflow-wrap: anywhere;
+}
+.raw__actions {
+  flex: none;
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* ---------- weighted values ---------- */
+.weights {
+  min-width: 0;
+}
+.weights__lead {
+  margin: 0 0 var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.weights__list {
+  list-style: none;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.weights__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  min-width: 0;
+}
+.weights__name {
+  flex: 1 1 8rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+.weights__odds {
+  min-width: 3ch;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+.weights__add,
+.weights__number {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* ---------- name lists ---------- */
+.names {
+  min-width: 0;
+}
+.names__empty {
+  margin: 0 0 var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.names__list {
+  list-style: none;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-height: 16rem;
+  overflow: auto;
+}
+.names__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.names__name {
+  flex: 1 1 10rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.names__add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.names__add .input {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+.names__count {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.names__suggestions {
+  list-style: none;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  max-height: 12rem;
+  overflow: auto;
+}
+.names__suggestion {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-1) var(--space-2);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.names__suggestion:hover,
+.names__suggestion:focus-visible {
+  background: var(--accent-soft);
+}
+
+/* ---------- mixing games ---------- */
+.docheader__mix {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+.gamemix {
+  min-width: 0;
+}
+.gamemix__lead {
+  margin: 0 0 var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.gamemix__list {
+  list-style: none;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.gamemix__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  min-width: 0;
+}
+.gamemix__name {
+  flex: 1 1 10rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+.gamemix__odds {
+  min-width: 3ch;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.side__pane {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.side__pane[hidden] {
+  display: none;
+}
+
+/* ---------- make a seed ---------- */
+.seed {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.seed__title {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.seed__subtitle {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-md);
+}
+.seed__note,
+.seed__ready,
+.seed__path {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.seed__problem,
+.seed__warn,
+.seed__error {
+  margin: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-1);
+  background: var(--warn-soft);
+  color: var(--warn);
+  overflow-wrap: anywhere;
+}
+.seed__problem p {
+  margin: 0 0 var(--space-2);
+}
+.seed__error {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.seed__list {
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.seed__list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.seed__file {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+.seed__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.seed__result {
+  padding: var(--space-3);
+  border-radius: var(--radius-2);
+  border: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.seed__result p {
+  margin: 0 0 var(--space-2);
+}
+.seed__result--ok {
+  background: var(--accent-soft);
+}
+.seed__result--bad {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.seed__problems {
+  margin: 0 0 var(--space-2);
+  padding-left: var(--space-4);
+}
+.seed__log {
+  margin: var(--space-2) 0 0;
+  max-height: 14rem;
+  overflow: auto;
+  padding: var(--space-2);
+  border-radius: var(--radius-1);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono, ui-monospace, Consolas, monospace);
+  font-size: var(--text-xs);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

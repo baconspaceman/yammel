@@ -1,0 +1,28 @@
+node_modules/
+out/
+dist/
+test-results/
+playwright-report/
+*.log
+*.tmp
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Local settings, keys and anything machine-specific never belong in the repository
+settings.json
+.env
+.env.*
+*.key
+
+# Working notes written while building this with AI agents: they name local paths and people.
+docs/superpowers/
+
+# The showcase folder (screenshots, slideshow, PDF) is made from this code but is not part of it. The screenshots
+# used by the documentation are copied into docs/images.
+portfolio/
+tests/portfolio/capture.spec.ts
+tests/portfolio/slideshow.spec.ts

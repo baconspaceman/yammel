@@ -1,0 +1,55 @@
+{
+  "apVersion": "0.6.7",
+  "extractedAt": "2026-10-09T00:00:00+00:00",
+  "errors": [],
+  "games": {
+    "Demo Game": {
+      "name": "Demo Game",
+      "hidden": false,
+      "groups": [
+        { "name": "Game Options", "collapsed": false, "options": ["difficulty", "lives", "hard_mode"] }
+      ],
+      "options": {
+        "difficulty": {
+          "key": "difficulty",
+          "kind": "choice",
+          "displayName": "Difficulty",
+          "description": "How hard the game is.",
+          "default": "easy",
+          "visibility": ["template", "simple_ui", "complex_ui", "spoiler"],
+          "supportsWeighting": true,
+          "choices": [
+            { "key": "easy", "label": "easy" },
+            { "key": "hard", "label": "hard" }
+          ],
+          "aliases": { "difficult": "hard" }
+        },
+        "lives": {
+          "key": "lives",
+          "kind": "range",
+          "displayName": "Lives",
+          "description": "Starting lives.",
+          "default": 5,
+          "visibility": ["template", "simple_ui", "complex_ui", "spoiler"],
+          "supportsWeighting": true,
+          "min": 1,
+          "max": 10
+        },
+        "hard_mode": {
+          "key": "hard_mode",
+          "kind": "toggle",
+          "displayName": "Hard Mode",
+          "description": "Turns on hard mode.",
+          "default": false,
+          "visibility": ["template", "simple_ui", "complex_ui", "spoiler"],
+          "supportsWeighting": true
+        }
+      },
+      "presets": { "Casual": { "difficulty": "easy", "lives": 9 } },
+      "items": ["Key", "Sword"],
+      "locations": ["Cave", "Castle"],
+      "itemGroups": ["Weapons"],
+      "locationGroups": []
+    }
+  }
+}

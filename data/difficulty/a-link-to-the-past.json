@@ -1,0 +1,94 @@
+{
+  "format": 1,
+  "game": "A Link to the Past",
+  "apVersion": "0.6.7",
+  "status": "drafted",
+  "base": 4,
+  "options": {
+    "glitches_required": {
+      "why": "Higher settings put glitches you must perform into the logic.",
+      "values": { "minor_glitches": 0.5, "overworld_glitches": 1.5, "hybrid_major_glitches": 2.5, "no_logic": 3 }
+    },
+    "mode": {
+      "why": "Inverted swaps the two worlds, which makes everything less familiar.",
+      "values": { "standard": 0.2, "inverted": 0.6 }
+    },
+    "item_pool": {
+      "why": "Harder pools have fewer upgrades such as hearts and armor.",
+      "values": { "easy": -0.8, "hard": 0.8, "expert": 1.4 }
+    },
+    "item_functionality": {
+      "why": "Harder settings make items less helpful.",
+      "values": { "easy": -0.4, "hard": 0.6, "expert": 1 }
+    },
+    "enemy_health": {
+      "why": "Enemies take more hits to kill.",
+      "values": { "easy": -0.3, "hard": 0.4, "expert": 0.8 }
+    },
+    "enemy_damage": {
+      "why": "Enemy damage is shuffled, and in chaos some enemies hit for up to eight hearts.",
+      "values": { "shuffled": 0.4, "chaos": 0.9 }
+    },
+    "swordless": {
+      "why": "No swords at all.",
+      "values": { "true": 1 }
+    },
+    "entrance_shuffle": {
+      "why": "The more entrances are shuffled, the less the map can be trusted.",
+      "values": {
+        "dungeons_simple": 0.4,
+        "dungeons_full": 0.6,
+        "dungeons_crossed": 0.8,
+        "simple": 0.8,
+        "restricted": 1,
+        "full": 1.3,
+        "crossed": 1.6,
+        "insanity": 2.2
+      }
+    },
+    "timer": {
+      "why": "A running clock, and in the OHKO modes one hit ends the run.",
+      "values": { "timed": 0.5, "timed_countdown": 0.8, "timed_ohko": 1.8, "ohko": 2.5 }
+    },
+    "pot_shuffle": {
+      "why": "Items can be hidden in pots.",
+      "values": { "true": 0.3 }
+    },
+    "enemy_shuffle": {
+      "why": "Every enemy spawn is randomized.",
+      "values": { "true": 0.6 }
+    },
+    "bombless_start": {
+      "why": "You cannot use bombs until you find a bomb upgrade.",
+      "values": { "true": 0.4 }
+    },
+    "retro_bow": {
+      "why": "Arrows cost rupees and need a quiver.",
+      "values": { "true": 0.5 }
+    },
+    "crystals_needed_for_ganon": {
+      "why": "Fewer crystals to damage Ganon is an easier finish.",
+      "curve": [[0, -0.5], [7, 0]]
+    },
+    "crystals_needed_for_gt": {
+      "why": "Fewer crystals to open Ganon's Tower is an easier path.",
+      "curve": [[0, -0.5], [7, 0]]
+    },
+    "beemizer_total_chance": {
+      "why": "Junk items become bee swarm traps.",
+      "curve": [[0, 0], [100, 0.8]]
+    },
+    "dark_room_logic": {
+      "why": "With none, dark rooms must be crossed without light.",
+      "values": { "torches": -0.1, "none": 0.5 }
+    },
+    "death_link": {
+      "why": "When any player dies, everyone dies.",
+      "values": { "true": 0.5 }
+    },
+    "accessibility": {
+      "why": "Minimal accessibility only promises the goal can be finished.",
+      "values": { "full": -0.2, "minimal": 0.5 }
+    }
+  }
+}

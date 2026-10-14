@@ -1,0 +1,68 @@
+/* Design tokens: every colour, size and space used by the app comes from here. */
+:root {
+  color-scheme: light dark;
+
+  --font-sans: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Cascadia Mono', Consolas, 'SFMono-Regular', ui-monospace, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.375rem;
+  --leading: 1.45;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --radius-1: 6px;
+  --radius-2: 10px;
+  --control-height: 34px;
+
+  /* light theme */
+  --bg: #f4f5f8;
+  --surface: #ffffff;
+  --surface-2: #eceff4;
+  --border: #d3d8e0;
+  --text: #1a1e26;
+  --text-muted: #556070;
+  --accent: #3550d6;
+  --accent-hover: #2a42b3;
+  --accent-contrast: #ffffff;
+  --accent-soft: #e3e8fc;
+  --danger: #b42318;
+  --danger-soft: #fde9e7;
+  --warn: #8a5700;
+  --warn-soft: #fff1d0;
+  --focus: #3550d6;
+  --heat-low: #2f9e6b;
+  --heat-mid: #d9a21b;
+  --heat-high: #d6402b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #13161b;
+    --surface: #1b1f26;
+    --surface-2: #252a33;
+    --border: #353c48;
+    --text: #e8ebf1;
+    --text-muted: #a3adbd;
+    --accent: #8aa0ff;
+    --accent-hover: #a5b6ff;
+    --accent-contrast: #0e1322;
+    --accent-soft: #252d52;
+    --danger: #ff8f85;
+    --danger-soft: #3d2120;
+    --warn: #ffcf70;
+    --warn-soft: #3b3015;
+    --focus: #a5b6ff;
+    --heat-low: #4cc78d;
+    --heat-mid: #e8b93a;
+    --heat-high: #ff6a55;
+  }
+}

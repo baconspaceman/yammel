@@ -1,0 +1,58 @@
+name: Bug report
+description: Something does not work, or works differently from what the guide says.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time. Please check the [troubleshooting guide](../blob/main/docs/guide/troubleshooting.md) first, and never paste API keys or passwords here.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what did you see instead? A screenshot helps.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps, starting from the start screen if you can.
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Shown in the installer file name, for example 0.1.0.
+    validations:
+      required: true
+  - type: dropdown
+    id: how
+    attributes:
+      label: How are you running it?
+      options:
+        - Installer
+        - Portable exe
+        - From source (npm run dev)
+    validations:
+      required: true
+  - type: input
+    id: archipelago
+    attributes:
+      label: Archipelago version (if it matters)
+      description: For example 0.6.7. Leave empty if you do not use check counts, seed making or custom worlds.
+  - type: input
+    id: game
+    attributes:
+      label: Game or custom world involved (if any)
+  - type: textarea
+    id: yaml
+    attributes:
+      label: A small YAML that shows the problem (optional)
+      description: Remove anything private first.
+      render: yaml

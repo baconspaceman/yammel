@@ -1,0 +1,589 @@
+{
+ "apVersion": "0.6.7",
+ "failed": {},
+ "games": {
+  "A Hat in Time": {
+   "checks": 223,
+   "earlyOpen": 79,
+   "items": 223,
+   "needsFile": false,
+   "systems": []
+  },
+  "A Link to the Past": {
+   "checks": 259,
+   "earlyOpen": 31,
+   "items": 153,
+   "needsFile": true,
+   "systems": []
+  },
+  "A Short Hike": {
+   "checks": 131,
+   "earlyOpen": 83,
+   "items": 131,
+   "needsFile": false,
+   "systems": []
+  },
+  "APQuest": {
+   "checks": 6,
+   "earlyOpen": 2,
+   "items": 6,
+   "needsFile": false,
+   "systems": []
+  },
+  "Adventure": {
+   "checks": 24,
+   "earlyOpen": 10,
+   "items": 24,
+   "needsFile": true,
+   "systems": []
+  },
+  "Aquaria": {
+   "checks": 219,
+   "earlyOpen": 15,
+   "items": 217,
+   "needsFile": false,
+   "systems": []
+  },
+  "Blasphemous": {
+   "checks": 304,
+   "earlyOpen": 79,
+   "items": 285,
+   "needsFile": false,
+   "systems": []
+  },
+  "Bomb Rush Cyberfunk": {
+   "checks": 247,
+   "earlyOpen": 10,
+   "items": 247,
+   "needsFile": false,
+   "systems": []
+  },
+  "Bumper Stickers": {
+   "checks": 100,
+   "earlyOpen": 12,
+   "items": 100,
+   "needsFile": false,
+   "systems": []
+  },
+  "Castlevania - Circle of the Moon": {
+   "checks": 124,
+   "earlyOpen": 10,
+   "items": 123,
+   "needsFile": true,
+   "systems": [
+    "GBA"
+   ]
+  },
+  "Castlevania 64": {
+   "checks": 213,
+   "earlyOpen": 30,
+   "items": 213,
+   "needsFile": true,
+   "systems": [
+    "N64"
+   ]
+  },
+  "Celeste (Open World)": {
+   "checks": 233,
+   "earlyOpen": 8,
+   "items": 191,
+   "needsFile": false,
+   "systems": []
+  },
+  "Celeste 64": {
+   "checks": 40,
+   "earlyOpen": 9,
+   "items": 30,
+   "needsFile": false,
+   "systems": []
+  },
+  "ChecksFinder": {
+   "checks": 25,
+   "earlyOpen": 5,
+   "items": 25,
+   "needsFile": false,
+   "systems": []
+  },
+  "Choo-Choo Charles": {
+   "checks": 691,
+   "earlyOpen": 561,
+   "items": 691,
+   "needsFile": false,
+   "systems": []
+  },
+  "Civilization VI": {
+   "checks": 148,
+   "earlyOpen": 28,
+   "items": 148,
+   "needsFile": false,
+   "systems": []
+  },
+  "DLCQuest": {
+   "checks": 29,
+   "earlyOpen": 0,
+   "items": 29,
+   "needsFile": false,
+   "systems": []
+  },
+  "DOOM 1993": {
+   "checks": 348,
+   "earlyOpen": 11,
+   "items": 321,
+   "needsFile": false,
+   "systems": []
+  },
+  "DOOM II": {
+   "checks": 453,
+   "earlyOpen": 9,
+   "items": 423,
+   "needsFile": false,
+   "systems": []
+  },
+  "Dark Souls III": {
+   "checks": 1190,
+   "earlyOpen": 75,
+   "items": 1187,
+   "needsFile": false,
+   "systems": []
+  },
+  "EarthBound": {
+   "checks": 251,
+   "earlyOpen": 13,
+   "items": 245,
+   "needsFile": true,
+   "systems": []
+  },
+  "Factorio": {
+   "checks": 179,
+   "earlyOpen": 0,
+   "items": 176,
+   "needsFile": true,
+   "systems": []
+  },
+  "Faxanadu": {
+   "checks": 110,
+   "earlyOpen": 1,
+   "items": 106,
+   "needsFile": false,
+   "systems": []
+  },
+  "Final Fantasy": {
+   "checks": 0,
+   "earlyOpen": 0,
+   "items": 0,
+   "needsFile": false,
+   "systems": [
+    "NES"
+   ]
+  },
+  "Final Fantasy Mystic Quest": {
+   "checks": 251,
+   "earlyOpen": 13,
+   "items": 251,
+   "needsFile": false,
+   "systems": []
+  },
+  "Heretic": {
+   "checks": 502,
+   "earlyOpen": 14,
+   "items": 475,
+   "needsFile": false,
+   "systems": []
+  },
+  "Hollow Knight": {
+   "checks": 203,
+   "earlyOpen": 2,
+   "items": 203,
+   "needsFile": false,
+   "systems": []
+  },
+  "Hylics 2": {
+   "checks": 133,
+   "earlyOpen": 19,
+   "items": 133,
+   "needsFile": false,
+   "systems": []
+  },
+  "Inscryption": {
+   "checks": 100,
+   "earlyOpen": 8,
+   "items": 100,
+   "needsFile": false,
+   "systems": []
+  },
+  "Jak and Daxter: The Precursor Legacy": {
+   "checks": 239,
+   "earlyOpen": 50,
+   "items": 239,
+   "needsFile": false,
+   "systems": []
+  },
+  "Kingdom Hearts": {
+   "checks": 511,
+   "earlyOpen": null,
+   "items": 398,
+   "needsFile": false,
+   "systems": []
+  },
+  "Kingdom Hearts 2": {
+   "checks": 643,
+   "earlyOpen": 24,
+   "items": 585,
+   "needsFile": false,
+   "systems": []
+  },
+  "Kirby's Dream Land 3": {
+   "checks": 65,
+   "earlyOpen": 9,
+   "items": 65,
+   "needsFile": true,
+   "systems": []
+  },
+  "Landstalker - The Treasures of King Nole": {
+   "checks": 291,
+   "earlyOpen": 30,
+   "items": 283,
+   "needsFile": false,
+   "systems": []
+  },
+  "Lingo": {
+   "checks": 155,
+   "earlyOpen": 19,
+   "items": 155,
+   "needsFile": false,
+   "systems": []
+  },
+  "Links Awakening DX": {
+   "checks": 220,
+   "earlyOpen": 1,
+   "items": 120,
+   "needsFile": true,
+   "systems": []
+  },
+  "Lufia II Ancient Cave": {
+   "checks": 35,
+   "earlyOpen": 5,
+   "items": 25,
+   "needsFile": true,
+   "systems": []
+  },
+  "Mario & Luigi Superstar Saga": {
+   "checks": 556,
+   "earlyOpen": 57,
+   "items": 551,
+   "needsFile": true,
+   "systems": [
+    "GBA"
+   ]
+  },
+  "Mega Man 2": {
+   "checks": 44,
+   "earlyOpen": 3,
+   "items": 44,
+   "needsFile": true,
+   "systems": [
+    "NES"
+   ]
+  },
+  "Mega Man 3": {
+   "checks": 64,
+   "earlyOpen": 2,
+   "items": 64,
+   "needsFile": true,
+   "systems": [
+    "NES"
+   ]
+  },
+  "MegaMan Battle Network 3": {
+   "checks": 263,
+   "earlyOpen": 42,
+   "items": 263,
+   "needsFile": true,
+   "systems": []
+  },
+  "Meritous": {
+   "checks": 104,
+   "earlyOpen": 25,
+   "items": 99,
+   "needsFile": false,
+   "systems": []
+  },
+  "Muse Dash": {
+   "checks": 90,
+   "earlyOpen": 10,
+   "items": 90,
+   "needsFile": false,
+   "systems": []
+  },
+  "Noita": {
+   "checks": 109,
+   "earlyOpen": 109,
+   "items": 70,
+   "needsFile": false,
+   "systems": []
+  },
+  "Ocarina of Time": {
+   "checks": 1053,
+   "earlyOpen": 162,
+   "items": 196,
+   "needsFile": true,
+   "systems": []
+  },
+  "Old School Runescape": {
+   "checks": 54,
+   "earlyOpen": 10,
+   "items": 54,
+   "needsFile": false,
+   "systems": []
+  },
+  "Overcooked! 2": {
+   "checks": 43,
+   "earlyOpen": 3,
+   "items": 43,
+   "needsFile": false,
+   "systems": []
+  },
+  "Paint": {
+   "checks": 130,
+   "earlyOpen": 10,
+   "items": 130,
+   "needsFile": false,
+   "systems": []
+  },
+  "Pokemon Emerald": {
+   "checks": 194,
+   "earlyOpen": 14,
+   "items": 194,
+   "needsFile": true,
+   "systems": [
+    "GBA"
+   ]
+  },
+  "Pokemon Red and Blue": {
+   "checks": 161,
+   "earlyOpen": 3,
+   "items": 159,
+   "needsFile": true,
+   "systems": [
+    "GB",
+    "SGB"
+   ]
+  },
+  "Raft": {
+   "checks": 154,
+   "earlyOpen": 13,
+   "items": 147,
+   "needsFile": false,
+   "systems": []
+  },
+  "Risk of Rain 2": {
+   "checks": 187,
+   "earlyOpen": 17,
+   "items": 187,
+   "needsFile": false,
+   "systems": []
+  },
+  "SMZ3": {
+   "checks": 316,
+   "earlyOpen": 37,
+   "items": 253,
+   "needsFile": false,
+   "systems": []
+  },
+  "Satisfactory": {
+   "checks": 377,
+   "earlyOpen": 40,
+   "items": 377,
+   "needsFile": false,
+   "systems": []
+  },
+  "Saving Princess": {
+   "checks": 36,
+   "earlyOpen": 7,
+   "items": 36,
+   "needsFile": true,
+   "systems": []
+  },
+  "Secret of Evermore": {
+   "checks": 339,
+   "earlyOpen": 57,
+   "items": 338,
+   "needsFile": true,
+   "systems": []
+  },
+  "Shivers": {
+   "checks": 76,
+   "earlyOpen": 10,
+   "items": 73,
+   "needsFile": false,
+   "systems": []
+  },
+  "Sonic Adventure 2 Battle": {
+   "checks": 206,
+   "earlyOpen": 32,
+   "items": 206,
+   "needsFile": false,
+   "systems": []
+  },
+  "Starcraft 2": {
+   "checks": 232,
+   "earlyOpen": 3,
+   "items": 232,
+   "needsFile": false,
+   "systems": []
+  },
+  "Stardew Valley": {
+   "checks": 471,
+   "earlyOpen": 33,
+   "items": 471,
+   "needsFile": false,
+   "systems": []
+  },
+  "Subnautica": {
+   "checks": 131,
+   "earlyOpen": 11,
+   "items": 130,
+   "needsFile": false,
+   "systems": []
+  },
+  "Super Mario 64": {
+   "checks": 149,
+   "earlyOpen": 4,
+   "items": 110,
+   "needsFile": false,
+   "systems": []
+  },
+  "Super Mario Land 2": {
+   "checks": 53,
+   "earlyOpen": 12,
+   "items": 53,
+   "needsFile": true,
+   "systems": [
+    "GB",
+    "SGB"
+   ]
+  },
+  "Super Mario World": {
+   "checks": 108,
+   "earlyOpen": 5,
+   "items": 96,
+   "needsFile": true,
+   "systems": []
+  },
+  "Super Metroid": {
+   "checks": 100,
+   "earlyOpen": 2,
+   "items": 100,
+   "needsFile": true,
+   "systems": []
+  },
+  "TUNIC": {
+   "checks": 302,
+   "earlyOpen": 107,
+   "items": 302,
+   "needsFile": false,
+   "systems": []
+  },
+  "Terraria": {
+   "checks": 63,
+   "earlyOpen": 40,
+   "items": 60,
+   "needsFile": false,
+   "systems": []
+  },
+  "The Legend of Zelda": {
+   "checks": 155,
+   "earlyOpen": 3,
+   "items": 142,
+   "needsFile": true,
+   "systems": []
+  },
+  "The Messenger": {
+   "checks": 106,
+   "earlyOpen": 10,
+   "items": 106,
+   "needsFile": true,
+   "systems": []
+  },
+  "The Wind Waker": {
+   "checks": 108,
+   "earlyOpen": 8,
+   "items": 79,
+   "needsFile": false,
+   "systems": []
+  },
+  "The Witness": {
+   "checks": 132,
+   "earlyOpen": 27,
+   "items": 131,
+   "needsFile": false,
+   "systems": []
+  },
+  "Timespinner": {
+   "checks": 180,
+   "earlyOpen": 6,
+   "items": 178,
+   "needsFile": false,
+   "systems": []
+  },
+  "Undertale": {
+   "checks": 48,
+   "earlyOpen": 9,
+   "items": 48,
+   "needsFile": false,
+   "systems": []
+  },
+  "VVVVVV": {
+   "checks": 20,
+   "earlyOpen": 6,
+   "items": 20,
+   "needsFile": false,
+   "systems": []
+  },
+  "Wargroove": {
+   "checks": 38,
+   "earlyOpen": 10,
+   "items": 38,
+   "needsFile": false,
+   "systems": []
+  },
+  "Yacht Dice": {
+   "checks": 89,
+   "earlyOpen": 5,
+   "items": 89,
+   "needsFile": false,
+   "systems": []
+  },
+  "Yoshi's Island": {
+   "checks": 191,
+   "earlyOpen": 9,
+   "items": 191,
+   "needsFile": true,
+   "systems": []
+  },
+  "Yu-Gi-Oh! 2006": {
+   "checks": 84,
+   "earlyOpen": 7,
+   "items": 84,
+   "needsFile": true,
+   "systems": [
+    "GBA"
+   ]
+  },
+  "Zillion": {
+   "checks": 147,
+   "earlyOpen": 34,
+   "items": 146,
+   "needsFile": true,
+   "systems": []
+  },
+  "shapez": {
+   "checks": 139,
+   "earlyOpen": 18,
+   "items": 139,
+   "needsFile": false,
+   "systems": []
+  }
+ },
+ "scannedAt": "2026-10-13T22:17:14.035067+00:00"
+}

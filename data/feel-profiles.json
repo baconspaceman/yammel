@@ -1,0 +1,1308 @@
+{
+ "note": "Drafted by Claude from general knowledge of the games on 2026-10-13. Judgement, not measured data; every value is a draft.",
+ "games": {
+  "A Hat in Time": {
+   "genre": "platformer",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "whimsical",
+    "funny"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "platforming",
+    "collecting",
+    "exploration"
+   ]
+  },
+  "A Link to the Past": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "heroic",
+    "mysterious"
+   ],
+   "era": "classic",
+   "families": [
+    "zelda"
+   ],
+   "activities": [
+    "exploration",
+    "combat",
+    "puzzle"
+   ]
+  },
+  "A Short Hike": {
+   "genre": "action-adventure",
+   "pace": 1,
+   "length": 2,
+   "tones": [
+    "cozy",
+    "whimsical"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "exploration",
+    "collecting"
+   ]
+  },
+  "APQuest": {
+   "genre": "action-adventure",
+   "pace": 2,
+   "length": 1,
+   "tones": [
+    "whimsical"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "exploration",
+    "collecting",
+    "combat"
+   ]
+  },
+  "Adventure": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 1,
+   "tones": [
+    "whimsical"
+   ],
+   "era": "classic",
+   "families": [
+    "atari"
+   ],
+   "activities": [
+    "exploration",
+    "collecting"
+   ]
+  },
+  "Aquaria": {
+   "genre": "metroidvania",
+   "pace": 2,
+   "length": 4,
+   "tones": [
+    "mysterious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "exploration",
+    "combat",
+    "collecting"
+   ]
+  },
+  "Blasphemous": {
+   "genre": "metroidvania",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "dark",
+    "serious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "combat",
+    "exploration",
+    "platforming"
+   ]
+  },
+  "Bomb Rush Cyberfunk": {
+   "genre": "platformer",
+   "pace": 4,
+   "length": 3,
+   "tones": [
+    "energetic",
+    "funny"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "platforming",
+    "collecting",
+    "exploration"
+   ]
+  },
+  "Bumper Stickers": {
+   "genre": "puzzle",
+   "pace": 3,
+   "length": 2,
+   "tones": [
+    "cozy"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "puzzle",
+    "logic"
+   ]
+  },
+  "Castlevania - Circle of the Moon": {
+   "genre": "metroidvania",
+   "pace": 3,
+   "length": 3,
+   "tones": [
+    "dark"
+   ],
+   "era": "mid",
+   "families": [
+    "castlevania"
+   ],
+   "activities": [
+    "combat",
+    "exploration",
+    "collecting"
+   ]
+  },
+  "Castlevania 64": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 3,
+   "tones": [
+    "dark"
+   ],
+   "era": "mid",
+   "families": [
+    "castlevania"
+   ],
+   "activities": [
+    "combat",
+    "platforming",
+    "exploration"
+   ]
+  },
+  "Celeste (Open World)": {
+   "genre": "platformer",
+   "pace": 4,
+   "length": 4,
+   "tones": [
+    "serious",
+    "energetic"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "platforming",
+    "exploration"
+   ]
+  },
+  "Celeste 64": {
+   "genre": "platformer",
+   "pace": 3,
+   "length": 2,
+   "tones": [
+    "whimsical"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "platforming",
+    "collecting"
+   ]
+  },
+  "ChecksFinder": {
+   "genre": "puzzle",
+   "pace": 2,
+   "length": 1,
+   "tones": [
+    "cozy"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "logic",
+    "puzzle"
+   ]
+  },
+  "Choo-Choo Charles": {
+   "genre": "survival",
+   "pace": 4,
+   "length": 3,
+   "tones": [
+    "tense",
+    "dark"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "exploration",
+    "combat",
+    "stealth"
+   ]
+  },
+  "Civilization VI": {
+   "genre": "strategy",
+   "pace": 2,
+   "length": 5,
+   "tones": [
+    "serious"
+   ],
+   "era": "modern",
+   "families": [
+    "civilization"
+   ],
+   "activities": [
+    "management",
+    "building",
+    "strategy"
+   ]
+  },
+  "DLCQuest": {
+   "genre": "platformer",
+   "pace": 3,
+   "length": 2,
+   "tones": [
+    "funny"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "platforming",
+    "collecting",
+    "grinding"
+   ]
+  },
+  "DOOM 1993": {
+   "genre": "shooter",
+   "pace": 5,
+   "length": 3,
+   "tones": [
+    "tense",
+    "energetic"
+   ],
+   "era": "classic",
+   "families": [
+    "doom"
+   ],
+   "activities": [
+    "shooting",
+    "exploration"
+   ]
+  },
+  "DOOM II": {
+   "genre": "shooter",
+   "pace": 5,
+   "length": 3,
+   "tones": [
+    "tense",
+    "energetic"
+   ],
+   "era": "classic",
+   "families": [
+    "doom"
+   ],
+   "activities": [
+    "shooting",
+    "exploration"
+   ]
+  },
+  "Dark Souls III": {
+   "genre": "rpg",
+   "pace": 4,
+   "length": 5,
+   "tones": [
+    "dark",
+    "serious"
+   ],
+   "era": "modern",
+   "families": [
+    "fromsoftware"
+   ],
+   "activities": [
+    "combat",
+    "exploration",
+    "grinding"
+   ]
+  },
+  "EarthBound": {
+   "genre": "jrpg",
+   "pace": 2,
+   "length": 5,
+   "tones": [
+    "funny",
+    "whimsical"
+   ],
+   "era": "classic",
+   "families": [
+    "mother"
+   ],
+   "activities": [
+    "combat",
+    "dialogue",
+    "exploration"
+   ]
+  },
+  "Factorio": {
+   "genre": "automation",
+   "pace": 3,
+   "length": 5,
+   "tones": [
+    "serious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "building",
+    "management",
+    "crafting"
+   ]
+  },
+  "Faxanadu": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 3,
+   "tones": [
+    "dark"
+   ],
+   "era": "classic",
+   "families": [],
+   "activities": [
+    "combat",
+    "platforming",
+    "exploration"
+   ]
+  },
+  "Final Fantasy": {
+   "genre": "jrpg",
+   "pace": 2,
+   "length": 5,
+   "tones": [
+    "heroic"
+   ],
+   "era": "classic",
+   "families": [
+    "final-fantasy"
+   ],
+   "activities": [
+    "combat",
+    "grinding",
+    "exploration"
+   ]
+  },
+  "Final Fantasy Mystic Quest": {
+   "genre": "jrpg",
+   "pace": 2,
+   "length": 3,
+   "tones": [
+    "whimsical",
+    "heroic"
+   ],
+   "era": "classic",
+   "families": [
+    "final-fantasy"
+   ],
+   "activities": [
+    "combat",
+    "exploration"
+   ]
+  },
+  "Heretic": {
+   "genre": "shooter",
+   "pace": 5,
+   "length": 3,
+   "tones": [
+    "dark",
+    "tense"
+   ],
+   "era": "classic",
+   "families": [
+    "doom"
+   ],
+   "activities": [
+    "shooting",
+    "exploration"
+   ]
+  },
+  "Hollow Knight": {
+   "genre": "metroidvania",
+   "pace": 3,
+   "length": 5,
+   "tones": [
+    "dark",
+    "mysterious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "combat",
+    "exploration",
+    "platforming"
+   ]
+  },
+  "Hylics 2": {
+   "genre": "rpg",
+   "pace": 2,
+   "length": 3,
+   "tones": [
+    "whimsical",
+    "mysterious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "combat",
+    "exploration",
+    "dialogue"
+   ]
+  },
+  "Inscryption": {
+   "genre": "card",
+   "pace": 2,
+   "length": 3,
+   "tones": [
+    "dark",
+    "mysterious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "cards",
+    "puzzle",
+    "strategy"
+   ]
+  },
+  "Jak and Daxter: The Precursor Legacy": {
+   "genre": "platformer",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "whimsical",
+    "funny"
+   ],
+   "era": "mid",
+   "families": [],
+   "activities": [
+    "platforming",
+    "collecting",
+    "exploration"
+   ]
+  },
+  "Kingdom Hearts": {
+   "genre": "rpg",
+   "pace": 3,
+   "length": 5,
+   "tones": [
+    "heroic",
+    "whimsical"
+   ],
+   "era": "mid",
+   "families": [
+    "kingdom-hearts"
+   ],
+   "activities": [
+    "combat",
+    "exploration",
+    "dialogue"
+   ]
+  },
+  "Kingdom Hearts 2": {
+   "genre": "rpg",
+   "pace": 4,
+   "length": 5,
+   "tones": [
+    "heroic"
+   ],
+   "era": "mid",
+   "families": [
+    "kingdom-hearts"
+   ],
+   "activities": [
+    "combat",
+    "exploration",
+    "dialogue"
+   ]
+  },
+  "Kirby's Dream Land 3": {
+   "genre": "platformer",
+   "pace": 2,
+   "length": 3,
+   "tones": [
+    "cozy",
+    "whimsical"
+   ],
+   "era": "classic",
+   "families": [
+    "kirby"
+   ],
+   "activities": [
+    "platforming",
+    "collecting"
+   ]
+  },
+  "Landstalker - The Treasures of King Nole": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "whimsical",
+    "heroic"
+   ],
+   "era": "classic",
+   "families": [],
+   "activities": [
+    "exploration",
+    "combat",
+    "puzzle"
+   ]
+  },
+  "Lingo": {
+   "genre": "puzzle",
+   "pace": 1,
+   "length": 5,
+   "tones": [
+    "cozy",
+    "mysterious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "puzzle",
+    "logic",
+    "exploration"
+   ]
+  },
+  "Links Awakening DX": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "whimsical",
+    "mysterious"
+   ],
+   "era": "classic",
+   "families": [
+    "zelda"
+   ],
+   "activities": [
+    "exploration",
+    "combat",
+    "puzzle"
+   ]
+  },
+  "Lufia II Ancient Cave": {
+   "genre": "roguelike",
+   "pace": 3,
+   "length": 3,
+   "tones": [
+    "heroic"
+   ],
+   "era": "classic",
+   "families": [],
+   "activities": [
+    "combat",
+    "grinding",
+    "collecting"
+   ]
+  },
+  "Mario & Luigi Superstar Saga": {
+   "genre": "jrpg",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "funny",
+    "whimsical"
+   ],
+   "era": "mid",
+   "families": [
+    "mario"
+   ],
+   "activities": [
+    "combat",
+    "exploration",
+    "dialogue"
+   ]
+  },
+  "Mega Man 2": {
+   "genre": "platformer",
+   "pace": 4,
+   "length": 2,
+   "tones": [
+    "energetic",
+    "heroic"
+   ],
+   "era": "classic",
+   "families": [
+    "megaman"
+   ],
+   "activities": [
+    "platforming",
+    "shooting"
+   ]
+  },
+  "Mega Man 3": {
+   "genre": "platformer",
+   "pace": 4,
+   "length": 2,
+   "tones": [
+    "energetic",
+    "heroic"
+   ],
+   "era": "classic",
+   "families": [
+    "megaman"
+   ],
+   "activities": [
+    "platforming",
+    "shooting"
+   ]
+  },
+  "MegaMan Battle Network 3": {
+   "genre": "jrpg",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "energetic",
+    "heroic"
+   ],
+   "era": "mid",
+   "families": [
+    "megaman"
+   ],
+   "activities": [
+    "combat",
+    "grinding",
+    "exploration"
+   ]
+  },
+  "Meritous": {
+   "genre": "shooter",
+   "pace": 4,
+   "length": 3,
+   "tones": [
+    "tense",
+    "mysterious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "shooting",
+    "exploration"
+   ]
+  },
+  "Muse Dash": {
+   "genre": "rhythm",
+   "pace": 4,
+   "length": 1,
+   "tones": [
+    "energetic",
+    "whimsical"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "rhythm"
+   ]
+  },
+  "Noita": {
+   "genre": "roguelike",
+   "pace": 4,
+   "length": 4,
+   "tones": [
+    "dark",
+    "tense"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "combat",
+    "exploration"
+   ]
+  },
+  "Ocarina of Time": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "heroic",
+    "mysterious"
+   ],
+   "era": "mid",
+   "families": [
+    "zelda"
+   ],
+   "activities": [
+    "exploration",
+    "combat",
+    "puzzle"
+   ]
+  },
+  "Old School Runescape": {
+   "genre": "rpg",
+   "pace": 1,
+   "length": 5,
+   "tones": [
+    "whimsical",
+    "funny"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "grinding",
+    "collecting",
+    "exploration"
+   ]
+  },
+  "Overcooked! 2": {
+   "genre": "party",
+   "pace": 5,
+   "length": 2,
+   "tones": [
+    "funny",
+    "energetic"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "management",
+    "cooking"
+   ]
+  },
+  "Paint": {
+   "genre": "creative",
+   "pace": 1,
+   "length": 1,
+   "tones": [
+    "cozy",
+    "funny"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "drawing"
+   ]
+  },
+  "Pokemon Emerald": {
+   "genre": "jrpg",
+   "pace": 2,
+   "length": 5,
+   "tones": [
+    "whimsical",
+    "heroic"
+   ],
+   "era": "mid",
+   "families": [
+    "pokemon"
+   ],
+   "activities": [
+    "collecting",
+    "combat",
+    "exploration"
+   ]
+  },
+  "Pokemon Red and Blue": {
+   "genre": "jrpg",
+   "pace": 2,
+   "length": 5,
+   "tones": [
+    "whimsical"
+   ],
+   "era": "classic",
+   "families": [
+    "pokemon"
+   ],
+   "activities": [
+    "collecting",
+    "combat",
+    "exploration"
+   ]
+  },
+  "Raft": {
+   "genre": "survival",
+   "pace": 2,
+   "length": 4,
+   "tones": [
+    "tense",
+    "whimsical"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "building",
+    "crafting",
+    "exploration"
+   ]
+  },
+  "Risk of Rain 2": {
+   "genre": "roguelike",
+   "pace": 5,
+   "length": 3,
+   "tones": [
+    "energetic",
+    "tense"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "shooting",
+    "combat"
+   ]
+  },
+  "SMZ3": {
+   "genre": "metroidvania",
+   "pace": 3,
+   "length": 5,
+   "tones": [
+    "heroic",
+    "mysterious"
+   ],
+   "era": "classic",
+   "families": [
+    "zelda",
+    "metroid"
+   ],
+   "activities": [
+    "exploration",
+    "combat",
+    "puzzle"
+   ]
+  },
+  "Satisfactory": {
+   "genre": "automation",
+   "pace": 3,
+   "length": 5,
+   "tones": [
+    "serious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "building",
+    "management",
+    "crafting"
+   ]
+  },
+  "Saving Princess": {
+   "genre": "platformer",
+   "pace": 4,
+   "length": 2,
+   "tones": [
+    "funny",
+    "energetic"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "shooting",
+    "platforming",
+    "exploration"
+   ]
+  },
+  "Secret of Evermore": {
+   "genre": "rpg",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "whimsical",
+    "mysterious"
+   ],
+   "era": "classic",
+   "families": [],
+   "activities": [
+    "combat",
+    "exploration",
+    "crafting"
+   ]
+  },
+  "Shivers": {
+   "genre": "puzzle",
+   "pace": 1,
+   "length": 3,
+   "tones": [
+    "dark",
+    "mysterious"
+   ],
+   "era": "classic",
+   "families": [],
+   "activities": [
+    "puzzle",
+    "exploration"
+   ]
+  },
+  "Sonic Adventure 2 Battle": {
+   "genre": "platformer",
+   "pace": 5,
+   "length": 3,
+   "tones": [
+    "energetic",
+    "funny"
+   ],
+   "era": "mid",
+   "families": [
+    "sonic"
+   ],
+   "activities": [
+    "platforming",
+    "racing",
+    "collecting"
+   ]
+  },
+  "Starcraft 2": {
+   "genre": "strategy",
+   "pace": 4,
+   "length": 4,
+   "tones": [
+    "serious",
+    "heroic"
+   ],
+   "era": "modern",
+   "families": [
+    "starcraft"
+   ],
+   "activities": [
+    "strategy",
+    "combat",
+    "management"
+   ]
+  },
+  "Stardew Valley": {
+   "genre": "sim",
+   "pace": 1,
+   "length": 5,
+   "tones": [
+    "cozy",
+    "whimsical"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "farming",
+    "crafting",
+    "management"
+   ]
+  },
+  "Subnautica": {
+   "genre": "survival",
+   "pace": 2,
+   "length": 5,
+   "tones": [
+    "tense",
+    "mysterious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "exploration",
+    "crafting",
+    "survival"
+   ]
+  },
+  "Super Mario 64": {
+   "genre": "platformer",
+   "pace": 3,
+   "length": 3,
+   "tones": [
+    "whimsical",
+    "energetic"
+   ],
+   "era": "mid",
+   "families": [
+    "mario"
+   ],
+   "activities": [
+    "platforming",
+    "collecting",
+    "exploration"
+   ]
+  },
+  "Super Mario Land 2": {
+   "genre": "platformer",
+   "pace": 3,
+   "length": 2,
+   "tones": [
+    "whimsical"
+   ],
+   "era": "classic",
+   "families": [
+    "mario"
+   ],
+   "activities": [
+    "platforming",
+    "collecting"
+   ]
+  },
+  "Super Mario World": {
+   "genre": "platformer",
+   "pace": 3,
+   "length": 3,
+   "tones": [
+    "whimsical"
+   ],
+   "era": "classic",
+   "families": [
+    "mario"
+   ],
+   "activities": [
+    "platforming",
+    "exploration",
+    "collecting"
+   ]
+  },
+  "Super Metroid": {
+   "genre": "metroidvania",
+   "pace": 3,
+   "length": 3,
+   "tones": [
+    "dark",
+    "mysterious"
+   ],
+   "era": "classic",
+   "families": [
+    "metroid"
+   ],
+   "activities": [
+    "exploration",
+    "combat",
+    "platforming"
+   ]
+  },
+  "TUNIC": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "mysterious",
+    "whimsical"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "exploration",
+    "combat",
+    "puzzle"
+   ]
+  },
+  "Terraria": {
+   "genre": "sandbox",
+   "pace": 4,
+   "length": 5,
+   "tones": [
+    "whimsical",
+    "tense"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "building",
+    "combat",
+    "exploration",
+    "crafting"
+   ]
+  },
+  "The Legend of Zelda": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "heroic"
+   ],
+   "era": "classic",
+   "families": [
+    "zelda"
+   ],
+   "activities": [
+    "exploration",
+    "combat",
+    "puzzle"
+   ]
+  },
+  "The Messenger": {
+   "genre": "platformer",
+   "pace": 4,
+   "length": 3,
+   "tones": [
+    "funny",
+    "energetic"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "platforming",
+    "combat",
+    "exploration"
+   ]
+  },
+  "The Wind Waker": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 5,
+   "tones": [
+    "whimsical",
+    "heroic"
+   ],
+   "era": "mid",
+   "families": [
+    "zelda"
+   ],
+   "activities": [
+    "exploration",
+    "combat",
+    "puzzle"
+   ]
+  },
+  "The Witness": {
+   "genre": "puzzle",
+   "pace": 1,
+   "length": 5,
+   "tones": [
+    "mysterious",
+    "serious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "puzzle",
+    "logic",
+    "exploration"
+   ]
+  },
+  "Timespinner": {
+   "genre": "metroidvania",
+   "pace": 3,
+   "length": 4,
+   "tones": [
+    "heroic",
+    "mysterious"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "combat",
+    "exploration",
+    "platforming"
+   ]
+  },
+  "Undertale": {
+   "genre": "rpg",
+   "pace": 2,
+   "length": 3,
+   "tones": [
+    "funny",
+    "whimsical"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "dialogue",
+    "combat",
+    "exploration"
+   ]
+  },
+  "VVVVVV": {
+   "genre": "platformer",
+   "pace": 4,
+   "length": 2,
+   "tones": [
+    "energetic",
+    "whimsical"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "platforming",
+    "exploration"
+   ]
+  },
+  "Wargroove": {
+   "genre": "strategy",
+   "pace": 2,
+   "length": 4,
+   "tones": [
+    "whimsical",
+    "heroic"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "strategy",
+    "combat",
+    "management"
+   ]
+  },
+  "Yacht Dice": {
+   "genre": "casual",
+   "pace": 2,
+   "length": 1,
+   "tones": [
+    "cozy"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "dice",
+    "luck"
+   ]
+  },
+  "Yoshi's Island": {
+   "genre": "platformer",
+   "pace": 3,
+   "length": 3,
+   "tones": [
+    "cozy",
+    "whimsical"
+   ],
+   "era": "classic",
+   "families": [
+    "mario"
+   ],
+   "activities": [
+    "platforming",
+    "collecting",
+    "exploration"
+   ]
+  },
+  "Yu-Gi-Oh! 2006": {
+   "genre": "card",
+   "pace": 2,
+   "length": 4,
+   "tones": [
+    "energetic",
+    "serious"
+   ],
+   "era": "mid",
+   "families": [
+    "yugioh"
+   ],
+   "activities": [
+    "cards",
+    "strategy",
+    "grinding"
+   ]
+  },
+  "Zillion": {
+   "genre": "action-adventure",
+   "pace": 3,
+   "length": 2,
+   "tones": [
+    "serious",
+    "mysterious"
+   ],
+   "era": "classic",
+   "families": [],
+   "activities": [
+    "exploration",
+    "shooting",
+    "puzzle"
+   ]
+  },
+  "shapez": {
+   "genre": "automation",
+   "pace": 2,
+   "length": 4,
+   "tones": [
+    "cozy"
+   ],
+   "era": "modern",
+   "families": [],
+   "activities": [
+    "building",
+    "puzzle",
+    "management"
+   ]
+  }
+ }
+}

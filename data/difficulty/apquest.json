@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "game": "APQuest",
+  "apVersion": "0.6.7",
+  "status": "drafted",
+  "base": 1.5,
+  "options": {
+    "hard_mode": {
+      "why": "Enemies and the final boss have more health, and the health upgrades become required.",
+      "values": { "true": 1.5 }
+    },
+    "trap_chance": {
+      "why": "Each Math Trap replaces a Confetti Cannon, so more of them means more setbacks.",
+      "curve": [[0, 0], [100, 1.5]]
+    },
+    "start_with_one_confetti_cannon": {
+      "why": "You start with a cannon already in hand.",
+      "values": { "true": -0.4 }
+    },
+    "accessibility": {
+      "why": "Minimal accessibility only promises the goal can be finished.",
+      "values": { "minimal": 0.3 }
+    }
+  }
+}

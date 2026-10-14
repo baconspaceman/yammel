@@ -1,0 +1,45 @@
+{
+  "format": 1,
+  "game": "Super Mario World",
+  "apVersion": "0.6.7",
+  "status": "drafted",
+  "base": 4,
+  "options": {
+    "bosses_required": {
+      "why": "Fewer bosses before Bowser is a shorter, easier run; all eleven is a full gauntlet.",
+      "curve": [[0, -1], [7, 0], [11, 0.6]]
+    },
+    "level_shuffle": {
+      "why": "Levels turn up in unfamiliar places, so you cannot lean on memory of the game.",
+      "values": { "true": 1 }
+    },
+    "boss_shuffle": {
+      "why": "Bosses appear in other boss slots, so each fight can be a surprise.",
+      "values": { "simple": 0.3, "full": 0.7, "singularity": 0.6 }
+    },
+    "bowser_castle_rooms": {
+      "why": "Longer forced room sequences make the end of the run harder than picking your own rooms.",
+      "values": { "vanilla": -0.2, "random_five_room": 0.3, "gauntlet": 0.6, "labyrinth": 0.9 }
+    },
+    "trap_fill_percentage": {
+      "why": "Traps replace junk items, so more of them means more setbacks.",
+      "curve": [[0, 0], [100, 1.2]]
+    },
+    "starting_life_count": {
+      "why": "More starting lives is a bigger safety net.",
+      "curve": [[1, 0.5], [5, 0], [99, -1]]
+    },
+    "exclude_special_zone": {
+      "why": "Nothing required is placed in the hardest levels.",
+      "values": { "true": -0.3 }
+    },
+    "death_link": {
+      "why": "When any player dies, everyone dies.",
+      "values": { "true": 0.5 }
+    },
+    "accessibility": {
+      "why": "Minimal accessibility only promises the goal can be finished.",
+      "values": { "minimal": 0.4 }
+    }
+  }
+}

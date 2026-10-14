@@ -1,0 +1,15 @@
+# Simple player file for one game
+name: Tester{NUMBER}
+description: Template YAML for a quiet solo run
+game: Demo Game
+requires:
+  version: 0.6.7
+
+Demo Game:
+  # how hard the run is
+  difficulty: hard # I like pain
+  lives: 5
+  hard_mode: true
+  start_inventory:
+    Key: 1
+  local_items: [Key, Sword]

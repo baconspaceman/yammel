@@ -1,0 +1,93 @@
+{
+  "format": 1,
+  "game": "Hollow Knight",
+  "apVersion": "0.6.7",
+  "status": "drafted",
+  "base": 5.5,
+  "options": {
+    "PreciseMovement": {
+      "why": "Puts extremely precise movement skips into logic.",
+      "values": { "true": 0.8 }
+    },
+    "ProficientCombat": {
+      "why": "Puts skips that need proficient combat into logic.",
+      "values": { "true": 0.6 }
+    },
+    "ObscureSkips": {
+      "why": "Puts skips that a beginner would not know into logic.",
+      "values": { "true": 0.6 }
+    },
+    "ShadeSkips": {
+      "why": "Puts shade pogo and damage boost skips into logic.",
+      "values": { "true": 0.5 }
+    },
+    "InfectionSkips": {
+      "why": "Puts skips that only work after the Crossroads are infected into logic.",
+      "values": { "true": 0.3 }
+    },
+    "FireballSkips": {
+      "why": "Puts skips that reset fall speed with spells into logic.",
+      "values": { "true": 0.4 }
+    },
+    "SpikeTunnels": {
+      "why": "Puts narrow spike tunnels into logic.",
+      "values": { "true": 0.5 }
+    },
+    "AcidSkips": {
+      "why": "Puts crossing acid without Isma's Tear into logic.",
+      "values": { "true": 0.5 }
+    },
+    "DamageBoosts": {
+      "why": "Puts skips that need you to take damage into logic.",
+      "values": { "true": 0.6 }
+    },
+    "DangerousSkips": {
+      "why": "Puts skips with a high risk of damage into logic.",
+      "values": { "true": 0.7 }
+    },
+    "DarkRooms": {
+      "why": "Puts dark rooms without the Lumafly Lantern into logic.",
+      "values": { "true": 0.5 }
+    },
+    "ComplexSkips": {
+      "why": "Puts skips with intense setup into logic.",
+      "values": { "true": 0.8 }
+    },
+    "DifficultSkips": {
+      "why": "Puts skips harder than typical into logic.",
+      "values": { "true": 1 }
+    },
+    "RemoveSpellUpgrades": {
+      "why": "The second level of every spell is removed from the item pool.",
+      "values": { "true": 0.8 }
+    },
+    "RandomizeNail": {
+      "why": "Nail swings in each direction become items you must find.",
+      "values": { "true": 0.8 }
+    },
+    "RandomizeSkills": {
+      "why": "With skills left where they are in the game, the run is more predictable.",
+      "values": { "false": -0.6 }
+    },
+    "WhitePalace": {
+      "why": "White Palace is some of the hardest platforming in the game, and including the Path of Pain is the hardest part.",
+      "values": { "kingfragment": 0.3, "nopathofpain": 0.8, "include": 1.5 }
+    },
+    "Goal": {
+      "why": "Later bosses and Godhome goals are much harder fights.",
+      "values": { "siblings": 0.6, "radiance": 1, "godhome": 1.5, "godhome_flower": 1.8 }
+    },
+    "StartingGeo": {
+      "why": "More starting geo buys more in the shops.",
+      "curve": [[0, 0], [1000, -0.4]]
+    },
+    "DeathLink": {
+      "why": "When any player dies, everyone dies.",
+      "values": { "true": 0.5 }
+    },
+    "accessibility": {
+      "why": "Minimal accessibility only promises the goal can be finished.",
+      "values": { "minimal": 0.4 }
+    }
+  }
+}

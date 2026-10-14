@@ -1,0 +1,90 @@
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+import type { ArchipelagoFinding } from '../shared/api';
+import { hostCandidates, hostErrorMessage, readHostFile, writeHostFile } from './hostFile';
+
+const dirs: string[] = [];
+const temp = () => {
+  const dir = mkdtempSync(join(tmpdir(), 'yamled-host-'));
+  dirs.push(dir);
+  return dir;
+};
+afterEach(() => {
+  for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
+});
+const finding = (over: Partial<ArchipelagoFinding> = {}): ArchipelagoFinding => ({ sourceRoot: null, origin: null, python: null, installRoot: null, problem: null, ...over });
+
+describe('hostCandidates', () => {
+  it('lists only what was detected, with the full path', () => {
+    expect(hostCandidates(finding())).toEqual([]);
+    const both = hostCandidates(finding({ installRoot: 'C:/AP', sourceRoot: 'C:/src' }), () => true);
+    expect(both.map((c) => c.id)).toEqual(['installed', 'source']);
+    expect(both[0]!.path.replace(/\\/g, '/')).toBe('C:/AP/host.yaml');
+  });
+
+  it('says when the file is missing', () => {
+    expect(hostCandidates(finding({ installRoot: 'C:/AP' }), () => false)[0]!.exists).toBe(false);
+  });
+});
+
+describe('readHostFile / writeHostFile', () => {
+  const setup = (text = 'general_options:\r\n  output_path: "output"\r\n') => {
+    const root = temp();
+    writeFileSync(join(root, 'host.yaml'), text, 'utf8');
+    return { root, f: finding({ installRoot: root }), backups: join(temp(), 'backups') };
+  };
+
+  it('reads the file, dropping a byte-order mark', async () => {
+    const { f } = setup('\uFEFFa:\n  b: 1\n');
+    expect((await readHostFile(f, 'installed')).text).toBe('a:\n  b: 1\n');
+  });
+
+  it('refuses an id that is not on this machine', async () => {
+    await expect(readHostFile(finding(), 'installed')).rejects.toThrow('could not be found');
+  });
+
+  it('writes with a backup of the old file', async () => {
+    const { root, f, backups } = setup();
+    const before = (await readHostFile(f, 'installed')).text;
+    const result = await writeHostFile(f, 'installed', 'general_options:\r\n  output_path: "seeds"\r\n', before, backups);
+    expect(readFileSync(join(root, 'host.yaml'), 'utf8')).toBe('general_options:\r\n  output_path: "seeds"\r\n');
+    expect(result.backupPath).not.toBeNull();
+    expect(readFileSync(result.backupPath!, 'utf8')).toBe(before);
+    expect(readdirSync(root)).toEqual(['host.yaml']);
+  });
+
+  it('puts back a byte-order mark that was hidden when the file was read', async () => {
+    const { root, f, backups } = setup('\uFEFFa:\n  b: 1\n');
+    const before = (await readHostFile(f, 'installed')).text;
+    await writeHostFile(f, 'installed', 'a:\n  b: 2\n', before, backups);
+    expect(readFileSync(join(root, 'host.yaml'), 'utf8')).toBe('\uFEFFa:\n  b: 2\n');
+  });
+
+  it('refuses to overwrite a file changed by something else since it was read', async () => {
+    const { root, f, backups } = setup();
+    const before = (await readHostFile(f, 'installed')).text;
+    writeFileSync(join(root, 'host.yaml'), 'general_options:\n  output_path: "other"\n', 'utf8');
+    await expect(writeHostFile(f, 'installed', 'general_options:\n  output_path: "mine"\n', before, backups)).rejects.toThrow('changed by something else');
+    expect(readFileSync(join(root, 'host.yaml'), 'utf8')).toContain('other');
+  });
+
+  it('refuses text that is not a list of settings or is far too big, and writes nothing', async () => {
+    const { root, f, backups } = setup();
+    const before = (await readHostFile(f, 'installed')).text;
+    await expect(writeHostFile(f, 'installed', 'a: [unclosed\n', before, backups)).rejects.toThrow('could not be read back');
+    await expect(writeHostFile(f, 'installed', '- just\n- a list\n', before, backups)).rejects.toThrow('could not be read back');
+    await expect(writeHostFile(f, 'installed', `a: ${'x'.repeat(1024 * 1024 + 1)}\n`, before, backups)).rejects.toThrow('too large');
+    expect(readFileSync(join(root, 'host.yaml'), 'utf8')).toBe(before);
+  });
+});
+
+describe('hostErrorMessage', () => {
+  it('turns system errors into plain sentences that name the file', () => {
+    const denied = Object.assign(new Error('x'), { code: 'EACCES' });
+    expect(hostErrorMessage(denied, 'C:/AP/host.yaml')).toContain('did not allow changing C:/AP/host.yaml');
+    expect(hostErrorMessage(Object.assign(new Error('x'), { code: 'EBUSY' }), 'p')).toContain('in use');
+    expect(hostErrorMessage(Object.assign(new Error('x'), { code: 'ENOENT' }), 'p')).toContain('not there');
+  });
+});

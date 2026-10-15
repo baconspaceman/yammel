@@ -28,7 +28,7 @@ import { isSendableSnapshot, parseHelperAction, type HelperSnapshot } from '../s
 import { MAX_PRESETS_BYTES, parsePresets, type PresetsState } from '../presets/presets';
 import { addRecent, describeRecent, MAX_RECENT_BYTES, parseRecent, removeRecent, type RecentState } from './recent';
 import { clearCustomWorlds, readSummary, scanBlocker, scanCustomWorlds, schemaWithCustom } from './customWorlds';
-import { hostCandidates, readHostFile, writeHostFile } from './hostFile';
+import { checkHostPaths, hostCandidates, readHostFile, writeHostFile } from './hostFile';
 import { askHelper, helperStatuses, isHelperId } from './helpers/service';
 import { SecretStore } from './helpers/secrets';
 import { MAX_STATE_BYTES, parseRecommenderState, type RecommenderState } from '../recommend/state';
@@ -157,7 +157,9 @@ function safeFileName(name: string): string {
 }
 
 function settingsView(): SettingsView {
-  const settings = settingsStore!.value;
+  const saved = settingsStore!.value;
+  // YAMMEL_SKIP_WELCOME is for tests and scripted runs: it hides the first-run card without saving anything.
+  const settings = process.env['YAMMEL_SKIP_WELCOME'] === '1' && !saved.welcome.seen ? { ...saved, welcome: { seen: true } } : saved;
   return { settings, finding: detectArchipelago({ settings, env: process.env, appPath: app.getAppPath() }) };
 }
 
@@ -282,6 +284,11 @@ function registerIpc(): void {
     } catch (error) {
       return fail(error);
     }
+  });
+
+  ipcMain.handle(IPC.checkHostPaths, async (event, id: unknown, values: unknown): Promise<ApiResult<boolean[]>> => {
+    if (!fromOurWindow(event) || settingsStore === null || (id !== 'installed' && id !== 'source') || !Array.isArray(values)) return { ok: false, message: 'Request refused.' };
+    return { ok: true, value: checkHostPaths(settingsView().finding, id, values) };
   });
 
   ipcMain.handle(IPC.pickHostPath, async (event, kind: unknown): Promise<ApiResult<string | null>> => {

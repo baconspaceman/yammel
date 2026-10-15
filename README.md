@@ -84,11 +84,12 @@ New here? Read **[Getting started](docs/guide/getting-started.md)**. It takes ab
   games** in one YAML, and a **Raw tab** for everything else (your comments are kept).
 - **Presets**: each game's own presets (for example Stardew Valley's Easy to Maxsanity) and your own named presets.
 - **Files with several players** (`---` between them) ask which player to edit, or split into one file each.
+- **Triggers and plando**: a **Triggers** tab ("when this option rolls this value, change those") and a **Plando** tab (place items where you want them, or choose which door leads where), with the game's real item, location and entrance names, a note when Archipelago's `host.yaml` has item plando switched off, and checks confirmed against Archipelago's own code.
 - **Custom worlds**: point it at a folder of `.apworld` files and those games appear like any other, each with a
   starter YAML.
 
 Guides: [Editing options](docs/guide/editing-options.md), [Files and saving](docs/guide/files-and-saving.md),
-[Ideas and shortcuts](docs/guide/ideas-and-shortcuts.md), [Custom worlds](docs/guide/custom-worlds.md).
+[Ideas and shortcuts](docs/guide/ideas-and-shortcuts.md), [Triggers and plando](docs/guide/triggers-and-plando.md), [Custom worlds](docs/guide/custom-worlds.md).
 
 <br clear="right">
 
@@ -174,6 +175,7 @@ Everything is written for people who play Archipelago, not for programmers, unle
 | [Ideas and shortcuts](docs/guide/ideas-and-shortcuts.md) | | [Security](SECURITY.md), [Privacy](PRIVACY.md), [Code signing](docs/development/code-signing.md) |
 | [The helper](docs/guide/helper.md) | | [Code of conduct](CODE_OF_CONDUCT.md) |
 | [Custom worlds](docs/guide/custom-worlds.md) | | [Changelog](CHANGELOG.md) |
+| [Triggers and plando](docs/guide/triggers-and-plando.md) | | |
 | [Archipelago's settings](docs/guide/archipelago-settings-host-yaml.md) | | |
 | [Settings and appearance](docs/guide/settings-and-appearance.md) | | |
 

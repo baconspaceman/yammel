@@ -3,7 +3,7 @@ import type { EditorApi } from '../../shared/api';
 import type { HostFileId, HostFileInfo } from '../../shared/host';
 import { diffLines, parseHost, setEntry, type Entry, type ParsedHost } from '../../hostyaml/model';
 
-export type HostApi = Pick<EditorApi, 'hostFiles' | 'readHost' | 'writeHost' | 'pickHostPath'>;
+export type HostApi = Pick<EditorApi, 'hostFiles' | 'readHost' | 'writeHost' | 'pickHostPath' | 'checkHostPaths'>;
 
 export interface HostScreenProps {
   api: HostApi;
@@ -23,12 +23,14 @@ function valuesOf(parsed: Parsed): Map<string, Value> {
 
 interface FieldProps {
   entry: Entry;
+  /** True when this path setting points at something that is not on this computer. */
+  missing?: boolean;
   onCommit(entry: Entry, value: Value): void;
   onPick(entry: Entry, kind: 'file' | 'folder'): void;
 }
 
 /** One setting. Typed values apply when you leave the box or press Enter, so half-typed numbers never reach the file. */
-function EntryField({ entry, onCommit, onPick }: FieldProps) {
+function EntryField({ entry, missing = false, onCommit, onPick }: FieldProps) {
   const shown = entry.value === null ? '' : String(entry.value);
   const [text, setText] = useState(shown);
   const [problem, setProblem] = useState<string | null>(null);
@@ -118,6 +120,11 @@ function EntryField({ entry, onCommit, onPick }: FieldProps) {
           {problem}
         </span>
       )}
+      {missing && problem === null && (
+        <span id={`${id}-missing`} className="host__missing" data-testid={`missing-${entry.key}`}>
+          Not found on this computer. Archipelago only asks for it if you play that game.
+        </span>
+      )}
     </span>
   );
 }
@@ -184,6 +191,30 @@ export function HostScreen({ api, onBack }: HostScreenProps) {
     return count;
   }, [original, current]);
   const diff = useMemo(() => (loaded === null ? [] : diffLines(loaded.text, draft, 2)), [loaded, draft]);
+
+  /** Every path setting that has a value, in file order, and which of them point at nothing. A missing path is a note, never an error. */
+  const pathEntries = useMemo(() => (current.ok ? current.sections.flatMap((section) => section.entries).filter((entry) => entry.kind === 'path' && typeof entry.value === 'string' && entry.value.trim() !== '') : []), [current]);
+  const pathKey = pathEntries.map((entry) => `${entry.section}\u0000${entry.key}\u0000${String(entry.value)}`).join('\u0001');
+  const [pathRecheck, setPathRecheck] = useState(0);
+  const [pathPresent, setPathPresent] = useState<Map<string, boolean>>(new Map());
+  useEffect(() => {
+    if (fileId === null || pathEntries.length === 0) {
+      setPathPresent(new Map());
+      return;
+    }
+    let cancelled = false;
+    void api.checkHostPaths(fileId, pathEntries.map((entry) => String(entry.value))).then((reply) => {
+      if (cancelled || !reply.ok) return;
+      setPathPresent(new Map(pathEntries.map((entry, index) => [`${entry.section}\u0000${entry.key}`, reply.value[index] !== false])));
+    });
+    return () => {
+      cancelled = true;
+    };
+    // pathKey stands for the entries' content, so a new array with the same values does not ask again.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, fileId, pathKey, pathRecheck]);
+  const isMissing = (entry: Entry) => pathPresent.get(`${entry.section}\u0000${entry.key}`) === false;
+  const missingCount = pathEntries.filter(isMissing).length;
 
   const change = (entry: Entry, value: Value) => {
     if (!current.ok) return;
@@ -323,6 +354,17 @@ export function HostScreen({ api, onBack }: HostScreenProps) {
               <input id="host-search" className="host__input" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="port, output, rom…" />
             </p>
 
+            {pathEntries.length > 0 && (
+              <p className="settings__note host__paths" data-testid="host-paths-summary" role="status">
+                {missingCount === 0
+                  ? 'Every file or folder named here was found.'
+                  : `${missingCount} of the ${pathEntries.length} file or folder settings point at something that is not on this computer. That is normal for games you do not play.`}{' '}
+                <button type="button" className="button button--small" onClick={() => setPathRecheck((value) => value + 1)}>
+                  Check again
+                </button>
+              </p>
+            )}
+
             <div className="host__footer" role="region" aria-label="Save changes">
               <p className="host__count" role="status">
                 {changed === 0 ? 'No changes yet.' : `${changed} ${changed === 1 ? 'change' : 'changes'} waiting.`}
@@ -387,7 +429,7 @@ export function HostScreen({ api, onBack }: HostScreenProps) {
                       <label className="host__label" htmlFor={idOf(entry)}>
                         {entry.label}
                       </label>
-                      <EntryField entry={entry} onCommit={change} onPick={(e, kind) => void pick(e, kind)} />
+                      <EntryField entry={entry} missing={isMissing(entry)} onCommit={change} onPick={(e, kind) => void pick(e, kind)} />
                       {entry.comment !== '' && <p className="host__comment">{entry.comment}</p>}
                     </div>
                   ))}

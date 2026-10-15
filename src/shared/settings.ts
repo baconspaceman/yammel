@@ -34,11 +34,17 @@ export interface AppearanceSettings {
   theme: ThemeChoice;
 }
 
+/** The first-run "how it works" card. `seen` turns true the first time it is closed. */
+export interface WelcomeSettings {
+  seen: boolean;
+}
+
 export interface Settings {
   version: 1;
   archipelago: ArchipelagoSettings;
   integrations: IntegrationSettings;
   appearance: AppearanceSettings;
+  welcome: WelcomeSettings;
 }
 
 function cleanTheme(value: unknown): ThemeChoice {
@@ -55,6 +61,7 @@ export const DEFAULT_SETTINGS: Settings = {
     jev: { enabled: false },
   },
   appearance: { theme: 'system' },
+  welcome: { seen: false },
 };
 
 /** What the window may change. Anything not listed here cannot be changed from the page. */
@@ -62,6 +69,7 @@ export interface SettingsPatch {
   archipelago?: Partial<ArchipelagoSettings>;
   integrations?: { [K in keyof IntegrationSettings]?: { enabled?: boolean; model?: string | null } };
   appearance?: { theme?: ThemeChoice };
+  welcome?: { seen?: boolean };
 }
 
 const MAX_PATH_LENGTH = 1024;
@@ -118,6 +126,7 @@ export function parseSettings(raw: unknown): Settings {
     }
   }
   if (isRecord(raw['appearance'])) out.appearance.theme = cleanTheme(raw['appearance']['theme']);
+  if (isRecord(raw['welcome']) && raw['welcome']['seen'] === true) out.welcome.seen = true;
   return out;
 }
 
@@ -143,5 +152,7 @@ export function applyPatch(settings: Settings, patch: unknown): Settings {
   }
   const appearance = patch['appearance'];
   if (isRecord(appearance) && 'theme' in appearance) out.appearance.theme = cleanTheme(appearance['theme']);
+  const welcome = patch['welcome'];
+  if (isRecord(welcome) && typeof welcome['seen'] === 'boolean') out.welcome.seen = welcome['seen'];
   return out;
 }

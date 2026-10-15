@@ -58,7 +58,7 @@ Notes on each one:
 - **Claude Code and Codex** are run as programs on your computer, using the login you already have. If they are not signed in, the Helper tells you how to sign in.
 - **OpenRouter** is called directly from the app. Leave the **Model** box empty for the default model. Each question costs a small amount at OpenRouter's prices, charged to your own OpenRouter account. The app never supplies a key of its own.
 - **The key is kept safe.** The app asks your operating system to encrypt it. If the system cannot protect a key, saving is refused. The key is never shown again: the box stays empty, and it says a key is saved. Press **Remove key** to delete it.
-- **The consent step.** Each helper shows a confirmation the first time you switch it on, explaining that your YAML and option descriptions go to it for each question you type. Press Cancel and nothing changes.
+- **The consent step.** Each helper shows a confirmation each time you switch it on, explaining that your YAML and option descriptions go to it for each question you type. Press Cancel and nothing changes.
 - **Suggestion buttons always use the built-in guide.** Buttons and starter phrases are answered by the free built-in guide, even when an AI helper is chosen. Only what you type goes to the AI helper.
 - **AI suggestions are checked.** A suggestion must name a real option, and it must not make the YAML fail the problem checker. Suggestions that fail these checks are left out, and the reply says how many.
 - **If an AI helper fails,** the reply says why, for example that the key was not accepted or the account is out of credit. Then the built-in guide gives its own answer to the same message.

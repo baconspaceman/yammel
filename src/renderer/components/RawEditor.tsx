@@ -36,7 +36,7 @@ export function RawEditor({ text, onApply }: RawEditorProps) {
         <h2 className="raw__title">Raw YAML</h2>
         <span className="raw__meta">{changed ? 'Not applied yet' : 'Matches the editor'}</span>
       </header>
-      <p className="raw__note">Edit the text directly for anything the controls do not cover, such as triggers or comments. Nothing changes until you press Apply, and undo takes it back.</p>
+      <p className="raw__note">Edit the text directly for anything the controls do not cover, such as comments or the kinds of plando the Plando tab does not show. Nothing changes until you press Apply, and undo takes it back.</p>
       <textarea
         className="raw__text"
         aria-label="Raw YAML text"

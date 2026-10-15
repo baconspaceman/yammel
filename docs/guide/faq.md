@@ -40,7 +40,7 @@ Quite a lot. You can edit every option for every bundled game, use the live YAML
 
 ### Does it send my YAML anywhere?
 
-Not by itself. Editing, checking and saving all happen on your computer. Your YAML only leaves your computer if you switch on one of the optional AI helpers (Claude Code, Codex or OpenRouter) and then type a question in the Helper. Then your current YAML and descriptions of the game's options are sent to that helper. The app asks you to confirm the first time you switch one on. The built-in guide never sends anything. See [The Helper](helper.md).
+Not by itself. Editing, checking and saving all happen on your computer. Your YAML only leaves your computer if you switch on one of the optional AI helpers (Claude Code, Codex or OpenRouter) and then type a question in the Helper. Then your current YAML and descriptions of the game's options are sent to that helper. The app asks you to confirm each time you switch one on. The built-in guide never sends anything. See [The Helper](helper.md).
 
 ### Where are my files kept?
 

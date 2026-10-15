@@ -22,6 +22,12 @@ describe('engineOptionsFor', () => {
     expect(engineOptionsFor(doc, 'Demo Game', game)).toEqual({ lives: 3 });
   });
 
+  it('leaves plando out, because it cannot change the number of checks', () => {
+    const plando = { ...game, options: { ...game.options, plando_items: { key: 'plando_items', kind: 'plando_items' as const, displayName: 'Plando Items', description: '', default: [], visibility: [], supportsWeighting: false } } };
+    const doc = YamlDocument.parse('game: Demo Game\nDemo Game:\n  lives: 3\n  plando_items:\n    - item: Sword\n');
+    expect(engineOptionsFor(doc, 'Demo Game', plando)).toEqual({ lives: 3 });
+  });
+
   it('passes weighted and random values through as written, so the engine can report them', () => {
     const doc = YamlDocument.parse('game: Demo Game\nDemo Game:\n  lives: random\n  difficulty:\n    easy: 50\n    hard: 50\n');
     expect(engineOptionsFor(doc, 'Demo Game', game)).toEqual({ lives: 'random', difficulty: { easy: 50, hard: 50 } });

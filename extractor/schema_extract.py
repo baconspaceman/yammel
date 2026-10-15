@@ -120,6 +120,11 @@ def option_to_dict(key: str, option: type) -> dict[str, Any]:
             out["domain"] = "locations"
         elif issubclass(option, O.ItemSet) or issubclass(option, O.ItemDict):
             out["domain"] = "items"
+        if kind == "plando_connections":
+            # The names Archipelago accepts (it compares them without regard to capitals, so they are listed in lower case).
+            out["entrances"] = sorted(str(name) for name in getattr(option, "entrances", ()))
+            out["exits"] = sorted(str(name) for name in getattr(option, "exits", ()))
+            out["duplicateExits"] = bool(getattr(option, "duplicate_exits", False))
     return out
 
 

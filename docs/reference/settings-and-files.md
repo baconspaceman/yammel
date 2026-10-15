@@ -14,7 +14,7 @@ For the settings screen itself see [settings and appearance](../guide/settings-a
 
 ## 1. Saved settings
 
-Settings live in `settings.json` in the data folder (section 2). The file holds folder paths and on/off switches only; keys and tokens are never stored in it. A missing, unreadable, over-size (more than 64 KB) or damaged file means defaults, and the app always starts. Nothing is written until you change a setting. When the file is read, each part that is the wrong type or fails its check falls back to its default on its own.
+Settings live in `settings.json` in the data folder (section 2). The file holds folder paths, on/off switches, the appearance choice and model names only; keys and tokens are never stored in it. A missing, unreadable, over-size (more than 64 KB) or damaged file means defaults, and the app always starts. Nothing is written until you change a setting. When the file is read, each part that is the wrong type or fails its check falls back to its default on its own.
 
 The file looks like this (these are the defaults):
 
@@ -28,7 +28,8 @@ The file looks like this (these are the defaults):
     "openRouter": { "enabled": false, "model": null },
     "jev": { "enabled": false }
   },
-  "appearance": { "theme": "system" }
+  "appearance": { "theme": "system" },
+  "welcome": { "seen": false }
 }
 ```
 
@@ -46,6 +47,7 @@ The file looks like this (these are the defaults):
 | `integrations.openRouter.model` | string or null | `null` | Model name; `null` uses `anthropic/claude-haiku-4.5`. |
 | `integrations.jev.enabled` | boolean | `false` | A stored on/off switch. It has no `model` field. Apart from tests, nothing in `src/main` or `src/renderer` reads it yet. |
 | `appearance.theme` | `"system"`, `"light"` or `"dark"` | `"system"` | Follow the computer's light or dark setting, or always use one. Any other value becomes `"system"`. |
+| `welcome.seen` | boolean | `false` | Becomes `true` the first time the welcome card is closed. **Show the welcome card again** in Settings shows it once more. Only an exact `true` counts. |
 
 Value checks:
 

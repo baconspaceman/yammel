@@ -8,6 +8,8 @@ export interface NameListEditorProps {
   /** Every name the person may pick, or null when the game gives no list (then any text is accepted). */
   pool: readonly string[] | null;
   entries: NameEntries;
+  /** What to say when the list is empty. The default speaks of the game's default. */
+  emptyText?: string;
   /** Save these names. Fewer than before means something was removed. */
   onChange(entries: NameEntries): void;
 }
@@ -15,7 +17,7 @@ export interface NameListEditorProps {
 const MAX_COUNT = 9999;
 
 /** A list of item or location names: search to add, a remove button on each, and a count for the ones that have one. */
-export function NameListEditor({ option, pool, entries, onChange }: NameListEditorProps) {
+export function NameListEditor({ option, pool, entries, emptyText, onChange }: NameListEditorProps) {
   const uid = useId();
   const name = option.displayName;
   const [query, setQuery] = useState('');
@@ -51,7 +53,7 @@ export function NameListEditor({ option, pool, entries, onChange }: NameListEdit
   return (
     <div className="names" role="group" aria-label={`${name} list`}>
       {names.length === 0 ? (
-        <p className="names__empty">Nothing chosen. The game's default applies.</p>
+        <p className="names__empty">{emptyText ?? "Nothing chosen. The game's default applies."}</p>
       ) : (
         <ul className="names__list" aria-label={`Chosen for ${name}`}>
           {names.map((entry, index) => (

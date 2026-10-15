@@ -39,7 +39,7 @@ Each setting shows its name, the explanation written in the file, and a control 
 - **On or Off** for yes-or-no settings. Tick the box.
 - **A menu** where the file lists its choices. Each choice shows its value and its label.
 - **A text or number box.** A typed value is applied when you leave the box or press Enter, so half-typed numbers never reach the file. A number box that does not hold a number says "Type a number."
-- **Path settings** have a box and two buttons, **Pick a file…** and **Pick a folder…**.
+- **Path settings** have a box and two buttons, **Pick a file…** and **Pick a folder…**. If what the box names is not on this computer, a quiet note under it says "Not found on this computer. Archipelago only asks for it if you play that game." Relative paths are looked for next to the host.yaml. The note is only information: it never stops you from saving, and it is normal for games you do not play. A line above the save bar counts them, and **Check again** looks once more, for example after you create a folder.
 
 The footer counts your changes: "No changes yet." or "[number] changes waiting." **Discard changes** puts the form back to the file as it was.
 

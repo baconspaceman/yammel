@@ -37,6 +37,8 @@ The easiest way is to download it from the [Releases page](https://github.com/ba
 - **The installer** (`Yammel-Setup-<version>.exe`) installs it for your own account. It does not need administrator rights.
 - **The portable file** (`Yammel-Portable-<version>.exe`) is one file you can run from anywhere. Nothing is installed.
 
+The first time Yammel opens, a short welcome card explains how it works. Close it with **Got it**; it does not come back unless you ask for it in Settings.
+
 Windows may warn about an "unknown publisher", because the downloads are not code-signed. Choose **More info**, then **Run anyway**.
 
 If you prefer to run it from the source code, follow [building and running](../development/building-and-running.md).

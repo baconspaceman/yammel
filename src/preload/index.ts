@@ -46,6 +46,7 @@ const api: EditorApi = {
   hostFiles: () => ipcRenderer.invoke(IPC.hostFiles),
   readHost: (id) => ipcRenderer.invoke(IPC.readHost, id),
   writeHost: (request) => ipcRenderer.invoke(IPC.writeHost, request),
+  checkHostPaths: (id, values) => ipcRenderer.invoke(IPC.checkHostPaths, id, values),
   pickHostPath: (kind) => ipcRenderer.invoke(IPC.pickHostPath, kind),
   helperStatus: () => ipcRenderer.invoke(IPC.helperStatus),
   askHelper: (request) => ipcRenderer.invoke(IPC.askHelper, request),

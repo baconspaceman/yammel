@@ -29,6 +29,10 @@ Choose how the app looks. The options are:
 
 The toolbar also has a button for this. It shows **Auto**, **Light** or **Dark**, and each press moves to the next one in that order.
 
+### The welcome card
+
+The first time you open Yammel, a short card explains how it works in four steps. Closing it (the **Got it** button, the Esc key, or a click outside it) is remembered, and it does not appear again. To see it again, open Settings and press **Show the welcome card again** under Appearance.
+
 ![The start screen in light mode](../images/22-light-start-screen.jpg)
 
 ## Check counts
@@ -61,7 +65,7 @@ Press **Open host.yaml settings** to edit Archipelago's own settings file as a f
 
 These add an AI that understands more open-ended requests in the Helper. Each one is off until you switch it on, and the built-in guide keeps working without them.
 
-- **Claude Code**, **Codex** and **OpenRouter** each have a checkbox, **Use [name] in the Helper**. The first time you switch one on, the app asks you to confirm what is sent.
+- **Claude Code**, **Codex** and **OpenRouter** each have a checkbox, **Use [name] in the Helper**. Each time you switch one on, the app asks you to confirm what is sent.
 - **Model (optional)** lets you choose a model. Leave it empty for the default.
 - **OpenRouter key** is where you paste your OpenRouter key. Press **Save key**, or **Remove key** to delete it.
 

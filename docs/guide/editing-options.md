@@ -102,7 +102,7 @@ The **YAML** tab shows the text the editor is building. It updates as you change
 
 ![The Raw tab with the full YAML text](../images/09-raw-editor.jpg)
 
-The **Raw** tab is for anything the controls do not cover, such as triggers, plando and comments. It shows the whole YAML as plain text.
+The **Raw** tab is for anything the controls do not cover, such as comments, or things the **Triggers** and **Plando** tabs do not show. It shows the whole YAML as plain text. Triggers and plando have tabs of their own: see [Triggers and plando](triggers-and-plando.md).
 
 - The heading shows **Matches the editor** when the text and the editor agree. It shows **Not applied yet** when you have typed changes that are not applied.
 - Nothing changes until you press **Apply**. Undo takes the change back.

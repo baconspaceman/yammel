@@ -37,6 +37,8 @@ export async function checkLayout(page: Page): Promise<LayoutReport> {
       return `${el.tagName.toLowerCase()}${id}${cls}`;
     };
 
+    // While a modal dialog is open, only the dialog is on show: the page behind it is dimmed and unreachable.
+    const modal = document.querySelector('[aria-modal="true"]');
     const boxes: Box[] = [];
     let nodeIndex = 0;
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -45,6 +47,7 @@ export async function checkLayout(page: Page): Promise<LayoutReport> {
       const parent = node.parentElement;
       if (text === '' || parent === null) continue;
       if (parent.closest('script,style,noscript,option,datalist,select')) continue;
+      if (modal !== null && !modal.contains(parent)) continue;
       const style = getComputedStyle(parent);
       if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) continue;
 

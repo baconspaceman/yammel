@@ -23,6 +23,8 @@ import { groupId, OptionGroups } from './components/OptionGroups';
 import { ProblemPanel } from './components/ProblemPanel';
 import { AssistantPanel } from './components/AssistantPanel';
 import { RawEditor } from './components/RawEditor';
+import { PlandoPanel } from './components/PlandoPanel';
+import { TriggersPanel } from './components/TriggersPanel';
 import { SeedPanel } from './components/SeedPanel';
 import { ProblemsBar } from './components/ProblemsBar';
 import { RandomizePanel, type RandomizeOutcome } from './components/RandomizePanel';
@@ -32,6 +34,7 @@ import { SeedMeter } from './components/SeedMeter';
 import type { AimControl } from './components/DifficultyGauge';
 import { nudgeDifficulty } from '../assistant/nudge';
 import { SettingsScreen } from './components/SettingsScreen';
+import { WelcomeCard } from './components/WelcomeCard';
 import { StartScreen } from './components/StartScreen';
 import { Toolbar } from './components/Toolbar';
 import { YamlPreview } from './components/YamlPreview';
@@ -83,7 +86,7 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const [previewOpen, setPreviewOpen] = useState(true);
-  const [sideTab, setSideTab] = useState<'yaml' | 'helper' | 'raw' | 'seed' | 'presets'>('yaml');
+  const [sideTab, setSideTab] = useState<'yaml' | 'helper' | 'raw' | 'seed' | 'presets' | 'triggers' | 'plando'>('yaml');
   /** Files opened lately (shown on the start screen), and a multi-player file waiting for the person to choose. */
   const [recent, setRecent] = useState<RecentFile[]>([]);
   const [importing, setImporting] = useState<{ path: string; parts: DocPart[]; message: string | null } | null>(null);
@@ -93,10 +96,22 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   /** The chosen look (computer's setting, light or dark). The window restyles itself; this only labels the toolbar button. */
   const [theme, setTheme] = useState<ThemeChoice>('system');
+  /** The first-run card: open until it has been closed once, and again whenever Settings asks. */
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const welcomeChecked = useRef(false);
+  const closeWelcome = () => {
+    setWelcomeOpen(false);
+    void window.api.saveSettings({ welcome: { seen: true } });
+  };
   useEffect(() => {
     let cancelled = false;
     void window.api.getSettings().then((reply) => {
-      if (!cancelled && reply.ok) setTheme(reply.value.settings.appearance.theme);
+      if (cancelled || !reply.ok) return;
+      setTheme(reply.value.settings.appearance.theme);
+      if (!welcomeChecked.current) {
+        welcomeChecked.current = true;
+        if (!reply.value.settings.welcome.seen) setWelcomeOpen(true);
+      }
     });
     return () => {
       cancelled = true;
@@ -670,6 +685,12 @@ export default function App() {
           <button type="button" role="tab" aria-selected={sideTab === 'raw'} className="side__tab" onClick={() => setSideTab('raw')}>
             Raw
           </button>
+          <button type="button" role="tab" aria-selected={sideTab === 'triggers'} className="side__tab" onClick={() => setSideTab('triggers')}>
+            Triggers
+          </button>
+          <button type="button" role="tab" aria-selected={sideTab === 'plando'} className="side__tab" onClick={() => setSideTab('plando')}>
+            Plando
+          </button>
           <button type="button" role="tab" aria-selected={sideTab === 'presets'} className="side__tab" onClick={() => setSideTab('presets')}>
             Presets
           </button>
@@ -692,6 +713,29 @@ export default function App() {
         </div>
         <div className="side__pane" hidden={sideTab !== 'raw'}>
           <RawEditor text={session.text} onApply={(text) => (applyEdits([{ op: 'replaceText', text }]) ? null : 'That text could not be applied.')} />
+        </div>
+        <div className="side__pane" hidden={sideTab !== 'triggers'}>
+          <TriggersPanel
+            doc={doc}
+            gameName={activeGame}
+            game={gameSchema}
+            issues={issues}
+            onApply={(edits) => {
+              applyEdits(edits);
+            }}
+          />
+        </div>
+        <div className="side__pane" hidden={sideTab !== 'plando'}>
+          <PlandoPanel
+            api={window.api}
+            doc={doc}
+            gameName={activeGame}
+            game={gameSchema}
+            issues={issues}
+            onApply={(edits) => {
+              applyEdits(edits);
+            }}
+          />
         </div>
         <div className="side__pane" hidden={sideTab !== 'seed'}>
           <SeedPanel
@@ -776,6 +820,8 @@ export default function App() {
         </div>
       )}
 
+      {welcomeOpen && <WelcomeCard onClose={closeWelcome} />}
+
       {settingsOpen ? (
         <SettingsScreen
           api={window.api}
@@ -788,6 +834,10 @@ export default function App() {
             startNew(game);
           }}
           onSaveStarters={saveStarterFiles}
+          onShowWelcome={() => {
+            setSettingsOpen(false);
+            setWelcomeOpen(true);
+          }}
         />
       ) : importing !== null ? (
         <MultiDocScreen

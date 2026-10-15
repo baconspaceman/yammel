@@ -14,7 +14,7 @@ Contents:
 8. Fixes and "apply all"
 9. What is not checked
 
-The rules are in `src/validate/validate.ts` (helpers in `src/validate/text.ts`, types in `src/validate/types.ts`) and were checked against Archipelago's own option code, with the project's tests (`src/validate/validate.test.ts`, `src/validate/validate.review.test.ts`) running the rules over all 80 bundled games. See [checking your work](../guide/checking-your-work.md) for how the findings appear in the app.
+The rules are in `src/validate/validate.ts` (helpers in `src/validate/text.ts`, types in `src/validate/types.ts`) and were checked against Archipelago's own option code, with the project's tests (`src/validate/validate.test.ts`, which runs the rules over all 80 bundled games, and `src/validate/validate.review.test.ts`). See [checking your work](../guide/checking-your-work.md) for how the findings appear in the app.
 
 ## 1. How the checker works
 
@@ -49,6 +49,39 @@ The rules are in `src/validate/validate.ts` (helpers in `src/validate/text.ts`, 
 | `BAD_LIST_VALUE` | error (warning for a number used as a switch) | An entry of a list of values is not valid, or is not a single value. | None. |
 | `WRONG_SHAPE` | error | A names option got something that is neither a list nor a map. | None. |
 | `UNKNOWN_NAME` | warning if only capitals differ, otherwise error | An item or location name is not in the game. | Replace with the closest valid names; remove them (destructive). |
+| `TRIGGERS_NOT_LIST` | error | `triggers` is not a list. | None. |
+| `TRIGGER_NOT_MAP` | error | An entry of the trigger list is not a block. | Remove it (destructive, game blocks only). |
+| `TRIGGER_MISSING` | error | A trigger has no `option_name` or no `options`. | None. |
+| `TRIGGER_NO_RESULT` | warning | A trigger has no `option_result`, so it only fires when the watched option has no value. | None. |
+| `TRIGGER_BAD_CATEGORY` | error | `option_category` names a section that is not in the file. | Use the closest section (game blocks only). |
+| `TRIGGER_NO_CATEGORY` | warning | A trigger inside a game block has no `option_category`, so it looks at the top of the file and never fires. | Look in the game (game blocks only). |
+| `TRIGGER_UNKNOWN_OPTION` | warning | The watched option is not an option of the game. | Watch the closest option (game blocks only). |
+| `TRIGGER_WATCHED_NOT_SET` | error | The watched option is a real option but the game section does not write it, so Archipelago stops. | Write the option with its default (game blocks only). |
+| `TRIGGER_NEVER_FIRES` | warning | The value the trigger waits for is not one the watched option can have, including a switch (`true`) against the text `"true"`, or different capitals. | Wait for the matching value (game blocks only). |
+| `TRIGGER_PERCENT` | error | `percentage` is not a number. | Use 100 (game blocks only). |
+| `TRIGGER_PERCENT_RANGE` | warning | `percentage` is below 0 or above 100. | Use 0 or 100 (game blocks only). |
+| `TRIGGER_OPTIONS_SHAPE` | error | A trigger's `options` is not a block. | None. |
+| `TRIGGER_CHANGE_BAD_CATEGORY` | error | A trigger changes options in a section that is not in the file. | None. |
+| `TRIGGER_CHANGES_SHAPE` | error | The changes for one section are not a list of options with values. | None. |
+| `TRIGGER_CHANGE_UNKNOWN_OPTION` | warning | A trigger changes an option the game does not have, so Archipelago ignores it. | None. |
+| `TRIGGER_MERGE_KIND` | error | `+` or `-` is used on an option that holds a single value. | Set it instead (game blocks only). |
+| `TRIGGER_MERGE_VALUE` | error | `+` or `-` is used with a single value instead of a list or map. | None. |
+| `TRIGGER_BAD_VALUE` | error or warning | A value a trigger would set is not valid for its option (same rules as section 5). | A suggested value where there is one (game blocks only). |
+| `PLANDO_NOT_LIST` | error | Item or connection plando is not a list. | None. |
+| `PLANDO_ENTRY_NOT_MAP` | error | A placement or connection is not a block. | Remove it (destructive). |
+| `PLANDO_NO_ITEM` | error | An item placement does not say which item. | None. |
+| `PLANDO_ITEMS_SHAPE` | error | The items are not a name, a list or a map. | None. |
+| `PLANDO_UNKNOWN_ITEM` | error | An item name is not an item or item group of the game. | Use the closest name. |
+| `PLANDO_UNKNOWN_LOCATION` | warning (error when `force` is true) | A location name is not a location or group of the game (only checked for items placed in your own world). Archipelago quietly places nothing there. | Use the closest name. |
+| `PLANDO_LOCATION_SHAPE` | error | `location` or `locations` is not a name or a list of names. | None. |
+| `PLANDO_PERCENT` | error | `percentage` is not a whole number from 0 to 100 (for connections, not a number). | Use the nearest valid number. |
+| `PLANDO_FORCE` | error | `force` is not true, false or silent. | Use silent. |
+| `PLANDO_FROM_POOL` | error | `from_pool` is not true or false. | Use true. |
+| `PLANDO_COUNT` | warning (error when `force` is true) | `count` is more than the items named. | Use the number of items. |
+| `PLANDO_CONNECTION_MISSING` | error | A connection has no entrance or no exit. | None. |
+| `PLANDO_DIRECTION` | error | `direction` is not both, entrance or exit. | Use both. |
+| `PLANDO_DUPLICATE` | error | An entrance, or an exit (unless the game allows repeats), is used twice. | None. |
+| `PLANDO_UNKNOWN_CONNECTION` | error | An entrance or exit name is not one the game accepts (capitals are ignored). | Use the closest name. |
 | `WORLD_REFUSES` | error | The check engine's world refused the settings. The message begins "The game itself refused these settings:". Shown only when the live check count is running and reports a world error. | None. |
 
 ## 3. The player name and game lines
@@ -71,7 +104,7 @@ The rules are in `src/validate/validate.ts` (helpers in `src/validate/text.ts`, 
 Inside a game's section, each key is checked:
 
 - The keys `triggers` (for every game) and, for A Link to the Past, `sprite`, `sprite_pool` and `random_sprite_on_event`, are valid although they are not options. They are skipped and their contents are not checked.
-- A key that is not an option of the game gives `UNKNOWN_OPTION`. The message suggests the nearest option, which is found by ignoring capitals first and then by a closeness test (edit distance, ignoring case, spaces, dashes and underscores; a name that contains the typed word also counts when the word is at least 4 characters).
+- A key that is not an option of the game gives `UNKNOWN_OPTION`. The message suggests the nearest option, which is found by ignoring capitals first and then by a closeness test (edit distance, ignoring case, spaces, dashes and underscores; a name that contains the typed word also counts when the word is at least 4 characters, and the typed word also counts when it contains a name of at least 5 characters).
 - Otherwise the value is checked by the kind of option (sections 5 to 7). Kinds that are not checked: see section 9.
 
 ## 5. Switches, choices and numbers
@@ -164,11 +197,12 @@ A fix is a set of edits applied as one undo step. A fix marked destructive throw
 | Remove one weighted value | Yes |
 | Remove an unknown game from a game mix | Yes |
 
-Findings with no fix are left for you: `NO_GAME`, `BAD_GAME_WEIGHT`, `NEEDS_NEWER_VERSION`, `BLOCK_NOT_MAP`, `BAD_WEIGHT`, `ALL_WEIGHTS_ZERO`, `BAD_LIST_VALUE`, `WRONG_SHAPE`, `WORLD_REFUSES`, and any value problem where no believable replacement exists (such as the minus-sign trap).
+Findings with no fix are left for you: `NO_GAME`, `BAD_GAME_WEIGHT`, `NEEDS_NEWER_VERSION`, `BLOCK_NOT_MAP`, `BAD_WEIGHT`, `ALL_WEIGHTS_ZERO`, `BAD_LIST_VALUE`, `WRONG_SHAPE`, `WORLD_REFUSES`. A value problem with no believable replacement (such as the minus-sign trap) gets only "Go back to the default".
 
 ## 9. What is not checked
 
-- Plando and other structured options, and option kinds other than those in sections 5 to 7, are not checked (any value is accepted by this checker).
+- Item and connection plando are checked as listed in section 2. Not checked: whether an item can be placed at a location, whether an entrance may be joined to an exit (each game decides), item names in another player's world, and other plando-like options (texts, bosses and so on). Each rule was confirmed with Archipelago's own `Options.py` and `Fill.py`, and by running its generator.
+- Other structured option kinds, and option kinds other than those in sections 5 to 7, are not checked (any value is accepted by this checker).
 - Free text and text-choice values are not checked as values; only the shape of a weights map or list around them is.
-- The contents of `triggers` are not checked.
+- Triggers are checked as listed in section 2. Not checked: whether a `-` change removes something that is really in the list, item and location names inside a trigger's changes, and how a trigger's changes interact with another trigger beyond one trigger firing on a value another trigger sets. Each trigger rule was confirmed by running Archipelago's own `Generate.py` on a small YAML.
 - Anything only the world itself can judge (whether a combination of settings works) is not covered by these rules. When the live check count is running, a world's own refusal is shown as `WORLD_REFUSES`.

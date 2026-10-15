@@ -37,6 +37,7 @@ function fakeApi(start: SettingsView, over: Partial<SettingsApi> = {}): Settings
     hostFiles: vi.fn(async () => ({ ok: true, value: [] }) as ApiResult<HostFileInfo[]>),
     readHost: vi.fn(async () => ({ ok: false, message: 'none' }) as ApiResult<HostFileContents>),
     writeHost: vi.fn(async () => ({ ok: false, message: 'none' }) as ApiResult<HostWriteResult>),
+    checkHostPaths: vi.fn(async (_id, values) => ({ ok: true, value: values.map(() => true) }) as ApiResult<boolean[]>),
     pickHostPath: vi.fn(async () => ({ ok: true, value: null }) as ApiResult<string | null>),
     ...over,
   };

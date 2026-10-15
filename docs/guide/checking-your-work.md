@@ -59,7 +59,7 @@ The check count uses Archipelago's own game code, so it needs an Archipelago sou
 - "The Python you chose ... was not found."
 - "The check engine keeps stopping, so it was switched off for a minute."
 
-When the count is being worked out again, the app keeps showing the last number it had. When the count differs from the game's default, the figure shows the default and the difference, for example "default 50 (+4)".
+When the count is being worked out again, the app keeps showing the last number it had. When the count differs from the game's default, a note under the figure shows the default and the difference, for example "default 50 (+4)".
 
 Everything else in the editor works without the check count.
 
@@ -111,7 +111,7 @@ Other things you will see on this tab:
 
 - **Looking for Archipelago…** appears while the app looks. If Archipelago cannot be used, the tab explains why and has an **Open Settings** button. If it is ready, it says which one it will use: your Archipelago source folder, or your installed Archipelago.
 - A warning appears when the checker has found errors: "The problem checker found 2 errors, so Archipelago will probably refuse this YAML. Fix them first, or try anyway."
-- **Add other players' YAMLs…** adds more YAML files, so the seed is made for several players at once. The list shows which file is the one you are editing. **Leave out** removes an extra file from the seed. The app reads these files for the seed. It does not change them.
+- **Add other players' YAMLs…** adds more YAML files, so the seed is made for several players at once. The list shows which file is the one you are editing. **Remove** takes an extra file out of the seed. The app reads these files for the seed. It does not change them.
 - If a seed includes a spoiler file, the tab says so and warns you not to open it if you want to be surprised.
 
 ### When Archipelago refuses a YAML

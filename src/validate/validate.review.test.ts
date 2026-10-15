@@ -13,7 +13,7 @@ const demo = (options: string) => `name: P\ngame: Demo Game\nDemo Game:\n${optio
 
 describe('things Archipelago accepts that must not be flagged (found in review)', () => {
   it('triggers and the A Link to the Past sprite keys are valid inside a game block', () => {
-    expect(run(demo('  triggers:\n    - option_name: lives\n      option_result: 3\n      options:\n        Demo Game:\n          hard_mode: true\n'))).toEqual([]);
+    expect(run(demo('  lives: 3\n  triggers:\n    - option_category: Demo Game\n      option_name: lives\n      option_result: 3\n      options:\n        Demo Game:\n          hard_mode: true\n'))).toEqual([]);
     expect(run('name: P\ngame: A Link to the Past\nA Link to the Past:\n  sprite: Link\n  sprite_pool: [Link]\n  random_sprite_on_event: {}\n', real)).toEqual([]);
   });
 

@@ -21,6 +21,7 @@ export async function launch(
   const userData = options.userData ?? mkdtempSync(join(tmpdir(), 'yamled-ud-'));
   const env: Record<string, string> = {};
   for (const [key, value] of Object.entries(process.env)) if (value !== undefined) env[key] = value;
+  env['YAMMEL_SKIP_WELCOME'] = '1'; // the first-run card is tested on its own
   if (options.schema !== undefined) env['ARCHIPELAGO_YAML_SCHEMA'] = options.schema;
   Object.assign(env, options.env ?? {});
   const app = await electron.launch({ args: ['.', `--user-data-dir=${userData}`], env, cwd: ROOT });

@@ -48,6 +48,11 @@ export interface OptionSchema {
   specialNames?: Record<string, number>;
   /** set, list, dict, counter: which name list the values come from */
   domain?: 'items' | 'locations';
+  /** plando_connections: the entrance and exit names Archipelago accepts (lower case; it ignores capitals). */
+  entrances?: string[];
+  exits?: string[];
+  /** plando_connections: whether one exit may be used by several connections. */
+  duplicateExits?: boolean;
 }
 
 export interface OptionGroup {

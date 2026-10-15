@@ -19,6 +19,7 @@ How to use the app.
 - [Checking your work](guide/checking-your-work.md): the problems bar, the check count, the difficulty gauge and making a seed.
 - [Files and saving](guide/files-and-saving.md): opening and saving, backups, recent files, files with several players.
 - [Ideas and shortcuts](guide/ideas-and-shortcuts.md): randomize, game roulette, games to mix and presets.
+- [Triggers and plando](guide/triggers-and-plando.md): the Triggers and Plando tabs, what each setting does, and what Archipelago stops on.
 - [The Helper](guide/helper.md): the chat beside your YAML, the optional AI helpers and the pop-out window.
 - [Custom worlds](guide/custom-worlds.md): using extra games from `.apworld` files.
 - [Archipelago's own settings (host.yaml)](guide/archipelago-settings-host-yaml.md): editing Archipelago's `host.yaml` as a form.

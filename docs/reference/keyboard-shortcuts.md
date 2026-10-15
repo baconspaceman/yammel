@@ -29,7 +29,7 @@ Details:
 - A text box here means a textarea, or an input of type `text`, `search`, `number`, `email`, `url`, `tel` or `password`. Sliders, switches, check boxes and dropdowns do not count, so Ctrl+Z and Ctrl+Y work while one of those has focus.
 - Ctrl+O is also matched when Shift is held.
 - When the keys are used on a slider, letting go of Ctrl, Alt, Shift or the Command key does not write the slider's old position back.
-- Closing the window with unsaved changes asks first (the window's own "leave site" prompt); the title shows a bullet before the file name while there are unsaved changes.
+- Closing the window with unsaved changes asks first (an "Unsaved changes" box with **Keep editing** and **Discard changes**); the title shows a bullet before the file name while there are unsaved changes.
 
 See [files and saving](../guide/files-and-saving.md) for what saving does, and [ideas and shortcuts](../guide/ideas-and-shortcuts.md).
 

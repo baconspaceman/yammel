@@ -2,6 +2,18 @@
 
 All notable changes to this project are written here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-10-14
+
+- A short welcome card for the first time Yammel opens. It is shown once, and Settings can show it again.
+- The host.yaml page now tells you, with a quiet note, when a file or folder setting points at something that is not on the computer. It never blocks saving.
+- A **Triggers** tab: build "when this option is this value, change those options" cards with the game's own options and values. New checks for triggers, each confirmed by running Archipelago itself, including the easy-to-miss ones: a watched option that is not written in the YAML (Archipelago stops), a trigger inside a game section with no category (it never fires), and a switch value against the text "true" (never matches).
+- A **Plando** tab: item placements (items, locations, whose world, from the pool or new, what to do if it goes wrong, how many, chance) and, for the six games that have them, entrance-to-exit connections with the game's real entrance and exit names. It says whether Archipelago's `host.yaml` has item plando switched on, because Archipelago ignores items plando quietly when it is off. New checks for both.
+- The option data now lists each plando-connection game's entrance and exit names.
+- A new guide, [Triggers and plando](docs/guide/triggers-and-plando.md).
+- **Fixed:** a YAML with plando in it made the live check count read "Unavailable". Plando cannot change how many checks there are, so it is now left out of that request.
+- The guides were checked against the program by three helper reads and about ten wrong statements were fixed (for example, an AI helper asks you to confirm every time you switch it on, not only the first time).
+- The screenshots and the portfolio were retaken with the new tabs, and the screenshot tour has three new pictures and a welcome card.
+
 ## [0.1.1] - renamed to Yammel
 
 The project is now called **Yammel**. Nothing else about how it works changed.

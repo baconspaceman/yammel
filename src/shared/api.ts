@@ -182,6 +182,8 @@ export interface EditorApi {
   readHost(id: HostFileId): Promise<ApiResult<HostFileContents>>;
   /** Writes a changed host.yaml after a backup. Refused if the file changed since it was read. */
   writeHost(request: HostWriteRequest): Promise<ApiResult<HostWriteResult>>;
+  /** For each path shown in the host.yaml form, whether something is there (relative paths are read from the host.yaml's folder). */
+  checkHostPaths(id: HostFileId, values: string[]): Promise<ApiResult<boolean[]>>;
   /** Shows a file or folder picker for a path setting. Null when the user cancels. */
   pickHostPath(kind: 'file' | 'folder'): Promise<ApiResult<string | null>>;
   /** The optional AI helpers and whether each is ready. */
@@ -232,6 +234,7 @@ export const IPC = {
   hostFiles: 'host:files',
   readHost: 'host:read',
   writeHost: 'host:write',
+  checkHostPaths: 'host:check-paths',
   pickHostPath: 'host:pick-path',
   helperStatus: 'helper:status',
   askHelper: 'helper:ask',

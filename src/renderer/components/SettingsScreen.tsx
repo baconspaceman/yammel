@@ -20,6 +20,8 @@ export interface SettingsScreenProps {
   onStartGame?(game: string): void;
   /** Save a starter YAML for each of these games; resolves to a sentence saying what happened. */
   onSaveStarters?(games: string[]): Promise<string>;
+  /** Close Settings and show the first-run card again. */
+  onShowWelcome?(): void;
 }
 
 const ORIGIN_TEXT: Record<SourceOrigin, string> = {
@@ -28,7 +30,7 @@ const ORIGIN_TEXT: Record<SourceOrigin, string> = {
   sibling: 'found next to this app',
 };
 
-export function SettingsScreen({ api, onBack, onChanged, onHelpersChanged, onSchemaChanged, onStartGame, onSaveStarters }: SettingsScreenProps) {
+export function SettingsScreen({ api, onBack, onChanged, onHelpersChanged, onSchemaChanged, onStartGame, onSaveStarters, onShowWelcome }: SettingsScreenProps) {
   const [view, setView] = useState<SettingsView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -123,6 +125,13 @@ export function SettingsScreen({ api, onBack, onChanged, onHelpersChanged, onSch
                   </label>
                 ))}
               </div>
+              {onShowWelcome !== undefined && (
+                <p className="settings__lead">
+                  <button type="button" className="button button--small" onClick={onShowWelcome}>
+                    Show the welcome card again
+                  </button>
+                </p>
+              )}
             </section>
 
             <section className="settings__section" aria-labelledby="settings-ap">

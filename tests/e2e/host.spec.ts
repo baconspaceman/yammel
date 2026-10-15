@@ -158,3 +158,29 @@ test('the host.yaml page never overlaps or clips text, in both themes, small win
     }
   }
 });
+
+test('a path that points at nothing gets a quiet note, a found one does not, and saving is never blocked', async ({ page }) => {
+  mkdirSync(join(INSTALL, 'Players'), { recursive: true });
+  await openHost(page);
+  // "Players" exists next to the host.yaml; "weights.yaml" and "output" do not.
+  await expect(page.getByTestId('missing-weights_file_path')).toContainText('Not found on this computer');
+  await expect(page.getByTestId('missing-output_path')).toBeVisible();
+  await expect(page.getByTestId('missing-player_files_path')).toHaveCount(0);
+  await expect(page.getByTestId('host-paths-summary')).toContainText('point at something that is not on this computer');
+
+  // Pointing it at something that exists clears the note.
+  await page.getByLabel('Output path').fill('Players');
+  await page.getByLabel('Output path').press('Enter');
+  await expect(page.getByTestId('missing-output_path')).toHaveCount(0);
+
+  // Changing it to something missing shows the note again, and the file can still be saved.
+  await page.getByLabel('Output path').fill('nowhere-at-all');
+  await page.getByLabel('Output path').press('Enter');
+  await expect(page.getByTestId('missing-output_path')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Review and save/ })).toBeEnabled();
+
+  // Creating the folder and pressing "Check again" clears it.
+  mkdirSync(join(INSTALL, 'nowhere-at-all'), { recursive: true });
+  await page.getByRole('button', { name: 'Check again' }).click();
+  await expect(page.getByTestId('missing-output_path')).toHaveCount(0);
+});

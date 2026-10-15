@@ -3,6 +3,8 @@ import type { Edit } from '../model/edits';
 import { resolveChoiceKey } from '../renderer/state/options';
 import type { GameSchema, OptionSchema, SchemaFile } from '../schema/types';
 import { closest } from './text';
+import { validateConnectionPlando, validateItemPlando } from './plando';
+import { validateTriggers } from './triggers';
 import type { Fix, Issue, Severity } from './types';
 
 const TOGGLE_OFF = ['off', '0', 'false', 'none', 'null', 'no', 'disabled'];
@@ -215,7 +217,15 @@ function validateOption(out: Collector, game: GameSchema, option: OptionSchema, 
     validateNames(out, game, option, raw);
     return;
   }
-  if (!WEIGHTED_KINDS.includes(option.kind)) return; // plando and other structured options are not checked yet
+  if (option.kind === 'plando_items') {
+    validateItemPlando({ add: (...args) => out.add(...args) }, game, option, raw);
+    return;
+  }
+  if (option.kind === 'plando_connections') {
+    validateConnectionPlando({ add: (...args) => out.add(...args) }, game, option, raw);
+    return;
+  }
+  if (!WEIGHTED_KINDS.includes(option.kind)) return; // other structured options are not checked yet
 
   if (isRecord(raw)) {
     const entries = Object.entries(raw);
@@ -397,6 +407,10 @@ function validateUnchecked(doc: YamlDocument, schema: SchemaFile): Issue[] {
     }
     const lowerKeys = new Map(Object.keys(game.options).map((key) => [key.toLowerCase(), key]));
     for (const [key, value] of Object.entries(block)) {
+      if (key === 'triggers') {
+        validateTriggers({ add: (...args) => out.add(...args), checkValue }, { schema, object, list: value, host: name });
+        continue;
+      }
       if ((EXTRA_GAME_KEYS['*']!.includes(key)) || (EXTRA_GAME_KEYS[name]?.includes(key) ?? false)) continue;
       const option = own(game.options, key) ? game.options[key] : undefined;
       if (option === undefined) {
@@ -410,5 +424,6 @@ function validateUnchecked(doc: YamlDocument, schema: SchemaFile): Issue[] {
       validateOption(out, game, option, value);
     }
   }
+  if (own(object, 'triggers') && object['triggers'] !== null) validateTriggers({ add: (...args) => out.add(...args), checkValue }, { schema, object, list: object['triggers'], host: null });
   return out.issues;
 }

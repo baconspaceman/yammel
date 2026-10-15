@@ -167,6 +167,7 @@ function setFix(label: string, game: string, option: string, value: unknown): Fi
 function validateNames(out: Collector, game: GameSchema, option: OptionSchema, raw: unknown): void {
   const domain = option.domain;
   if (domain === undefined) return;
+  if (game.inferred === true) return; // a game read from the file has no list of names to check against
   const pool = namePool(game, domain, option.kind === 'set' || option.kind === 'list');
   const exact = new Set(pool);
   const folded = new Map(pool.map((name) => [name.toLowerCase(), name]));

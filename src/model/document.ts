@@ -1,6 +1,19 @@
 import { Document, isMap, isNode, isScalar, isSeq, Pair, parseDocument, Scalar, YAMLMap } from 'yaml';
 import { EditError, type Edit, type MetaKey } from './edits';
 
+/** One option of a game's block as the file itself describes it (see YamlDocument.templateInfo). */
+export interface TemplateOption {
+  key: string;
+  /** The option's value as plain data. */
+  value: unknown;
+  /** The comment lines under the option's name, or an empty string. */
+  description: string;
+  /** The short comment after an entry of a weighted map, by entry name. */
+  notes: Record<string, string>;
+  /** The title of the section banner just above this option, when there is one. */
+  heading?: string;
+}
+
 export interface ParseIssue {
   message: string;
   /** 1-based */
@@ -105,6 +118,56 @@ export class YamlDocument {
     const node = this.doc.getIn([game, option], true);
     if (node === undefined) return undefined;
     return isNode(node) ? node.toJS(this.doc) : node;
+  }
+
+  /**
+   * What the file itself says about the options of one game's block, in file order. Archipelago's templates put an option's
+   * description in the comment lines under its name, a short note after each choice, and a banner (a line of `#` signs, then
+   * a title) above the first option of each section. This reads all three so a game Yammel has no data for can still be edited.
+   */
+  templateInfo(game: string): TemplateOption[] {
+    const block = this.doc.get(game, true);
+    if (!isMap(block)) return [];
+    const clean = (text: string | null | undefined): string =>
+      (text ?? '')
+        .split('\n')
+        .map((line) => line.replace(/^\s?/, '').trimEnd())
+        .join('\n')
+        .trim();
+    // A banner is a comment with a line of five or more # signs (the library drops each line's first #); its title is the first line that has words in it.
+    const bannerTitle = (text: string | null | undefined): string | undefined => {
+      const lines = (text ?? '').split('\n');
+      if (!lines.some((line) => /^\s*#{5,}/.test(line))) return undefined;
+      for (const line of lines) {
+        const words = line.replace(/#/g, ' ').trim();
+        if (words !== '') return words;
+      }
+      return undefined;
+    };
+    const out: TemplateOption[] = [];
+    block.items.forEach((pair, index) => {
+      if (!isScalar(pair.key)) return;
+      const key = String(pair.key.value);
+      const value = pair.value;
+      const keyBefore = isNode(pair.key) ? pair.key.commentBefore : undefined;
+      const heading = bannerTitle(keyBefore) ?? (index === 0 ? bannerTitle(block.commentBefore) : undefined);
+      let description = '';
+      const notes: Record<string, string> = {};
+      if (isMap(value) && value.items.length > 0) {
+        const first = value.items[0]!;
+        description = clean(isNode(first.key) ? first.key.commentBefore : undefined) || clean(value.commentBefore);
+        for (const entry of value.items) {
+          if (!isScalar(entry.key)) continue;
+          const note = isNode(entry.value) ? clean(entry.value.comment) : '';
+          if (note !== '') notes[String(entry.key.value)] = note;
+        }
+      } else if (isNode(value)) {
+        description = clean(value.commentBefore);
+      }
+      const plain = isNode(value) ? value.toJS(this.doc) : value;
+      out.push({ key, value: plain, description, notes, ...(heading === undefined ? {} : { heading }) });
+    });
+    return out;
   }
 
   apply(edit: Edit): void {

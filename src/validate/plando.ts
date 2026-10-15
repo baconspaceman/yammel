@@ -95,7 +95,7 @@ export function validateItemPlando(ctx: PlandoContext, game: GameSchema, option:
 
     // Item names are always the player's own game's items, whichever world they land in.
     for (const name of itemList) {
-      if (itemNames.has(name)) continue;
+      if (game.inferred === true || itemNames.has(name)) continue;
       const near = closest(name, [...itemNames]);
       const fixes: Fix[] =
         near === undefined
@@ -126,7 +126,7 @@ export function validateItemPlando(ctx: PlandoContext, game: GameSchema, option:
       add('PLANDO_LOCATION_SHAPE', 'error', `The ${locKey} of placement ${n} must be one name or a list of names. Archipelago would stop with an error.`, [], id);
     } else if (own_world) {
       for (const name of locs) {
-        if (locationNames.has(name)) continue;
+        if (game.inferred === true || locationNames.has(name)) continue;
         const near = closest(name, [...locationNames]);
         const severity: Severity = force === true ? 'error' : 'warning';
         add(

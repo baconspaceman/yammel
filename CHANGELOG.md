@@ -2,6 +2,10 @@
 
 All notable changes to this project are written here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2026-10-15
+
+- **Any YAML opens.** A YAML for a game Yammel has no data for (a custom world you never scanned, or one the scan cannot load, such as a world written for a newer Python) used to be refused with "is not in the game list". It now opens with every option read from the file itself: choices, ranges, switches, lists, the section headings and the description under each option. All of it is editable, and comments and layout are kept. The check count, difficulty and item or location name checks are not available for such a game, and the screen says so. A misspelled name of a game Yammel does know still gets the "did you mean" message.
+
 ## [0.3.0] - 2026-10-14
 
 - **Games to mix groups**: a Pairs / Groups switch. Groups of 3 to 8 games with must-include and leave-out lists, one score for the group that counts its weakest pair, a list of every pair's score, and the same mood and scoring weights as pairs.

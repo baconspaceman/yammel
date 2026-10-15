@@ -88,6 +88,7 @@ New here? Read **[Getting started](docs/guide/getting-started.md)**. It takes ab
 - **Triggers and plando**: a **Triggers** tab ("when this option rolls this value, change those") and a **Plando** tab (place items where you want them, choose which door leads where, or replace a text in A Link to the Past), with the game's real item, location and entrance names, a note when Archipelago's `host.yaml` has item plando switched off, and checks confirmed against Archipelago's own code.
 - **Custom worlds**: point it at a folder of `.apworld` files and those games appear like any other, each with a
   starter YAML.
+- **Any YAML opens**: a YAML for a game Yammel has no data for (a custom world you have not scanned, or one that cannot be scanned) still opens, with every option read from the file itself and its comments kept.
 
 Guides: [Editing options](docs/guide/editing-options.md), [Files and saving](docs/guide/files-and-saving.md),
 [Ideas and shortcuts](docs/guide/ideas-and-shortcuts.md), [Triggers and plando](docs/guide/triggers-and-plando.md), [Custom worlds](docs/guide/custom-worlds.md).

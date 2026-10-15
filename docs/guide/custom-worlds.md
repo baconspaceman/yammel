@@ -7,6 +7,7 @@ Contents:
 - [What you need](#what-you-need)
 - [Choose the folder and scan it](#choose-the-folder-and-scan-it)
 - [What you see](#what-you-see)
+- [A game Yammel has no data for](#a-game-yammel-has-no-data-for)
 - [Files that could not be added](#files-that-could-not-be-added)
 - [Limits and safety](#limits-and-safety)
 - [Forgetting the folder](#forgetting-the-folder)
@@ -55,6 +56,17 @@ A file that cannot be loaded does not stop the others. It is listed under **File
 - **Unzipped world folders are not scanned yet.** Only `.apworld` files count.
 - **The live check count and Make a seed need the world in Archipelago's own folder.** Both use Archipelago itself, and Archipelago only knows a custom game if its `.apworld` is also in Archipelago's `custom_worlds` folder. If it is not there, the check says the game is unknown. The Seed tab says this when a custom game is open.
 - **Scanning needs a source folder with its Python.** An installed-only Archipelago cannot scan custom worlds.
+
+## A game Yammel has no data for
+
+You do not have to scan anything to edit a custom game's YAML. If you open a YAML whose game Yammel does not know, it reads the options from the file itself. An Archipelago template (the file you get from the launcher's **Generate Template Options**) holds everything an editor needs: each option's name, its weighted choices, its range, the section headings and the description under each option.
+
+- Every option in the file gets a control, and comments and layout are kept like in any other YAML.
+- A line at the top says the options were read from the file.
+- **Not available for this game:** the live check count, the difficulty estimate, and the checks of item and location names, because Yammel has no list of them. Everything else, such as weights, the Raw view, Triggers and saving, works.
+- A file with only plain values (`goal: ganon`) opens too. It has no list of other choices to offer, so such an option is a text box or a number box.
+- A name that looks like a misspelling of a game Yammel does know (`Ocarina of Tmie`) is still reported, so a typo is not mistaken for a new game.
+- Scanning the custom worlds folder is still worth doing when it works, because a scanned game also has its item and location names.
 
 ## Forgetting the folder
 

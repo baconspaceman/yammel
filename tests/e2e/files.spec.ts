@@ -59,12 +59,12 @@ test.describe('opening files', () => {
     expect(readFileSync(path, 'utf8')).toBe(WEIGHTED); // the file itself is untouched until saved
   });
 
-  test('a YAML for a game that is not in the list is shown, not edited', async ({ app, page }) => {
+  test('a YAML for a game Yammel has no data for is opened from its own options, not refused', async ({ app, page }) => {
     const text = 'name: P\ngame: Nope Game\nNope Game:\n  x: 1\n';
     await openFile(app, page, tempFile('nope.yaml', text));
-    await expect(page.getByRole('alert').filter({ hasText: 'is not in the game list' })).toBeVisible();
+    await expect(page.getByText('Yammel has no data for Nope Game')).toBeVisible();
     expect(await previewText(page)).toBe(text);
-    await expect(page.locator('article.option')).toHaveCount(0);
+    await expect(page.locator('article.option')).toHaveCount(1);
   });
 
   test('a YAML with a syntax error points at the line and is not edited', async ({ app, page }) => {

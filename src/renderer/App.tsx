@@ -15,7 +15,9 @@ import { shippedFacts, shippedFeel } from '../recommend/shipped';
 import { EditError, type Edit } from '../model/edits';
 import { isWeightedValue, planRandomizeAll, type DifficultyBand } from '../randomize/plan';
 import { randomizableOptions } from '../randomize/roll';
+import { withInferredGames } from '../schema/infer';
 import { parseSchemaFile, SchemaError } from '../schema/load';
+import type { GameSchema } from '../schema/types';
 import type { SchemaFile } from '../schema/types';
 import { DocumentHeader } from './components/DocumentHeader';
 import { GroupNav } from './components/GroupNav';
@@ -151,16 +153,25 @@ export default function App() {
     };
   }, [schemaTick]);
 
-  const schema = schemaState.status === 'ready' ? schemaState.schema : null;
-  const gameInfos = useMemo(() => (schema === null ? [] : buildGameInfos(schema, shippedFeel, shippedFacts, shippedProfiles)), [schema]);
+  const baseSchema = schemaState.status === 'ready' ? schemaState.schema : null;
+  const gameInfos = useMemo(() => (baseSchema === null ? [] : buildGameInfos(baseSchema, shippedFeel, shippedFacts, shippedProfiles)), [baseSchema]);
   const doc = session?.doc ?? null;
   const games = doc?.games() ?? [];
+  // A game Yammel has no data for (a custom world that was never scanned, or cannot be) is read from the file itself, once per
+  // opened file, so the controls do not change shape while the file is edited. Everything below then sees it as an ordinary game.
+  const inferredGames = useRef(new WeakMap<EditorSession, Map<string, GameSchema>>());
+  const gamesKey = games.join('|');
+  const schema = useMemo(
+    () => (baseSchema === null || session === null ? baseSchema : withInferredGames(baseSchema, session.doc, inferredGames.current, session)),
+    // the game list changes only when the game line does; edits to option values must not rebuild the schema
+    [baseSchema, session, gamesKey],
+  );
   const activeGame = selectedGame !== null && games.includes(selectedGame) ? selectedGame : (games[0] ?? null);
   const gameSchema = schema !== null && activeGame !== null ? schema.games[activeGame] : undefined;
   const groups = useMemo(() => (gameSchema ? simpleGroups(gameSchema, query) : []), [gameSchema, query]);
   const allGameNames = useMemo(() => (schema === null ? [] : Object.values(schema.games).filter((g) => !g.hidden).map((g) => g.name).sort((a, b) => a.localeCompare(b))), [schema]);
   const gameNames = useMemo(
-    () => (gameSchema ? { items: gameSchema.items, itemGroups: gameSchema.itemGroups, locations: gameSchema.locations, locationGroups: gameSchema.locationGroups } : undefined),
+    () => (gameSchema && gameSchema.inferred !== true ? { items: gameSchema.items, itemGroups: gameSchema.itemGroups, locations: gameSchema.locations, locationGroups: gameSchema.locationGroups } : undefined),
     [gameSchema],
   );
   const optionCount = groups.reduce((total, group) => total + group.options.length, 0);
@@ -172,7 +183,7 @@ export default function App() {
     () => counter.state,
   );
   const engineOptions =
-    doc !== null && doc.isValid && gameSchema !== undefined && activeGame !== null ? engineOptionsFor(doc, activeGame, gameSchema) : null;
+    doc !== null && doc.isValid && gameSchema !== undefined && gameSchema.inferred !== true && activeGame !== null ? engineOptionsFor(doc, activeGame, gameSchema) : null;
   const engineKey = engineOptions !== null && activeGame !== null ? countKey(activeGame, engineOptions) : null;
   useEffect(() => {
     if (engineOptions !== null && activeGame !== null) counter.request(activeGame, engineOptions);
@@ -743,7 +754,7 @@ export default function App() {
             yaml={{ name: suggestedFileName(session.doc, activeGame), text: session.text }}
             errorCount={issues.filter((issue) => issue.severity === 'error').length}
             onSettings={() => setSettingsOpen(true)}
-            customGame={gameSchema?.customFile !== undefined}
+            customGame={gameSchema?.customFile !== undefined || gameSchema?.inferred === true}
           />
         </div>
         <div className="side__pane" hidden={sideTab !== 'helper'}>
@@ -889,6 +900,14 @@ export default function App() {
                 onEdit={applyEdits}
                 allGames={allGameNames}
               />
+              {gameSchema?.inferred === true && (
+                <div className="banner banner--note" role="status">
+                  <span className="banner__text">
+                    Yammel has no data for {activeGame}, so its options were read from this file. You can change every option and nothing is lost. The check count,
+                    difficulty and item or location names are not available for this game.
+                  </span>
+                </div>
+              )}
               <SeedMeter state={counterState} rating={rating} onSetup={() => setSettingsOpen(true)} aim={aim} />
               <ProblemsBar issues={issues} onFix={applyFix} onFixAll={applyFixes} onShow={showIssue} />
               <div className="searchbar">

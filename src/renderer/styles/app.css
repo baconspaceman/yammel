@@ -101,6 +101,11 @@ pre {
   border-bottom: 1px solid var(--border);
 }
 
+.banner--note {
+  background: var(--surface-2, var(--border));
+  color: inherit;
+}
+
 .banner__text {
   flex: 1 1 0;
   min-width: 0;

@@ -77,6 +77,11 @@ export interface GameSchema {
   locationGroups: string[];
   /** Only for a game added from the person's own custom worlds folder: the .apworld file it came from. */
   customFile?: string;
+  /**
+   * Set for a game Yammel has no option data for: the options were read from the YAML file itself (see infer.ts).
+   * It has no item or location names, so names are not checked, and the seed engine is not asked about it.
+   */
+  inferred?: boolean;
 }
 
 export interface SchemaFile {

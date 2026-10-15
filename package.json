@@ -1,7 +1,7 @@
 {
   "name": "yammel",
   "productName": "Yammel",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Yammel, a desktop editor for Archipelago player YAMLs: every option, a live check count, a difficulty estimate, randomize, and an agent toolkit.",
   "license": "MIT",
   "author": "baconspaceman",

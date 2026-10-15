@@ -3,7 +3,7 @@ import type { Edit } from '../model/edits';
 import { resolveChoiceKey } from '../renderer/state/options';
 import type { GameSchema, OptionSchema, SchemaFile } from '../schema/types';
 import { closest } from './text';
-import { validateConnectionPlando, validateItemPlando } from './plando';
+import { validateConnectionPlando, validateItemPlando, validateTextPlando } from './plando';
 import { validateTriggers } from './triggers';
 import type { Fix, Issue, Severity } from './types';
 
@@ -219,6 +219,10 @@ function validateOption(out: Collector, game: GameSchema, option: OptionSchema, 
   }
   if (option.kind === 'plando_items') {
     validateItemPlando({ add: (...args) => out.add(...args) }, game, option, raw);
+    return;
+  }
+  if (option.kind === 'plando_texts') {
+    validateTextPlando({ add: (...args) => out.add(...args) }, game, option, raw);
     return;
   }
   if (option.kind === 'plando_connections') {

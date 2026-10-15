@@ -94,3 +94,39 @@ test('the Plando tab never overlaps or clips text, in both themes, small windows
     }
   }
 });
+
+test('text plando: pick a place from the game, write the words, and see them in the YAML', async ({ page }) => {
+  await open(page, /^A Link to the Past/);
+  await page.getByRole('button', { name: 'Add a text' }).click();
+  const card = page.getByRole('listitem', { name: 'Text 1' });
+  await card.getByLabel('Which text to replace').fill('aginah');
+  await card.getByLabel('Which text to replace').press('Enter');
+  const words = card.getByLabel('New text');
+  await words.fill('Hello there');
+  await words.blur();
+  const raw = await rawText(page);
+  await expect(raw).toHaveValue(/plando_texts:/);
+  await expect(raw).toHaveValue(/at: aginah/);
+  await expect(raw).toHaveValue(/text: Hello there/);
+  await page.getByRole('tab', { name: 'Plando' }).click();
+  await expect(page.getByRole('list', { name: /Problems with/ })).toHaveCount(0);
+});
+
+test('an item placement can have a count range and a list of players', async ({ page }) => {
+  await open(page, /^APQuest/);
+  await page.getByRole('button', { name: 'Add an item placement' }).click();
+  const card = page.getByRole('listitem', { name: 'Placement 1' });
+  await card.getByRole('textbox', { name: 'Add to Items' }).fill('Sword');
+  await card.getByRole('textbox', { name: 'Add to Items' }).press('Enter');
+  await card.getByRole('textbox', { name: 'Add to Items' }).fill('Hammer');
+  await card.getByRole('textbox', { name: 'Add to Items' }).press('Enter');
+  await card.getByLabel('Fewest to place for placement 1').fill('1');
+  await card.getByLabel('Fewest to place for placement 1').press('Enter');
+  await card.getByLabel('Most to place for placement 1').fill('2');
+  await card.getByLabel('Most to place for placement 1').press('Enter');
+  await card.getByLabel('In whose world').selectOption('several');
+  const raw = await rawText(page);
+  await expect(raw).toHaveValue(/min: 1/);
+  await expect(raw).toHaveValue(/max: 2/);
+  await expect(raw).toHaveValue(/world:/);
+});

@@ -150,6 +150,18 @@ export function validateItemPlando(ctx: PlandoContext, game: GameSchema, option:
       }
     }
 
+    // How many: a range must not be upside down (Archipelago stops on it).
+    if (isRecord(entry['count']) && typeof entry['count']['min'] === 'number' && typeof entry['count']['max'] === 'number' && entry['count']['min'] > entry['count']['max']) {
+      const range = entry['count'] as { min: number; max: number };
+      add(
+        'PLANDO_COUNT_RANGE',
+        'error',
+        `Placement ${n} asks for at least ${range.min} but at most ${range.max}. The fewest cannot be more than the most. Archipelago would stop with an error.`,
+        [{ label: `Swap them (${range.max} to ${range.min})`, edits: rewrite((copy) => void (target(copy)['count'] = { min: range.max, max: range.min })) }],
+        id,
+      );
+    }
+
     // How many.
     const count = entry['count'];
     if (typeof count === 'number' && Number.isInteger(count) && itemList.length > 0 && itemKind !== 'one') {
@@ -225,6 +237,55 @@ export function validateConnectionPlando(ctx: PlandoContext, game: GameSchema, o
           near === undefined ? [] : [{ label: `Use "${near}"`, edits: rewrite((copy) => void (target(copy)[key] = near)) }],
           `${id}|${key}`,
         );
+      }
+    }
+  });
+}
+
+export function validateTextPlando(ctx: PlandoContext, game: GameSchema, option: OptionSchema, list: unknown): void {
+  const add = (code: string, severity: Severity, message: string, fixes: Fix[] = [], idKey = '') => ctx.add(code, severity, game.name, option.key, message, fixes, idKey);
+  if (!Array.isArray(list)) {
+    add('PLANDO_NOT_LIST', 'error', 'Text plando must be a list, one entry for each text. Archipelago would stop with an error.');
+    return;
+  }
+  const places = option.validKeys === undefined ? null : new Set(option.validKeys);
+  const rewrite = (change: (copy: unknown[]) => void): Fix['edits'] => {
+    const copy = clone(list);
+    change(copy);
+    return copy.length === 0 ? [{ op: 'reset', game: game.name, option: option.key }] : [{ op: 'set', game: game.name, option: option.key, value: copy }];
+  };
+
+  list.forEach((entry, index) => {
+    const n = index + 1;
+    const id = `${n}`;
+    if (!isRecord(entry)) {
+      add('PLANDO_ENTRY_NOT_MAP', 'error', `Text ${n} must be a block with "at" and "text". Archipelago would stop with an error.`, [{ label: `Remove text ${n}`, edits: rewrite((copy) => void copy.splice(index, 1)), destructive: true }], id);
+      return;
+    }
+    const target = (copy: unknown[]) => copy[index] as Record<string, unknown>;
+    const at = entry['at'];
+    if (at === undefined || at === null || at === '') {
+      add('PLANDO_TEXT_NO_PLACE', 'error', `Text ${n} does not say which text to replace ("at"). Archipelago would stop with an error.`, [], id);
+    } else if (typeof at === 'string' && places !== null && !places.has(at)) {
+      const near = closest(at, [...places]);
+      add(
+        'PLANDO_TEXT_UNKNOWN_PLACE',
+        'error',
+        `"${at}" is not a text of ${game.name} that can be replaced${near === undefined ? '' : `. Did you mean "${near}"?`} Names are matched exactly, capitals included. Archipelago would stop when it writes the game.`,
+        near === undefined ? [] : [{ label: `Use "${near}"`, edits: rewrite((copy) => void (target(copy)['at'] = near)) }],
+        id,
+      );
+    }
+    const text = entry['text'];
+    if (text !== undefined && typeof text !== 'string' && !(Array.isArray(text) && text.every((line) => typeof line === 'string')) && !isRecord(text)) {
+      add('PLANDO_TEXT_SHAPE', 'error', `The text of text ${n} must be words, or a list of lines. Archipelago would stop with an error.`, [], id);
+    } else if (text === undefined || text === '' || (Array.isArray(text) && text.length === 0)) {
+      add('PLANDO_TEXT_EMPTY', 'warning', `Text ${n} has no words in it, so it would replace the game's text with nothing.`, [], id);
+    }
+    if (own(entry, 'percentage')) {
+      const p = entry['percentage'];
+      if (typeof p !== 'number' || !Number.isFinite(p)) {
+        add('PLANDO_PERCENT', 'error', `The percentage of text ${n} is ${quote(p)}. It must be a number from 0 to 100. Archipelago would stop with an error.`, [{ label: 'Use 100', edits: rewrite((copy) => void (target(copy)['percentage'] = 100)) }], id);
       }
     }
   });

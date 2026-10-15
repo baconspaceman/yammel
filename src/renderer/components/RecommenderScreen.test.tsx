@@ -179,3 +179,88 @@ describe('RecommenderScreen', () => {
 function cleanupRender(): void {
   document.body.innerHTML = '';
 }
+
+describe('RecommenderScreen groups', () => {
+  const toGroups = async () => {
+    const view = await setup();
+    await userEvent.click(screen.getByRole('radio', { name: 'Groups of three or more' }));
+    await screen.findAllByTestId('group-card');
+    return view;
+  };
+  const groupCards = () => screen.getAllByTestId('group-card');
+
+  it('switches to groups: ten cards of four games, each with a score, reasons and every pair', async () => {
+    await toGroups();
+    expect(groupCards()).toHaveLength(10);
+    const first = groupCards()[0]!;
+    expect(within(first).getByRole('heading').textContent!.split(' + ')).toHaveLength(4);
+    expect(within(first).getByLabelText(/^Score \d+ out of 100$/)).toBeTruthy();
+    expect(within(first).getByText(/Best match inside/)).toBeTruthy();
+    await userEvent.click(within(first).getByRole('button', { name: 'How each pair scores' }));
+    expect(within(first).getAllByRole('listitem').length).toBeGreaterThanOrEqual(6);
+    expect(screen.queryAllByTestId('rec-card')).toHaveLength(0);
+  });
+
+  it('changes the size of the groups', async () => {
+    await toGroups();
+    await userEvent.selectOptions(screen.getByLabelText('How many games in a group'), '6');
+    await waitFor(() => expect(within(groupCards()[0]!).getByRole('heading').textContent!.split(' + ')).toHaveLength(6));
+  });
+
+  it('keeps a game you insist on in every group, and leaves one out when asked', async () => {
+    await toGroups();
+    await userEvent.selectOptions(screen.getByLabelText('Add a game to Must include'), 'Game 03');
+    await userEvent.selectOptions(screen.getByLabelText('Add a game to Leave out'), 'Game 05');
+    await waitFor(() => {
+      for (const card of groupCards()) {
+        const titles = within(card).getByRole('heading').textContent!;
+        expect(titles).toContain('Game 03');
+        expect(titles).not.toContain('Game 05');
+      }
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Remove Game 03 from Must include' }));
+    expect(screen.queryByRole('list', { name: 'Must include: chosen games' })).toBeNull();
+  });
+
+  it('does not offer a game that is already on the other list', async () => {
+    await toGroups();
+    await userEvent.selectOptions(screen.getByLabelText('Add a game to Must include'), 'Game 03');
+    const options = within(screen.getByLabelText('Add a game to Leave out')).getAllByRole('option').map((o) => o.textContent);
+    expect(options).not.toContain('Game 03');
+  });
+
+  it('gives ten more different groups, and different ones again with "Try different groups"', async () => {
+    await toGroups();
+    const before = groupCards().map((card) => within(card).getByRole('heading').textContent);
+    await userEvent.click(screen.getByRole('button', { name: 'Give me ten more' }));
+    await waitFor(() => expect(groupCards().length).toBeGreaterThan(10));
+    const all = groupCards().map((card) => within(card).getByRole('heading').textContent);
+    expect(new Set(all).size).toBe(all.length);
+    expect(all.slice(0, 10)).toEqual(before);
+    await userEvent.click(screen.getByRole('button', { name: 'Try different groups' }));
+    await waitFor(() => expect(groupCards()).toHaveLength(10));
+  });
+
+  it('starts a YAML with all of the games in a group', async () => {
+    const { onUse } = await toGroups();
+    await userEvent.click(within(groupCards()[0]!).getByRole('button', { name: 'Use these games' }));
+    expect(onUse).toHaveBeenCalledTimes(1);
+    expect(onUse.mock.calls[0]![0]).toHaveLength(4);
+  });
+
+  it('says so when no group fits, and goes back to pairs', async () => {
+    await toGroups();
+    await userEvent.selectOptions(screen.getByLabelText('How many games in a group'), '3');
+    for (const name of GAMES.slice(0, 14).map((g) => g.name)) await userEvent.selectOptions(screen.getByLabelText('Add a game to Leave out'), name);
+    await waitFor(() => expect(screen.getByText(/No group of 3 games fits/)).toBeTruthy());
+    await userEvent.click(screen.getByRole('radio', { name: 'Pairs' }));
+    await screen.findAllByTestId('rec-card');
+  });
+
+  it('the pair scoring controls still apply to groups', async () => {
+    await toGroups();
+    const before = groupCards().map((card) => within(card).getByLabelText(/^Score/).textContent);
+    await userEvent.click(screen.getByRole('radio', { name: 'Opposites attract' }));
+    await waitFor(() => expect(groupCards().map((card) => within(card).getByLabelText(/^Score/).textContent)).not.toEqual(before));
+  });
+});

@@ -53,9 +53,9 @@ const AQ_ONE = `name: P\ngame: ${AQ}\n${AQ}:\n  plando_items:\n    - item: Sword
 
 describe('plandoSwitchesFrom', () => {
   it('reads which plando kinds the host.yaml allows', () => {
-    expect(plandoSwitchesFrom(HOST_OFF)).toEqual({ items: false, connections: true });
-    expect(plandoSwitchesFrom(HOST_ON)).toEqual({ items: true, connections: true });
-    expect(plandoSwitchesFrom('generator:\n  plando_options: ""\n')).toEqual({ items: false, connections: false });
+    expect(plandoSwitchesFrom(HOST_OFF)).toEqual({ items: false, connections: true, texts: true });
+    expect(plandoSwitchesFrom(HOST_ON)).toEqual({ items: true, connections: true, texts: true });
+    expect(plandoSwitchesFrom('generator:\n  plando_options: ""\n')).toEqual({ items: false, connections: false, texts: false });
   });
 
   it('gives null for a file it cannot read or that does not say', () => {
@@ -125,13 +125,61 @@ describe('PlandoPanel item plando', () => {
   });
 
   it('keeps a placement it cannot show exactly as it is', async () => {
-    const odd = `name: P\ngame: ${AQ}\n${AQ}:\n  plando_items:\n    - item: Sword\n      location: Bottom Left Chest\n      count: {min: 1, max: 2}\n`;
+    const odd = `name: P\ngame: ${AQ}\n${AQ}:\n  plando_items:\n    - item: Sword\n      location: Bottom Left Chest\n      world: [1, 2]\n`;
     render(<Harness text={odd} gameName={AQ} />);
     expect(screen.getByText(/Edit it in the Raw tab/)).toBeTruthy();
     await userEvent.click(screen.getByRole('button', { name: 'Add an item placement' }));
     const list = YamlDocument.parse(yamlOf()).get(AQ, 'plando_items') as Record<string, unknown>[];
-    expect(list[0]).toEqual({ item: 'Sword', location: 'Bottom Left Chest', count: { min: 1, max: 2 } });
+    expect(list[0]).toEqual({ item: 'Sword', location: 'Bottom Left Chest', world: [1, 2] });
     expect(list).toHaveLength(2);
+  });
+});
+
+describe('PlandoPanel ranges, several players and texts', () => {
+  it('sets a count range and a list of players', async () => {
+    render(<Harness text={AQ_ONE} gameName={AQ} />);
+    await userEvent.type(screen.getByLabelText('Fewest to place for placement 1'), '1{Enter}');
+    await userEvent.type(screen.getByLabelText('Most to place for placement 1'), '2{Enter}');
+    await userEvent.selectOptions(screen.getByLabelText('In whose world'), 'several');
+    const names = screen.getByLabelText('Player names for placement 1, separated by commas');
+    await userEvent.clear(names);
+    await userEvent.type(names, 'Alice, Bob{Enter}');
+    const entry = (YamlDocument.parse(yamlOf()).get(AQ, 'plando_items') as Record<string, unknown>[])[0]!;
+    expect(entry).toMatchObject({ count: { min: 1, max: 2 }, world: ['Alice', 'Bob'] });
+  });
+
+  it('a single number clears the range, and clearing both removes the count', async () => {
+    render(<Harness text={AQ_ONE} gameName={AQ} />);
+    await userEvent.type(screen.getByLabelText('Fewest to place for placement 1'), '1{Enter}');
+    await userEvent.type(screen.getByLabelText('How many to place for placement 1'), '1{Enter}');
+    const entry = (YamlDocument.parse(yamlOf()).get(AQ, 'plando_items') as Record<string, unknown>[])[0]!;
+    expect(entry['count']).toBe(1);
+  });
+});
+
+describe('PlandoPanel text plando', () => {
+  const BASE = `name: P\ngame: ${LTTP}\n${LTTP}: {}\n`;
+
+  it('adds a text, picks the place from the own list of the game and writes the words', async () => {
+    const { container } = render(<Harness text={BASE} gameName={LTTP} />);
+    expect(container.querySelector('datalist option[value="aginah"]')).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: 'Add a text' }));
+    const card = screen.getByRole('listitem', { name: 'Text 1' });
+    await userEvent.type(within(card).getByLabelText('Which text to replace'), 'aginah{Enter}');
+    const words = within(card).getByLabelText('New text');
+    await userEvent.clear(words);
+    await userEvent.type(words, 'Hello there');
+    await userEvent.tab();
+    const entry = (YamlDocument.parse(yamlOf()).get(LTTP, 'plando_texts') as Record<string, unknown>[])[0]!;
+    expect(entry).toEqual({ at: 'aginah', text: 'Hello there' });
+  });
+
+  it('flags a place that does not exist and offers the nearest', async () => {
+    const text = `${BASE.replace('{}', '')}\n  plando_texts:\n    - at: aginh\n      text: Hi\n`;
+    render(<Harness text={text} gameName={LTTP} />);
+    const problems = screen.getByRole('list', { name: /Problems with Plando Texts/ });
+    await userEvent.click(within(problems).getByRole('button', { name: 'Use "aginah"' }));
+    expect(yamlOf()).toContain('at: aginah');
   });
 });
 

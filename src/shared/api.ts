@@ -3,7 +3,7 @@ import type { HelperAction, HelperSnapshot } from './popout';
 import type { RecommenderState } from '../recommend/state';
 import type { CustomWorldsStatus, ScanResult } from './customWorlds';
 import type { GenerateRequest, GenerateResult, GeneratorStatus } from './generate';
-import type { HostFileContents, HostFileId, HostFileInfo, HostWriteRequest, HostWriteResult } from './host';
+import type { HostBackup, HostFileContents, HostFileId, HostFileInfo, HostWriteRequest, HostWriteResult } from './host';
 import type { Settings, SettingsPatch } from './settings';
 
 /** The only things the window can ask the app to do. Implemented in src/main, exposed by src/preload. */
@@ -184,6 +184,10 @@ export interface EditorApi {
   writeHost(request: HostWriteRequest): Promise<ApiResult<HostWriteResult>>;
   /** For each path shown in the host.yaml form, whether something is there (relative paths are read from the host.yaml's folder). */
   checkHostPaths(id: HostFileId, values: string[]): Promise<ApiResult<boolean[]>>;
+  /** The backups kept when host.yaml changes were saved, newest first. */
+  listHostBackups(): Promise<ApiResult<HostBackup[]>>;
+  /** The text of one of those backups. Only a name from the list is accepted. */
+  readHostBackup(name: string): Promise<ApiResult<string>>;
   /** Shows a file or folder picker for a path setting. Null when the user cancels. */
   pickHostPath(kind: 'file' | 'folder'): Promise<ApiResult<string | null>>;
   /** The optional AI helpers and whether each is ready. */
@@ -235,6 +239,8 @@ export const IPC = {
   readHost: 'host:read',
   writeHost: 'host:write',
   checkHostPaths: 'host:check-paths',
+  listHostBackups: 'host:list-backups',
+  readHostBackup: 'host:read-backup',
   pickHostPath: 'host:pick-path',
   helperStatus: 'helper:status',
   askHelper: 'helper:ask',

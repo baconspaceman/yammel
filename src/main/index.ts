@@ -22,13 +22,13 @@ import { SettingsStore } from './settingsStore';
 import { JsonFileStore } from './jsonStore';
 import { findGenerator, generatorStatus, runGenerate } from './generate';
 import type { GenerateRequest, GenerateResult, GeneratorStatus } from '../shared/generate';
-import type { HostFileContents, HostFileInfo, HostWriteResult } from '../shared/host';
+import type { HostBackup, HostFileContents, HostFileInfo, HostWriteResult } from '../shared/host';
 import type { CustomWorldsStatus, ScanResult } from '../shared/customWorlds';
 import { isSendableSnapshot, parseHelperAction, type HelperSnapshot } from '../shared/popout';
 import { MAX_PRESETS_BYTES, parsePresets, type PresetsState } from '../presets/presets';
 import { addRecent, describeRecent, MAX_RECENT_BYTES, parseRecent, removeRecent, type RecentState } from './recent';
 import { clearCustomWorlds, readSummary, scanBlocker, scanCustomWorlds, schemaWithCustom } from './customWorlds';
-import { checkHostPaths, hostCandidates, readHostFile, writeHostFile } from './hostFile';
+import { checkHostPaths, hostCandidates, listHostBackups, readHostBackup, readHostFile, writeHostFile } from './hostFile';
 import { askHelper, helperStatuses, isHelperId } from './helpers/service';
 import { SecretStore } from './helpers/secrets';
 import { MAX_STATE_BYTES, parseRecommenderState, type RecommenderState } from '../recommend/state';
@@ -289,6 +289,20 @@ function registerIpc(): void {
   ipcMain.handle(IPC.checkHostPaths, async (event, id: unknown, values: unknown): Promise<ApiResult<boolean[]>> => {
     if (!fromOurWindow(event) || settingsStore === null || (id !== 'installed' && id !== 'source') || !Array.isArray(values)) return { ok: false, message: 'Request refused.' };
     return { ok: true, value: checkHostPaths(settingsView().finding, id, values) };
+  });
+
+  ipcMain.handle(IPC.listHostBackups, async (event): Promise<ApiResult<HostBackup[]>> => {
+    if (!fromOurWindow(event) || settingsStore === null) return { ok: false, message: 'Request refused.' };
+    return { ok: true, value: await listHostBackups(join(app.getPath('userData'), 'backups')) };
+  });
+
+  ipcMain.handle(IPC.readHostBackup, async (event, name: unknown): Promise<ApiResult<string>> => {
+    if (!fromOurWindow(event) || settingsStore === null) return { ok: false, message: 'Request refused.' };
+    try {
+      return { ok: true, value: await readHostBackup(join(app.getPath('userData'), 'backups'), name) };
+    } catch (error) {
+      return fail(error);
+    }
   });
 
   ipcMain.handle(IPC.pickHostPath, async (event, kind: unknown): Promise<ApiResult<string | null>> => {

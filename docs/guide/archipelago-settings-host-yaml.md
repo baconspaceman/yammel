@@ -60,6 +60,7 @@ If you press **Back** with unsaved changes, the page asks **Leave without saving
 ## Backups, line endings and comments
 
 - **Before every save,** the current file is copied to a backup. Backups are kept in a folder in the app's own data folder. Each backup is named after the file with a time stamp and ends in `.bak`.
+- **You can go back.** Press **Restore an earlier version…** above the save bar to list the backups, newest first, with their date and size. **Load it** fills the form with that version; nothing is written until you press **Review and save**, so you see exactly which lines change first (and saving makes a new backup, as always). The list is of backups of any host.yaml this app changed, so if you have both an installed Archipelago and a source folder, check the date and the review before saving.
 - **The new file is written safely.** The text is written to a temporary copy and then swapped in, so the file is never left half-written.
 - **Only the changed lines change.** Comments and the file's byte-order mark are kept as they were. If the file mixes Windows and plain line endings, the review warns you that saving makes them all one kind.
 

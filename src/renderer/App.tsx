@@ -423,7 +423,7 @@ export default function App() {
     return reply.message;
   };
 
-  const useMixedGames = (mixed: [string, string]) => {
+  const useMixedGames = (mixed: string[]) => {
     setMixOpen(false);
     begin(new EditorSession(YamlDocument.emptyMulti(mixed, 'Player')));
   };

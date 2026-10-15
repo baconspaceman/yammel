@@ -148,3 +148,50 @@ describe('the real data', () => {
     }
   });
 });
+
+describe('item plando count ranges', () => {
+  it('an upside-down range stops Archipelago, with a fix that swaps it', () => {
+    const text = aq('    - items: [Sword, Hammer]\n      locations: [Bottom Left Chest, Top Middle Chest]\n      count:\n        min: 3\n        max: 1\n');
+    expect(codes(text)).toContain('PLANDO_COUNT_RANGE');
+    expect(fixed(text, 'PLANDO_COUNT_RANGE')).toMatch(/min: 1/);
+  });
+
+  it('a normal range is fine', () => {
+    expect(codes(aq('    - items: [Sword, Hammer]\n      locations: [Bottom Left Chest, Top Middle Chest]\n      count:\n        min: 1\n        max: 2\n'))).toEqual([]);
+  });
+});
+
+describe('text plando', () => {
+  const texts = (body: string) => `name: P\ngame: ${LTTP}\n${LTTP}:\n  plando_texts:\n${body}`;
+
+  it('accepts good texts', () => {
+    expect(codes(texts('    - at: sign_north_of_links_house\n      text: Hello there\n'))).toEqual([]);
+    expect(codes(texts('    - at: aginah\n      text:\n        - One\n        - Two\n      percentage: 50\n'))).toEqual([]);
+  });
+
+  it('stops on things that are not a list or a block, a missing place or a bad percentage', () => {
+    expect(codes(`name: P\ngame: ${LTTP}\n${LTTP}:\n  plando_texts: hello\n`)).toEqual(['PLANDO_NOT_LIST']);
+    expect(codes(texts('    - hello\n'))).toEqual(['PLANDO_ENTRY_NOT_MAP']);
+    expect(codes(texts('    - text: Hello\n'))).toContain('PLANDO_TEXT_NO_PLACE');
+    expect(codes(texts('    - at: aginah\n      text: Hi\n      percentage: often\n'))).toContain('PLANDO_PERCENT');
+    expect(codes(texts('    - at: aginah\n      text: 5\n'))).toContain('PLANDO_TEXT_SHAPE');
+  });
+
+  it('a place that does not exist, with the nearest one offered; capitals matter', () => {
+    const wrong = texts('    - at: aginh\n      text: Hi\n');
+    expect(codes(wrong)).toContain('PLANDO_TEXT_UNKNOWN_PLACE');
+    expect(fixed(wrong, 'PLANDO_TEXT_UNKNOWN_PLACE')).toContain('at: aginah');
+    expect(codes(texts('    - at: Aginah\n      text: Hi\n'))).toContain('PLANDO_TEXT_UNKNOWN_PLACE');
+  });
+
+  it('empty text is only a warning', () => {
+    const issue = check(texts('    - at: aginah\n')).find((i) => i.code === 'PLANDO_TEXT_EMPTY')!;
+    expect(issue.severity).toBe('warning');
+  });
+
+  it('the data lists the places for the one game that has text plando', () => {
+    const owners = Object.values(real.games).filter((g) => Object.values(g.options).some((o) => o.kind === 'plando_texts'));
+    expect(owners.map((g) => g.name)).toEqual([LTTP]);
+    expect(real.games[LTTP]!.options['plando_texts']!.validKeys!.length).toBeGreaterThan(300);
+  });
+});

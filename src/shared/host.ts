@@ -27,3 +27,12 @@ export interface HostWriteRequest {
 export interface HostWriteResult {
   backupPath: string | null;
 }
+
+/** An earlier host.yaml that was kept as a backup when a change was saved. */
+export interface HostBackup {
+  /** The backup file's name, as listed. The window can only ask for a name that is in the list. */
+  name: string;
+  /** When it was kept (ISO). */
+  at: string;
+  bytes: number;
+}

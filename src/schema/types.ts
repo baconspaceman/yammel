@@ -13,6 +13,7 @@ export const OPTION_KINDS = [
   'counter',
   'plando_items',
   'plando_connections',
+  'plando_texts',
   'other',
 ] as const;
 
@@ -51,6 +52,8 @@ export interface OptionSchema {
   /** plando_connections: the entrance and exit names Archipelago accepts (lower case; it ignores capitals). */
   entrances?: string[];
   exits?: string[];
+  /** plando_texts: the places a text may be put (capitals matter). */
+  validKeys?: string[];
   /** plando_connections: whether one exit may be used by several connections. */
   duplicateExits?: boolean;
 }

@@ -184,3 +184,32 @@ test('a path that points at nothing gets a quiet note, a found one does not, and
   await page.getByRole('button', { name: 'Check again' }).click();
   await expect(page.getByTestId('missing-output_path')).toHaveCount(0);
 });
+
+test('an earlier version can be loaded back into the form, reviewed and saved', async ({ page }) => {
+  await openHost(page);
+  // Nothing has been saved yet, so there is nothing to restore.
+  await page.getByRole('button', { name: 'Restore an earlier version…' }).click();
+  await expect(page.getByText(/There are no earlier versions yet/)).toBeVisible();
+  await page.getByRole('button', { name: 'Hide earlier versions' }).click();
+
+  await page.getByLabel('Port', { exact: true }).fill('4000');
+  await page.getByLabel('Port', { exact: true }).press('Enter');
+  await page.getByRole('button', { name: /Review and save/ }).click();
+  await page.getByRole('button', { name: 'Save to host.yaml' }).click();
+  await expect(page.getByRole('status').filter({ hasText: /^Saved\./ })).toBeVisible();
+  expect(readFileSync(HOST, 'utf8')).toContain('port: 4000');
+
+  await page.getByRole('button', { name: 'Restore an earlier version…' }).click();
+  const list = page.getByRole('region', { name: 'Earlier versions of host.yaml' });
+  await expect(list.getByRole('listitem')).toHaveCount(1);
+  await list.getByRole('button', { name: /^Load the version from/ }).click();
+  await expect(page.getByTestId('host-restored')).toBeVisible();
+  await expect(page.getByLabel('Port', { exact: true })).toHaveValue('38281');
+  // Loading only fills the form: the file on disk still has the newer value until it is saved.
+  expect(readFileSync(HOST, 'utf8')).toContain('port: 4000');
+  await page.getByRole('button', { name: /Review and save/ }).click();
+  await expect(page.getByLabel('Changed lines')).toContainText('+   port: 38281');
+  await page.getByRole('button', { name: 'Save to host.yaml' }).click();
+  await expect(page.getByRole('status').filter({ hasText: /^Saved\./ })).toBeVisible();
+  expect(readFileSync(HOST, 'utf8')).toContain('port: 38281');
+});

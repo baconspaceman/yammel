@@ -78,6 +78,11 @@ The rules are in `src/validate/validate.ts` (helpers in `src/validate/text.ts`, 
 | `PLANDO_FORCE` | error | `force` is not true, false or silent. | Use silent. |
 | `PLANDO_FROM_POOL` | error | `from_pool` is not true or false. | Use true. |
 | `PLANDO_COUNT` | warning (error when `force` is true) | `count` is more than the items named. | Use the number of items. |
+| `PLANDO_COUNT_RANGE` | error | A count range has a fewest above its most. | Swap them. |
+| `PLANDO_TEXT_NO_PLACE` | error | A text has no `at`. | None. |
+| `PLANDO_TEXT_UNKNOWN_PLACE` | error | The `at` is not one of the game's text places (capitals matter). Archipelago stops when it writes the game. | Use the closest place. |
+| `PLANDO_TEXT_SHAPE` | error | The `text` is not words or a list of lines. | None. |
+| `PLANDO_TEXT_EMPTY` | warning | A text has no words in it. | None. |
 | `PLANDO_CONNECTION_MISSING` | error | A connection has no entrance or no exit. | None. |
 | `PLANDO_DIRECTION` | error | `direction` is not both, entrance or exit. | Use both. |
 | `PLANDO_DUPLICATE` | error | An entrance, or an exit (unless the game allows repeats), is used twice. | None. |
@@ -201,7 +206,7 @@ Findings with no fix are left for you: `NO_GAME`, `BAD_GAME_WEIGHT`, `NEEDS_NEWE
 
 ## 9. What is not checked
 
-- Item and connection plando are checked as listed in section 2. Not checked: whether an item can be placed at a location, whether an entrance may be joined to an exit (each game decides), item names in another player's world, and other plando-like options (texts, bosses and so on). Each rule was confirmed with Archipelago's own `Options.py` and `Fill.py`, and by running its generator.
+- Item and connection plando are checked as listed in section 2. Text plando (A Link to the Past) is checked the same way; its place-name rule comes from reading the game's own code (`Rom.py`) rather than from running it. Not checked: whether an item can be placed at a location, whether an entrance may be joined to an exit (each game decides), item names in another player's world, and plando-like options that are ordinary options of one game. Each rule was confirmed with Archipelago's own `Options.py` and `Fill.py`, and by running its generator.
 - Other structured option kinds, and option kinds other than those in sections 5 to 7, are not checked (any value is accepted by this checker).
 - Free text and text-choice values are not checked as values; only the shape of a weights map or list around them is.
 - Triggers are checked as listed in section 2. Not checked: whether a `-` change removes something that is really in the list, item and location names inside a trigger's changes, and how a trigger's changes interact with another trigger beyond one trigger firing on a value another trigger sets. Each trigger rule was confirmed by running Archipelago's own `Generate.py` on a small YAML.

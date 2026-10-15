@@ -9,7 +9,7 @@ export function engineOptionsFor(doc: YamlDocument, game: string, schemaGame: Ga
   const options: Record<string, unknown> = {};
   for (const [key, option] of Object.entries(schemaGame.options)) {
     // Plando places things after the checks exist, so it cannot change how many there are, and the world's own option code rejects some of it when it is made without the rest of a multiworld.
-    if (option.kind === 'plando_items' || option.kind === 'plando_connections') continue;
+    if (option.kind === 'plando_items' || option.kind === 'plando_connections' || option.kind === 'plando_texts') continue;
     if (!doc.has(game, key)) continue;
     const value = doc.get(game, key);
     if (value === null || value === undefined) continue;

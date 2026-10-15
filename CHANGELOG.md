@@ -2,6 +2,12 @@
 
 All notable changes to this project are written here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-10-14
+
+- **Games to mix groups**: a Pairs / Groups switch. Groups of 3 to 8 games with must-include and leave-out lists, one score for the group that counts its weakest pair, a list of every pair's score, and the same mood and scoring weights as pairs.
+- **host.yaml: restore an earlier version**: lists the backups kept when you saved, and loads one into the form to review and save. Nothing is written until you save.
+- **More plando**: text plando for A Link to the Past (with its 406 places listed from the game), item placements with a count range and with several players, and checks for them. The option data now lists the text places.
+
 ## [0.2.0] - 2026-10-14
 
 - A short welcome card for the first time Yammel opens. It is shown once, and Settings can show it again.

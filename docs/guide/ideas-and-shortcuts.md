@@ -74,6 +74,17 @@ Games to mix suggests pairs of games that go well together in one YAML. You do n
 
 ![Games to mix suggestions with their reasons and score bars](../images/14-games-to-mix.jpg)
 
+### Groups of three or more
+
+Playing with friends who each bring a different game? Switch **Pairs** to **Groups of three or more** at the top of the screen.
+
+1. Choose **How many games** (3 to 8).
+2. Optionally add games to **Must include** (they are in every group) or **Leave out** (they are in none). A game cannot be on both lists.
+3. Read the groups. Each has one score out of 100, the best pair inside it, and a warning naming the **weakest link** when two of the games do not suit each other. **How each pair scores** lists every pair's score.
+4. Press **Use these games** to start a YAML that mixes all of them at the same weight. **Leave these games out** puts a whole group on the leave-out list, **Try different groups** looks again, and **Give me ten more** adds ten new groups below.
+
+A group's score is mostly the average of every pair inside it, pulled down by its weakest pair, because a group is only as good as its worst match. The mood choice ("Similar vibes", "Balanced", "Opposites attract") and the scoring weights under **Tune the scoring** apply to groups too. No game appears in more than three of the first ten groups, so the list has variety. The same choices give the same first ten groups.
+
 Each part of the score has a source label:
 
 - **Scanned** numbers were measured from each game's own code.

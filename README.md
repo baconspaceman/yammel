@@ -84,7 +84,8 @@ New here? Read **[Getting started](docs/guide/getting-started.md)**. It takes ab
   games** in one YAML, and a **Raw tab** for everything else (your comments are kept).
 - **Presets**: each game's own presets (for example Stardew Valley's Easy to Maxsanity) and your own named presets.
 - **Files with several players** (`---` between them) ask which player to edit, or split into one file each.
-- **Triggers and plando**: a **Triggers** tab ("when this option rolls this value, change those") and a **Plando** tab (place items where you want them, or choose which door leads where), with the game's real item, location and entrance names, a note when Archipelago's `host.yaml` has item plando switched off, and checks confirmed against Archipelago's own code.
+- **Groups of games**: besides pairs, Games to mix can find groups of three to eight games that suit each other, with must-include and leave-out choices and the weakest pair named.
+- **Triggers and plando**: a **Triggers** tab ("when this option rolls this value, change those") and a **Plando** tab (place items where you want them, choose which door leads where, or replace a text in A Link to the Past), with the game's real item, location and entrance names, a note when Archipelago's `host.yaml` has item plando switched off, and checks confirmed against Archipelago's own code.
 - **Custom worlds**: point it at a folder of `.apworld` files and those games appear like any other, each with a
   starter YAML.
 

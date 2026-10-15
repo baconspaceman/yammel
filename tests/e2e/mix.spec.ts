@@ -93,3 +93,45 @@ test('the screen never overlaps or clips text, in both themes, small windows and
     }
   }
 });
+
+test('groups: ten groups of four, with the games you insist on, and "Use these games" mixes all of them', async ({ page }) => {
+  await openMix(page);
+  await page.getByRole('radio', { name: 'Groups of three or more' }).click();
+  await expect(page.getByTestId('group-card')).toHaveCount(10);
+  const first = page.getByTestId('group-card').first();
+  expect((await first.getByRole('heading').innerText()).split(' + ')).toHaveLength(4);
+  await expect(first.getByLabel(/^Score \d+ out of 100$/)).toBeVisible();
+
+  await page.getByLabel('How many games in a group').selectOption('5');
+  await expect(page.getByTestId('group-card').first().getByRole('heading')).toContainText(' + ');
+  await expect.poll(async () => (await page.getByTestId('group-card').first().getByRole('heading').innerText()).split(' + ').length).toBe(5);
+
+  await page.getByLabel('Add a game to Must include').selectOption('Super Mario World');
+  await expect.poll(async () => (await page.getByTestId('group-card').allInnerTexts()).every((text) => text.includes('Super Mario World'))).toBe(true);
+
+  const heading = await page.getByTestId('group-card').first().getByRole('heading').innerText();
+  const games = heading.split(' + ');
+  await page.getByTestId('group-card').first().getByRole('button', { name: 'Use these games' }).click();
+  for (const name of games) await expect(page.locator('.yaml')).toContainText(`${name}: 50`);
+});
+
+test('the group view never overlaps or clips text, in both themes, small windows and zoom', async ({ page, app }) => {
+  await openMix(page);
+  await page.getByRole('radio', { name: 'Groups of three or more' }).click();
+  await expect(page.getByTestId('group-card')).toHaveCount(10);
+  await page.getByLabel('Add a game to Must include').selectOption('Super Mario World');
+  await page.getByLabel('Add a game to Leave out').selectOption('Hollow Knight');
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    for (const [width, height, zoom] of [
+      [900, 600, 1],
+      [1280, 720, 1],
+      [900, 600, 2],
+    ] as const) {
+      await setZoom(app, zoom);
+      await setWindowSize(app, width, height);
+      const report = await checkEverything(page);
+      expect(report.problems, `${scheme} ${width}x${height} at ${zoom * 100}%`).toEqual([]);
+    }
+  }
+});

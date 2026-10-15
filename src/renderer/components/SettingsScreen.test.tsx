@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiResult, ArchipelagoFinding, HelperStatus, SettingsView } from '../../shared/api';
 import type { CustomWorldsStatus, ScanResult } from '../../shared/customWorlds';
-import type { HostFileContents, HostFileInfo, HostWriteResult } from '../../shared/host';
+import type { HostBackup, HostFileContents, HostFileInfo, HostWriteResult } from '../../shared/host';
 import { applyPatch, DEFAULT_SETTINGS } from '../../shared/settings';
 import { SettingsScreen, type SettingsApi } from './SettingsScreen';
 
@@ -37,6 +37,8 @@ function fakeApi(start: SettingsView, over: Partial<SettingsApi> = {}): Settings
     hostFiles: vi.fn(async () => ({ ok: true, value: [] }) as ApiResult<HostFileInfo[]>),
     readHost: vi.fn(async () => ({ ok: false, message: 'none' }) as ApiResult<HostFileContents>),
     writeHost: vi.fn(async () => ({ ok: false, message: 'none' }) as ApiResult<HostWriteResult>),
+    listHostBackups: vi.fn(async () => ({ ok: true, value: [] }) as ApiResult<HostBackup[]>),
+    readHostBackup: vi.fn(async () => ({ ok: false, message: 'none' }) as ApiResult<string>),
     checkHostPaths: vi.fn(async (_id, values) => ({ ok: true, value: values.map(() => true) }) as ApiResult<boolean[]>),
     pickHostPath: vi.fn(async () => ({ ok: true, value: null }) as ApiResult<string | null>),
     ...over,

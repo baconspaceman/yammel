@@ -1,9 +1,9 @@
-import { readFile, stat } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { parseDocument, isMap } from 'yaml';
 import type { ArchipelagoFinding } from '../shared/api';
-import type { HostFileContents, HostFileId, HostFileInfo, HostWriteResult } from '../shared/host';
+import type { HostBackup, HostFileContents, HostFileId, HostFileInfo, HostWriteResult } from '../shared/host';
 import { FileError, saveTextSafely } from './files';
 
 export const MAX_HOST_BYTES = 1024 * 1024;
@@ -100,3 +100,23 @@ export function checkHostPaths(finding: ArchipelagoFinding, id: HostFileId, valu
   return pathsPresent(values, dirname(info.path), exists);
 }
 
+const BACKUP_NAME = /^host\.yaml\.[0-9T-]+Z(-\d+)?\.bak$/;
+const MAX_LISTED_BACKUPS = 30;
+
+/** The backups of host.yaml in the backup folder, newest first. A missing folder just means there are none. */
+export async function listHostBackups(backupDir: string): Promise<HostBackup[]> {
+  const names = await readdir(backupDir).catch(() => [] as string[]);
+  const found: HostBackup[] = [];
+  for (const name of names.filter((entry) => BACKUP_NAME.test(entry))) {
+    const details = await stat(join(backupDir, name)).catch(() => null);
+    if (details?.isFile() && details.size <= MAX_HOST_BYTES) found.push({ name, at: details.mtime.toISOString(), bytes: details.size });
+  }
+  return found.sort((a, b) => b.at.localeCompare(a.at) || b.name.localeCompare(a.name)).slice(0, MAX_LISTED_BACKUPS);
+}
+
+/** The text of one listed backup. A name that is not in the list is refused, so no other file can be read this way. */
+export async function readHostBackup(backupDir: string, name: unknown): Promise<string> {
+  const listed = typeof name === 'string' ? (await listHostBackups(backupDir)).find((backup) => backup.name === name) : undefined;
+  if (listed === undefined) throw new FileError('That backup is not there any more.');
+  return (await readFile(join(backupDir, listed.name))).toString('utf8').replace(/^﻿/, '');
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { YamlDocument } from './document';
-import { connectionPlandoToPlain, itemPlandoToPlain, newConnectionPlando, newItemPlando, plandoEdit, readConnectionPlando, readItemPlando } from './plando';
+import { connectionPlandoToPlain, itemPlandoToPlain, newConnectionPlando, newItemPlando, newTextPlando, plandoEdit, readConnectionPlando, readItemPlando, readTextPlando, textPlandoToPlain } from './plando';
 
 const GAME = 'A Link to the Past';
 
@@ -52,9 +52,9 @@ describe('readItemPlando', () => {
   it('leaves out of reach what the controls cannot show, and writes it back as it was', () => {
     const odd: unknown[] = [
       'text',
-      { item: 'Bow', location: 'X', world: ['a', 'b'] },
+      { item: 'Bow', location: 'X', world: [1, 2] },
       { items: { Bow: true }, locations: ['X'] },
-      { item: 'Bow', location: 'X', count: { min: 1, max: 2 } },
+      { item: 'Bow', location: 'X', count: { min: 'a' } },
       { item: 'Bow', force: 'maybe' },
       { item: 'Bow', percentage: 12.5 },
       { item: 'Bow', locations: 5 },
@@ -133,5 +133,51 @@ describe('connection plando', () => {
     const doc = YamlDocument.parse('name: T\ngame: A Link to the Past\nA Link to the Past: {}\n');
     doc.apply(plandoEdit(GAME, 'plando_connections', [connectionPlandoToPlain(newConnectionPlando('Links House', 'Sanctuary'))]));
     expect(readConnectionPlando(doc.get(GAME, 'plando_connections')).entries[0]).toMatchObject({ entrance: 'Links House', exit: 'Sanctuary' });
+  });
+});
+
+describe('item plando ranges and lists of worlds', () => {
+  it('reads and writes a count range and a list of players', () => {
+    const entry = { items: ['Bow', 'Hookshot', 'Fire Rod'], locations: ['A', 'B'], count: { min: 1, max: 2 }, world: ['Alice', 'Bob'] };
+    const [read] = readItemPlando([entry]).entries;
+    expect(read).toMatchObject({ editable: true, count: { min: 1, max: 2 }, world: ['Alice', 'Bob'] });
+    expect(itemPlandoToPlain(read!)).toEqual(entry);
+    const onlyMax = readItemPlando([{ item: 'Bow', count: { max: 3 } }]).entries[0]!;
+    expect(onlyMax.count).toEqual({ max: 3 });
+    expect(itemPlandoToPlain(onlyMax)).toEqual({ items: ['Bow'], count: { max: 3 } });
+  });
+
+  it('reads a world of null as everyone', () => {
+    const [read] = readItemPlando([{ item: 'Bow', world: null }]).entries;
+    expect(read!.world).toBeNull();
+    expect((itemPlandoToPlain(read!) as Record<string, unknown>)['world']).toBeNull();
+  });
+});
+
+describe('text plando', () => {
+  const TEXT = 'name: T\ngame: A Link to the Past\nA Link to the Past:\n  plando_texts:\n    - at: sign_north_of_links_house\n      text: Hello there\n    - at: aginah\n      text:\n        - First line\n        - Second line\n      percentage: 30\n';
+
+  it('reads one line as text and several as a list', () => {
+    const { entries } = readTextPlando(YamlDocument.parse(TEXT).get(GAME, 'plando_texts'));
+    expect(entries[0]).toMatchObject({ at: 'sign_north_of_links_house', text: ['Hello there'], percentage: null, editable: true });
+    expect(entries[1]).toMatchObject({ at: 'aginah', text: ['First line', 'Second line'], percentage: 30 });
+    expect(textPlandoToPlain(entries[0]!)).toEqual({ at: 'sign_north_of_links_house', text: 'Hello there' });
+    expect(textPlandoToPlain(entries[1]!)).toEqual({ at: 'aginah', text: ['First line', 'Second line'], percentage: 30 });
+  });
+
+  it('keeps what it cannot show exactly as it was', () => {
+    const odd: unknown[] = [{ at: { a: 1, b: 2 }, text: 'x' }, { at: 'aginah', text: { one: 1 } }, 'text', { at: 'aginah', text: 5 }];
+    for (const entry of odd) {
+      const [read] = readTextPlando([entry]).entries;
+      expect(read!.editable, JSON.stringify(entry)).toBe(false);
+      expect(textPlandoToPlain(read!)).toBe(entry);
+    }
+    expect(readTextPlando({ a: 1 }).problem).toMatch(/not a list/);
+  });
+
+  it('adds one through the document', () => {
+    const doc = YamlDocument.parse('name: T\ngame: A Link to the Past\nA Link to the Past: {}\n');
+    doc.apply(plandoEdit(GAME, 'plando_texts', [textPlandoToPlain({ ...newTextPlando('aginah'), text: ['Hi'] })]));
+    expect(readTextPlando(doc.get(GAME, 'plando_texts')).entries[0]).toMatchObject({ at: 'aginah', text: ['Hi'] });
   });
 });

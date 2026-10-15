@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { EditorApi } from '../../shared/api';
-import type { HostFileId, HostFileInfo } from '../../shared/host';
+import type { HostBackup, HostFileId, HostFileInfo } from '../../shared/host';
 import { diffLines, parseHost, setEntry, type Entry, type ParsedHost } from '../../hostyaml/model';
 
-export type HostApi = Pick<EditorApi, 'hostFiles' | 'readHost' | 'writeHost' | 'pickHostPath' | 'checkHostPaths'>;
+export type HostApi = Pick<EditorApi, 'hostFiles' | 'readHost' | 'writeHost' | 'pickHostPath' | 'checkHostPaths' | 'listHostBackups' | 'readHostBackup'>;
 
 export interface HostScreenProps {
   api: HostApi;
@@ -247,6 +247,26 @@ export function HostScreen({ api, onBack }: HostScreenProps) {
     }
   };
 
+  // Earlier versions kept as backups. Loading one only fills the form; nothing is written until it is reviewed and saved.
+  const [backups, setBackups] = useState<HostBackup[] | null>(null);
+  const openBackups = async () => {
+    const reply = await api.listHostBackups();
+    if (!reply.ok) return setError(reply.message);
+    setBackups(reply.value);
+  };
+  const loadBackup = async (name: string) => {
+    const reply = await api.readHostBackup(name);
+    if (!reply.ok) return setError(reply.message);
+    if (!parseHost(reply.value).ok) return setError('That backup could not be read as a host.yaml, so it was not loaded.');
+    setError(null);
+    setSaved(null);
+    setReviewing(false);
+    setDraft(reply.value);
+    setBackups(null);
+    setRestored(name);
+  };
+  const [restored, setRestored] = useState<string | null>(null);
+
   const needle = query.trim().toLowerCase();
   const matches = (entry: Entry) => needle === '' || `${entry.label} ${entry.key} ${entry.comment}`.toLowerCase().includes(needle);
 
@@ -296,6 +316,11 @@ export function HostScreen({ api, onBack }: HostScreenProps) {
         {saved !== null && (
           <p className="settings__status settings__status--ok" role="status">
             {saved}
+          </p>
+        )}
+        {restored !== null && changed > 0 && (
+          <p className="settings__note" role="status" data-testid="host-restored">
+            An earlier version is loaded in the form. Nothing is written until you press Review and save.
           </p>
         )}
 
@@ -363,6 +388,37 @@ export function HostScreen({ api, onBack }: HostScreenProps) {
                   Check again
                 </button>
               </p>
+            )}
+
+            <p className="host__backups">
+              <button type="button" className="button button--small" onClick={() => (backups === null ? void openBackups() : setBackups(null))}>
+                {backups === null ? 'Restore an earlier version…' : 'Hide earlier versions'}
+              </button>
+            </p>
+            {backups !== null && (
+              <section className="host__backuplist" aria-label="Earlier versions of host.yaml">
+                {backups.length === 0 ? (
+                  <p className="settings__note">There are no earlier versions yet. One is kept each time you save a change here.</p>
+                ) : (
+                  <>
+                    <p className="settings__note">
+                      Each time you saved a change here, the file as it was before was kept. Loading one fills the form; you review the difference and save as usual. These are kept for any host.yaml this app changed.
+                    </p>
+                    <ul className="host__backuprows">
+                      {backups.map((backup) => (
+                        <li key={backup.name} className="host__backuprow">
+                          <span>
+                            {new Date(backup.at).toLocaleString()} ({Math.max(1, Math.round(backup.bytes / 1024))} KB)
+                          </span>
+                          <button type="button" className="button button--small" aria-label={`Load the version from ${new Date(backup.at).toLocaleString()}`} onClick={() => void loadBackup(backup.name)}>
+                            Load it
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </section>
             )}
 
             <div className="host__footer" role="region" aria-label="Save changes">

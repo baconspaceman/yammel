@@ -7,13 +7,18 @@ import {
   itemPlandoToPlain,
   newConnectionPlando,
   newItemPlando,
+  newTextPlando,
   plandoEdit,
   readConnectionPlando,
   readItemPlando,
+  readTextPlando,
+  textPlandoToPlain,
   type ConnectionPlando,
   type Force,
   type ItemPlando,
+  type PlandoCount,
   type PlandoWorld,
+  type TextPlando,
 } from '../../model/plando';
 import type { GameSchema, OptionSchema } from '../../schema/types';
 import type { EditorApi } from '../../shared/api';
@@ -36,6 +41,7 @@ export interface PlandoPanelProps {
 export interface PlandoSwitches {
   items: boolean;
   connections: boolean;
+  texts: boolean;
 }
 
 /** Reads `plando_options` out of a host.yaml's text. */
@@ -46,7 +52,7 @@ export function plandoSwitchesFrom(text: string): PlandoSwitches | null {
     const entry = section.entries.find((candidate) => candidate.key === 'plando_options');
     if (entry === undefined) continue;
     const words = String(entry.value ?? '').toLowerCase().split(/[\s,]+/);
-    return { items: words.includes('items'), connections: words.includes('connections') };
+    return { items: words.includes('items'), connections: words.includes('connections'), texts: words.includes('texts') };
   }
   return null;
 }
@@ -56,16 +62,28 @@ const WORLD_CHOICES = [
   { id: 'others', label: "Any other player's world" },
   { id: 'all', label: "Everyone's world, mine too" },
   { id: 'player', label: 'One player (number or name)' },
+  { id: 'several', label: 'Several players (names)' },
 ] as const;
 type WorldChoice = (typeof WORLD_CHOICES)[number]['id'];
 
-const worldChoice = (world: PlandoWorld): WorldChoice => (world === false ? 'own' : world === true ? 'others' : world === null ? 'all' : 'player');
+const worldChoice = (world: PlandoWorld): WorldChoice => (world === false ? 'own' : world === true ? 'others' : world === null ? 'all' : Array.isArray(world) ? 'several' : 'player');
 
 const FORCE_LABEL: Record<string, string> = {
   silent: 'If it cannot be done, carry on quietly',
   false: 'If it cannot be done, carry on but warn me',
   true: 'If it cannot be done, stop the generation',
 };
+
+const rangeOf = (count: PlandoCount | null): { min: number | null; max: number | null } =>
+  count !== null && typeof count === 'object' ? { min: count.min ?? null, max: count.max ?? null } : { min: null, max: null };
+
+/** A fewest or a most replaces a single number; with neither left, the count is not written. */
+function toRange(count: PlandoCount | null, side: 'min' | 'max', value: number | null): PlandoCount | null {
+  const current = rangeOf(count);
+  const next = { ...current, [side]: value };
+  if (next.min === null && next.max === null) return null;
+  return { ...(next.min === null ? {} : { min: next.min }), ...(next.max === null ? {} : { max: next.max }) };
+}
 
 /** A whole number or empty, committed when you leave the box or press Enter. */
 function NumberBox({ id, label, value, placeholder, onCommit }: { id: string; label: string; value: number | null; placeholder: string; onCommit(value: number | null): void }) {
@@ -121,6 +139,7 @@ export function PlandoPanel({ api, doc, gameName, game, issues, onApply }: Pland
 
   const itemOptions = useMemo(() => (game === undefined ? [] : Object.values(game.options).filter((o) => o.kind === 'plando_items')), [game]);
   const connectionOptions = useMemo(() => (game === undefined ? [] : Object.values(game.options).filter((o) => o.kind === 'plando_connections')), [game]);
+  const textOptions = useMemo(() => (game === undefined ? [] : Object.values(game.options).filter((o) => o.kind === 'plando_texts')), [game]);
   const itemPool = useMemo(() => (game === undefined ? [] : [...game.items, ...game.itemGroups]), [game]);
   const locationPool = useMemo(() => (game === undefined ? [] : [...game.locations, ...game.locationGroups.filter((name) => name !== 'Everywhere'), ...SPECIAL_LOCATIONS]), [game]);
 
@@ -133,9 +152,9 @@ export function PlandoPanel({ api, doc, gameName, game, issues, onApply }: Pland
     );
   }
   const relevant = (option: OptionSchema) => issues.filter((issue) => issue.game === gameName && issue.option === option.key);
-  const none = itemOptions.length === 0 && connectionOptions.length === 0;
+  const none = itemOptions.length === 0 && connectionOptions.length === 0 && textOptions.length === 0;
 
-  const note = (kind: 'items' | 'connections') => {
+  const note = (kind: 'items' | 'connections' | 'texts') => {
     if (switches === 'loading' || switches === null) {
       return (
         <p className="triggers__note" data-testid={`plando-${kind}-switch`}>
@@ -143,7 +162,7 @@ export function PlandoPanel({ api, doc, gameName, game, issues, onApply }: Pland
         </p>
       );
     }
-    const on = kind === 'items' ? switches.items : switches.connections;
+    const on = kind === 'items' ? switches.items : kind === 'connections' ? switches.connections : switches.texts;
     return on ? (
       <p className="triggers__note" data-testid={`plando-${kind}-switch`}>
         Your Archipelago host.yaml has {kind} plando switched on.
@@ -165,6 +184,9 @@ export function PlandoPanel({ api, doc, gameName, game, issues, onApply }: Pland
 
       {itemOptions.map((option) => (
         <ItemSection key={option.key} uid={uid} doc={doc} gameName={gameName} option={option} itemPool={itemPool} locationPool={locationPool} onApply={onApply} issues={relevant(option)} note={note('items')} />
+      ))}
+      {textOptions.map((option) => (
+        <TextSection key={option.key} uid={uid} doc={doc} gameName={gameName} option={option} onApply={onApply} issues={relevant(option)} note={note('texts')} />
       ))}
       {connectionOptions.map((option) => (
         <ConnectionSection key={option.key} uid={uid} doc={doc} gameName={gameName} option={option} onApply={onApply} issues={relevant(option)} note={note('connections')} />
@@ -273,7 +295,7 @@ function ItemSection({ uid, doc, gameName, option, itemPool, locationPool, onApp
                         value={worldChoice(entry.world)}
                         onChange={(event) => {
                           const picked = event.target.value as WorldChoice;
-                          update(index, (e) => ({ ...e, world: picked === 'own' ? false : picked === 'others' ? true : picked === 'all' ? null : 1 }));
+                          update(index, (e) => ({ ...e, world: picked === 'own' ? false : picked === 'others' ? true : picked === 'all' ? null : picked === 'several' ? ['Player 2'] : 1 }));
                         }}
                       >
                         {WORLD_CHOICES.map((choice) => (
@@ -282,6 +304,18 @@ function ItemSection({ uid, doc, gameName, option, itemPool, locationPool, onApp
                           </option>
                         ))}
                       </select>
+                      {worldChoice(entry.world) === 'several' && (
+                        <TextBox
+                          id={`${pre}-names`}
+                          label={`Player names for placement ${index + 1}, separated by commas`}
+                          list={undefined}
+                          value={(entry.world as string[]).join(', ')}
+                          onCommit={(text) => {
+                            const names = text.split(',').map((name) => name.trim()).filter((name) => name !== '');
+                            if (names.length > 0) update(index, (e) => ({ ...e, world: names }));
+                          }}
+                        />
+                      )}
                       {worldChoice(entry.world) === 'player' && (
                         <input
                           className="host__input"
@@ -318,7 +352,13 @@ function ItemSection({ uid, doc, gameName, option, itemPool, locationPool, onApp
                     </div>
                     <div className="trigger__row">
                       <label htmlFor={`${pre}-count`}>How many to place</label>
-                      <NumberBox id={`${pre}-count`} label={`How many to place for placement ${index + 1}`} value={entry.count} placeholder="all" onCommit={(count) => update(index, (e) => ({ ...e, count }))} />
+                      <NumberBox id={`${pre}-count`} label={`How many to place for placement ${index + 1}`} value={typeof entry.count === 'number' ? entry.count : null} placeholder="all" onCommit={(count) => update(index, (e) => ({ ...e, count }))} />
+                      <label htmlFor={`${pre}-min`}>or between</label>
+                      <NumberBox id={`${pre}-min`} label={`Fewest to place for placement ${index + 1}`} value={rangeOf(entry.count).min} placeholder="fewest" onCommit={(min) => update(index, (e) => ({ ...e, count: toRange(e.count, 'min', min) }))} />
+                      <label htmlFor={`${pre}-max`}>and</label>
+                      <NumberBox id={`${pre}-max`} label={`Most to place for placement ${index + 1}`} value={rangeOf(entry.count).max} placeholder="most" onCommit={(max) => update(index, (e) => ({ ...e, count: toRange(e.count, 'max', max) }))} />
+                    </div>
+                    <div className="trigger__row">
                       <label htmlFor={`${pre}-pct`}>Chance (%)</label>
                       <NumberBox id={`${pre}-pct`} label={`Chance of placement ${index + 1}`} value={entry.percentage} placeholder="always" onCommit={(percentage) => update(index, (e) => ({ ...e, percentage }))} />
                     </div>
@@ -426,10 +466,11 @@ function ConnectionSection({ uid, doc, gameName, option, onApply, issues, note }
 }
 
 /** Text with an optional list of suggestions, committed when you leave the box or press Enter. */
-function TextBox({ id, list, value, onCommit }: { id: string; list: string | undefined; value: string; onCommit(value: string): void }) {
+function TextBox({ id, list, value, label, onCommit }: { id: string; list: string | undefined; value: string; label?: string; onCommit(value: string): void }) {
   return (
     <input
       id={id}
+      aria-label={label}
       className="host__input"
       type="text"
       list={list}
@@ -443,5 +484,87 @@ function TextBox({ id, list, value, onCommit }: { id: string; list: string | und
         if (event.key === 'Enter') event.currentTarget.blur();
       }}
     />
+  );
+}
+
+function TextSection({ uid, doc, gameName, option, onApply, issues, note }: SectionProps) {
+  const read = readTextPlando(doc.get(gameName, option.key));
+  const entries = read.entries;
+  const save = (next: TextPlando[]) => onApply([plandoEdit(gameName, option.key, next.map(textPlandoToPlain))]);
+  const update = (index: number, change: (entry: TextPlando) => TextPlando) => save(entries.map((entry, i) => (i === index ? change(entry) : entry)));
+  const listId = `${uid}-${option.key}-places`;
+
+  return (
+    <div className="plando__section" aria-label={option.displayName}>
+      <h3 className="plando__heading">{option.displayName}</h3>
+      {note}
+      {option.validKeys !== undefined && (
+        <datalist id={listId}>
+          {option.validKeys.map((name) => (
+            <option key={name} value={name} />
+          ))}
+        </datalist>
+      )}
+      {read.problem !== null && (
+        <p className="triggers__note" role="alert">
+          {read.problem} Fix it in the Raw tab.
+        </p>
+      )}
+      {read.problem === null && entries.length === 0 && <p className="triggers__note">No texts yet.</p>}
+      {read.problem === null && (
+        <ol className="triggers__list">
+          {entries.map((entry, index) => {
+            const pre = `${listId}-${index}`;
+            return (
+              <li key={index} className="trigger" aria-label={`Text ${index + 1}`}>
+                <div className="trigger__head">
+                  <h4 className="trigger__title">Text {index + 1}</h4>
+                  <button type="button" className="button button--small" onClick={() => save(entries.filter((_, i) => i !== index))}>
+                    Remove text {index + 1}
+                  </button>
+                </div>
+                {!entry.editable ? (
+                  <p className="triggers__note">This text uses something this editor does not show (for example a weighted choice of places). It is kept exactly as it is. Edit it in the Raw tab.</p>
+                ) : (
+                  <>
+                    <div className="trigger__row">
+                      <label htmlFor={`${pre}-at`}>Which text to replace</label>
+                      <TextBox id={`${pre}-at`} list={option.validKeys !== undefined ? listId : undefined} value={entry.at} onCommit={(at) => update(index, (e) => ({ ...e, at }))} />
+                    </div>
+                    <div className="trigger__row">
+                      <label htmlFor={`${pre}-text`}>New text</label>
+                      <textarea
+                        id={`${pre}-text`}
+                        className="host__input"
+                        rows={3}
+                        defaultValue={entry.text.join('\n')}
+                        key={entry.text.join('\n')}
+                        onBlur={(event) => {
+                          const lines = event.target.value.split('\n');
+                          if (lines.join('\n') !== entry.text.join('\n')) update(index, (e) => ({ ...e, text: lines }));
+                        }}
+                      />
+                      <span className="triggers__hint">Each line is a separate line in the game.</span>
+                    </div>
+                    <div className="trigger__row">
+                      <label htmlFor={`${pre}-pct`}>Chance (%)</label>
+                      <NumberBox id={`${pre}-pct`} label={`Chance of text ${index + 1}`} value={entry.percentage} placeholder="always" onCommit={(percentage) => update(index, (e) => ({ ...e, percentage }))} />
+                    </div>
+                  </>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      )}
+      {read.problem === null && (
+        <p>
+          <button type="button" className="button button--primary" onClick={() => save([...entries, newTextPlando()])}>
+            Add a text
+          </button>
+        </p>
+      )}
+      <IssueList issues={issues} onApply={onApply} label={`Problems with ${option.displayName}`} />
+    </div>
   );
 }

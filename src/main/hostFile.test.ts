@@ -1,9 +1,9 @@
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { ArchipelagoFinding } from '../shared/api';
-import { checkHostPaths, hostCandidates, hostErrorMessage, MAX_CHECKED_PATHS, pathsPresent, readHostFile, writeHostFile } from './hostFile';
+import { checkHostPaths, hostCandidates, hostErrorMessage, listHostBackups, MAX_CHECKED_PATHS, pathsPresent, readHostBackup, readHostFile, writeHostFile } from './hostFile';
 
 const dirs: string[] = [];
 const temp = () => {
@@ -135,5 +135,53 @@ describe('pathsPresent / checkHostPaths', () => {
     const dir = temp();
     mkdirSync(join(dir, 'Players'));
     expect(pathsPresent(['Players', 'weights.yaml', join(dir, 'Players')], dir)).toEqual([true, false, true]);
+  });
+});
+
+describe('host.yaml backups', () => {
+  const write = (dir: string, name: string, text: string, ageMs = 0) => {
+    const path = join(dir, name);
+    writeFileSync(path, text);
+    const when = new Date(Date.now() - ageMs);
+    utimesSync(path, when, when);
+  };
+
+  it('lists only host.yaml backups, newest first, and reads one by its listed name', async () => {
+    const dir = temp();
+    write(dir, 'host.yaml.2026-10-14T10-00-00-000Z.bak', 'old: 1\n', 60_000);
+    write(dir, 'host.yaml.2026-10-14T11-00-00-000Z.bak', 'new: 2\n', 1_000);
+    write(dir, 'host.yaml.2026-10-14T11-00-00-000Z-1.bak', 'same second: 3\n', 2_000);
+    write(dir, 'player.yaml.2026-10-14T11-00-00-000Z.bak', 'not a host file\n');
+    write(dir, 'host.yaml', 'the real file\n');
+    write(dir, 'host.yaml.tmp-123', 'half written\n');
+    const list = await listHostBackups(dir);
+    expect(list.map((b) => b.name)).toEqual(['host.yaml.2026-10-14T11-00-00-000Z.bak', 'host.yaml.2026-10-14T11-00-00-000Z-1.bak', 'host.yaml.2026-10-14T10-00-00-000Z.bak']);
+    expect(list[0]!.bytes).toBe(7);
+    expect(await readHostBackup(dir, list[0]!.name)).toBe('new: 2\n');
+  });
+
+  it('is empty for a folder that is not there', async () => {
+    expect(await listHostBackups(join(temp(), 'missing'))).toEqual([]);
+  });
+
+  it('refuses a name that is not listed, so no other file can be read', async () => {
+    const dir = temp();
+    write(dir, 'secret.txt', 'private');
+    for (const name of ['secret.txt', '../secret.txt', 'host.yaml.2026-10-14T11-00-00-000Z.bak', 5, null, undefined]) {
+      await expect(readHostBackup(dir, name)).rejects.toThrow(/not there any more/);
+    }
+  });
+
+  it('finds the backup that a real save makes', async () => {
+    const dir = temp();
+    const backups = join(dir, 'backups');
+    const root = join(dir, 'AP');
+    mkdirSync(root);
+    writeFileSync(join(root, 'host.yaml'), 'generator:\n  race: 0\n');
+    const result = await writeHostFile(finding({ installRoot: root }), 'installed', 'generator:\n  race: 1\n', 'generator:\n  race: 0\n', backups);
+    expect(result.backupPath).not.toBeNull();
+    const [only] = await listHostBackups(backups);
+    expect(only).toBeDefined();
+    expect(await readHostBackup(backups, only!.name)).toBe('generator:\n  race: 0\n');
   });
 });

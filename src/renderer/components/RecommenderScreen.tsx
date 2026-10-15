@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { findGroups, MAX_GROUP, MIN_GROUP, type GroupScore } from '../../recommend/groups';
 import { partnersFor, pickCards } from '../../recommend/select';
-import { scoreAllPairs, type ScoreOptions } from '../../recommend/score';
+import { pairKey, scoreAllPairs, type ScoreOptions } from '../../recommend/score';
 import {
   beginLaunch,
   clearHistory,
@@ -27,8 +28,8 @@ export interface RecommenderScreenProps {
   /** True the first time this screen opens in an app run: it counts as a new launch for the "not again for 5 launches" memory. */
   countLaunch: boolean;
   onBack(): void;
-  /** Start a new YAML that mixes these games. */
-  onUse(games: [string, string]): void;
+  /** Start a new YAML that mixes these games (two for a pair, more for a group). */
+  onUse(games: string[]): void;
   /** Random source for "give me ten more" and replacements (tests pass a seeded one). */
   random?: Random;
 }
@@ -67,6 +68,45 @@ function Bar({ label, value, source }: { label: string; value: number; source: S
   );
 }
 
+/** A list of chosen games: a menu to add one and a button on each to take it away. */
+function GameChips({ label, games, chosen, blocked, limit, onChange }: { label: string; games: readonly string[]; chosen: readonly string[]; blocked: readonly string[]; limit: number; onChange(next: string[]): void }) {
+  const choices = games.filter((game) => !chosen.includes(game) && !blocked.includes(game));
+  return (
+    <div className="rec__chips" role="group" aria-label={label}>
+      <label className="rec__focus">
+        <span>{label}</span>
+        <select
+          className="input"
+          value=""
+          aria-label={`Add a game to ${label}`}
+          disabled={chosen.length >= limit}
+          onChange={(e) => {
+            if (e.target.value !== '') onChange([...chosen, e.target.value]);
+          }}
+        >
+          <option value="">(add a game)</option>
+          {choices.map((game) => (
+            <option key={game} value={game}>
+              {game}
+            </option>
+          ))}
+        </select>
+      </label>
+      {chosen.length > 0 && (
+        <ul className="rec__chiplist" aria-label={`${label}: chosen games`}>
+          {chosen.map((game) => (
+            <li key={game}>
+              <button type="button" className="button button--small" aria-label={`Remove ${game} from ${label}`} onClick={() => onChange(chosen.filter((entry) => entry !== game))}>
+                {game} ✕
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function RecommenderScreen({ api, games, countLaunch, onBack, onUse, random }: RecommenderScreenProps) {
   const [state, setState] = useState<RecommenderState | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -76,6 +116,20 @@ export function RecommenderScreen({ api, games, countLaunch, onBack, onUse, rand
   const [drawVersion, setDrawVersion] = useState(0);
   const [focusGame, setFocusGame] = useState('');
   const [tuneOpen, setTuneOpen] = useState(false);
+  /** Pairs (the ten ideas) or groups of three to eight games. */
+  const [view, setView] = useState<'pairs' | 'groups'>('pairs');
+  const [groupSize, setGroupSize] = useState(4);
+  const [mustHave, setMustHave] = useState<string[]>([]);
+  const [leaveOut, setLeaveOut] = useState<string[]>([]);
+  const [groupVersion, setGroupVersion] = useState(0);
+  const [moreGroups, setMoreGroups] = useState<GroupScore[]>([]);
+  const [pairsOpen, setPairsOpen] = useState<ReadonlySet<string>>(new Set());
+  const togglePairs = (key: string) =>
+    setPairsOpen((previous) => {
+      const next = new Set(previous);
+      if (!next.delete(key)) next.add(key);
+      return next;
+    });
   const randomRef = useRef<Random>(random ?? Math.random);
   randomRef.current = random ?? randomRef.current;
 
@@ -111,6 +165,29 @@ export function RecommenderScreen({ api, games, countLaunch, onBack, onUse, rand
     [games, state?.mood, state?.weights, state?.picks, state?.favourites, state?.dislikes, state === null],
   );
   const byKey = useMemo(() => new Map(pairs.map((pair) => [pair.key, pair])), [pairs]);
+
+  // Groups are searched on demand, only while that view is open. The same choices give the same first ten.
+  const firstGroups = useMemo(
+    () =>
+      view === 'groups' && state !== null
+        ? findGroups({ pairs, size: groupSize, include: mustHave, exclude: leaveOut, random: seededRandom(state.launches * 31 + groupSize * 7 + groupVersion + 1) })
+        : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- state only matters through the launch count and the pairs
+    [view, pairs, groupSize, mustHave, leaveOut, groupVersion, state?.launches],
+  );
+  useEffect(() => setMoreGroups([]), [firstGroups]);
+  const groups = [...firstGroups, ...moreGroups];
+  const moreGroupsPlease = () => {
+    const extra = findGroups({
+      pairs,
+      size: groupSize,
+      include: mustHave,
+      exclude: leaveOut,
+      random: seededRandom((state?.launches ?? 0) * 31 + groupSize * 7 + groupVersion + 1000 + groups.length),
+      avoid: new Set(groups.map((group) => group.key)),
+    });
+    setMoreGroups((previous) => [...previous, ...extra]);
+  };
 
   // Draw the ten. This runs when the screen opens and when mood or sliders are changed on purpose, never because of a thumb.
   const loaded = state !== null;
@@ -177,8 +254,19 @@ export function RecommenderScreen({ api, games, countLaunch, onBack, onUse, rand
       <div className="start__panel">
         <h1 className="start__title">Games to mix</h1>
         <p className="start__lead">
-          Ideas for two games to play together in one YAML. You do not have to tell it anything: ten new ones show up each time you start the app.
+          Ideas for two games to play together in one YAML. You do not have to tell it anything: ten new ones show up each time you start the app. Or switch to groups to find three to eight
+          games that suit each other.
         </p>
+        <div role="radiogroup" aria-label="Pairs or groups" className="roulette__controls rec__views">
+          <label className="roulette__choice">
+            <input type="radio" name="rec-view" checked={view === 'pairs'} onChange={() => setView('pairs')} />
+            <span>Pairs</span>
+          </label>
+          <label className="roulette__choice">
+            <input type="radio" name="rec-view" checked={view === 'groups'} onChange={() => setView('groups')} />
+            <span>Groups of three or more</span>
+          </label>
+        </div>
         <p>
           <button type="button" className="button" onClick={onBack}>
             Back
@@ -201,7 +289,33 @@ export function RecommenderScreen({ api, games, countLaunch, onBack, onUse, rand
           ))}
         </fieldset>
 
+        {view === 'groups' && (
+          <section className="rec__groupcontrols" aria-label="Group choices">
+            <label className="rec__focus">
+              <span>How many games</span>
+              <select className="input" value={groupSize} aria-label="How many games in a group" onChange={(e) => setGroupSize(Number(e.target.value))}>
+                {Array.from({ length: MAX_GROUP - MIN_GROUP + 1 }, (_, i) => MIN_GROUP + i).map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <GameChips label="Must include" games={games.map((game) => game.name)} chosen={mustHave} blocked={[...leaveOut]} limit={groupSize} onChange={setMustHave} />
+            <GameChips label="Leave out" games={games.map((game) => game.name)} chosen={leaveOut} blocked={[...mustHave]} limit={games.length} onChange={setLeaveOut} />
+            <div className="rec__actions">
+              <button type="button" className="button" onClick={() => setGroupVersion((value) => value + 1)}>
+                Try different groups
+              </button>
+              <button type="button" className="button" onClick={moreGroupsPlease} disabled={groups.length === 0}>
+                Give me ten more
+              </button>
+            </div>
+          </section>
+        )}
+
         <div className="rec__tools">
+          {view === 'pairs' && (
           <label className="rec__focus">
             <span>What goes well with</span>
             <select className="input" value={focusGame} onChange={(e) => setFocusGame(e.target.value)}>
@@ -213,7 +327,8 @@ export function RecommenderScreen({ api, games, countLaunch, onBack, onUse, rand
               ))}
             </select>
           </label>
-          {focused === null && (
+          )}
+          {view === 'pairs' && focused === null && (
             <button type="button" className="button" onClick={() => draw(10)}>
               Give me ten more
             </button>
@@ -278,7 +393,66 @@ export function RecommenderScreen({ api, games, countLaunch, onBack, onUse, rand
           knowledge of the games, so they can be wrong. <strong>Guessed</strong> means there was no profile at all.
         </p>
 
-        {shown.length === 0 ? (
+        {view === 'groups' ? (
+          groups.length === 0 ? (
+            <p className="empty">No group of {groupSize} games fits those choices. Try fewer must-include games, or leave fewer out.</p>
+          ) : (
+            <ol className="rec__cards" aria-label="Game groups">
+              {groups.map((group) => (
+                <li key={group.key} className="rec__card" data-testid="group-card">
+                  <div className="rec__head">
+                    <h2 className="rec__names">{group.games.join(' + ')}</h2>
+                    <span className="rec__score" aria-label={`Score ${Math.round(group.score)} out of 100`}>
+                      {Math.round(group.score)}
+                    </span>
+                  </div>
+                  <p className="rec__kind">
+                    {group.games.length} games{group.guessed ? ' · Guessed' : ''}
+                  </p>
+                  <ul className="rec__reasons">
+                    {group.reasons.map((reason) => (
+                      <li key={reason}>{reason}</li>
+                    ))}
+                  </ul>
+                  {group.warnings.length > 0 && (
+                    <ul className="rec__warnings" aria-label="Things to know">
+                      {group.warnings.map((warning) => (
+                        <li key={warning}>{warning}</li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="rec__pairs">
+                    <button type="button" className="button button--small" aria-expanded={pairsOpen.has(group.key)} onClick={() => togglePairs(group.key)}>
+                      How each pair scores
+                    </button>
+                    {pairsOpen.has(group.key) && (
+                      <ul aria-label="Pair scores in this group">
+                        {group.games.flatMap((first, i) =>
+                          group.games.slice(i + 1).map((second) => {
+                            const pair = byKey.get(pairKey(first, second));
+                            return (
+                              <li key={`${first}|${second}`}>
+                                {first} + {second}: {pair === undefined ? 'unknown' : Math.round(pair.score)}
+                              </li>
+                            );
+                          }),
+                        )}
+                      </ul>
+                    )}
+                  </div>
+                  <div className="rec__actions">
+                    <button type="button" className="button button--primary" onClick={() => onUse(group.games)}>
+                      Use these games
+                    </button>
+                    <button type="button" className="button" onClick={() => setLeaveOut((previous) => [...previous, ...group.games.filter((game) => !previous.includes(game) && !mustHave.includes(game))])}>
+                      Leave these games out
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )
+        ) : shown.length === 0 ? (
           <p className="empty">Nothing to suggest.</p>
         ) : (
           <ol className="rec__cards" aria-label={focused !== null ? `Games that go well with ${focusGame}` : 'Game pairs'}>

@@ -39,10 +39,10 @@ Open the **Plando** tab and press **Add an item placement**. Each placement is a
 |---|---|
 | **Items** | The item or items to place. Search by name and press Enter. Item groups work too. Choose **items with how many of each** to say, for example, 2 Arrow Upgrades and 1 Bow. |
 | **Where to put them** | The locations to choose from. Leave it empty to mean "anywhere". Besides the game's own location names and groups you can use `Everywhere`, `early_locations` (spots you can reach right at the start) and `non_early_locations`. |
-| **In whose world** | **My own world** (the default), **Any other player's world**, **Everyone's world, mine too**, or **One player**, by number (1 is the first player in the multiworld) or by name. |
+| **In whose world** | **My own world** (the default), **Any other player's world**, **Everyone's world, mine too**, **One player**, by number (1 is the first player in the multiworld) or by name, or **Several players**, by names separated by commas. |
 | **Take them from the normal item pool** | On by default: the item is taken out of the normal pool, so nothing is duplicated. Turn it off to add brand new copies. |
 | **If it goes wrong** | What happens when the generator cannot place the items: carry on quietly (the default, "silent"), carry on but warn, or stop the whole generation. |
-| **How many to place** | How many of the chosen items to place. Empty means as many as the items and locations allow. |
+| **How many to place** | How many of the chosen items to place. Empty means as many as the items and locations allow. Or give a range with **or between ... and ...** (the fewest and the most, either one optional): the generator picks a number inside it. The fewest cannot be more than the most. |
 | **Chance (%)** | The chance that the whole placement is used. Empty means always. |
 
 How it fits together:
@@ -77,6 +77,12 @@ Archipelago stops with an error for:
 
 Some games add their own rules about which entrances may join which exits. Those are not checked here, so a pair that looks fine can still be refused when the seed is made.
 
+### Text plando (A Link to the Past)
+
+A Link to the Past can have its in-game texts replaced. In the **Plando** tab press **Add a text**, choose **Which text to replace** (start typing and the box suggests the game's own names, such as `aginah` or `sign_north_of_links_house`) and write the **New text**. Each line you type is a separate line in the game. A **Chance (%)** works as for items.
+
+The place names must be exactly right, capitals included. A name that does not exist stops Archipelago when it writes the game, so the checker reports it as an error and offers the nearest real name. Text plando, like items and connections, is allowed by the `plando_options` line in `host.yaml` (the default allows texts).
+
 ## 5. Triggers
 
 A **trigger** says: *when this option comes out as this value, change these other options.* It is decided when the seed is made, after any random rolls.
@@ -103,8 +109,9 @@ The problem checker reads triggers and plando too, and each finding appears in t
 
 ## 7. What is not covered here
 
-- **Other plando-like options.** Some games have their own: A Link to the Past's `plando_texts`, Mega Man's weakness plando, Hollow Knight's charm costs and similar. These stay where they were: ordinary option cards where the game's options allow it, and the **Raw** tab otherwise.
+- **Other plando-like options.** Some games have their own: Mega Man's weakness plando, Hollow Knight's charm costs, a Hat in Time's act plando, Stardew Valley's bundle plando and similar. These are ordinary options of the game, so they have ordinary option cards in the editor, not a tab of their own. Item counts of "all copies in the pool" (`true`) and other special forms are kept as they are and edited in the **Raw** tab.
 - **Whether a placement really works.** Whether an item can sit at a place, or whether an entrance may lead to an exit, is up to the game and is only known when the seed is made. Use **Make a seed** in the Seed tab to try it.
 - **Item and location names inside a trigger's changes.** The names a trigger changes are not checked.
+- **Whether a text plando place can really be replaced** is only known to the game; the list of 406 places comes from the game itself.
 
 Back to [the guide index](../README.md).

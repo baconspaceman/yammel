@@ -23,7 +23,8 @@ import type { Edit } from './edits';
  */
 
 export type ItemNames = { type: 'names'; names: string[] } | { type: 'counts'; counts: Record<string, number> };
-export type PlandoWorld = false | true | null | number | string;
+export type PlandoWorld = false | true | null | number | string | string[];
+export type PlandoCount = number | { min?: number; max?: number };
 export type Force = true | false | 'silent';
 
 export interface ItemPlando {
@@ -33,8 +34,8 @@ export interface ItemPlando {
   world: PlandoWorld;
   fromPool: boolean;
   force: Force;
-  /** null = not written. */
-  count: number | null;
+  /** null = not written. A map gives the fewest and the most. */
+  count: PlandoCount | null;
   /** null = not written, so 100. */
   percentage: number | null;
   extra: Record<string, unknown>;
@@ -100,23 +101,24 @@ export function readItemPlando(raw: unknown): PlandoList<ItemPlando> {
     const force = entry['force'] === undefined ? 'silent' : entry['force'];
     const count = entry['count'];
     const percentage = entry['percentage'];
-    const worldOk = world === false || world === true || world === null || typeof world === 'number' || typeof world === 'string';
+    const worldOk = world === false || world === true || world === null || typeof world === 'number' || typeof world === 'string' || (isStrings(world) && world.length > 0);
+    const isRange = isRecord(count) && Object.keys(count).every((key) => key === 'min' || key === 'max') && Object.values(count).every((n) => typeof n === 'number' && Number.isInteger(n));
     const editable =
       items !== null &&
       locations !== null &&
       worldOk &&
       typeof fromPool === 'boolean' &&
       (force === true || force === false || force === 'silent') &&
-      (count === undefined || count === false || (typeof count === 'number' && Number.isInteger(count))) &&
+      (count === undefined || count === false || (typeof count === 'number' && Number.isInteger(count)) || isRange) &&
       (percentage === undefined || (typeof percentage === 'number' && Number.isInteger(percentage)));
     if (!editable) return blank;
     return {
       items: items!,
       locations: locations!,
-      world: world as PlandoWorld,
+      world: (Array.isArray(world) ? [...world] : world) as PlandoWorld,
       fromPool: fromPool as boolean,
       force: force as Force,
-      count: typeof count === 'number' ? count : null,
+      count: typeof count === 'number' ? count : isRange ? { ...(count as { min?: number; max?: number }) } : null,
       percentage: typeof percentage === 'number' ? percentage : null,
       extra: extraOf(entry, ITEM_KEYS),
       editable: true,
@@ -193,4 +195,47 @@ export function newConnectionPlando(entrance = '', exit = ''): ConnectionPlando 
 /** The edit that makes this the option's list. An empty list removes the option. */
 export function plandoEdit(game: string, option: string, plain: readonly unknown[]): Edit {
   return plain.length === 0 ? { op: 'reset', game, option } : { op: 'set', game, option, value: [...plain] };
+}
+
+/** Text plando (`plando_texts`, A Link to the Past only): replace one of the game's texts. */
+export interface TextPlando {
+  /** Which text to replace, one of the game's own keys. */
+  at: string;
+  /** The lines of the new text. One line is written as plain text, more as a list. */
+  text: string[];
+  /** null = not written, so 100. */
+  percentage: number | null;
+  extra: Record<string, unknown>;
+  editable: boolean;
+  raw: unknown;
+}
+
+const TEXT_KEYS = new Set(['at', 'text', 'percentage']);
+
+export function readTextPlando(raw: unknown): PlandoList<TextPlando> {
+  if (raw === undefined || raw === null) return { entries: [], problem: null };
+  if (!Array.isArray(raw)) return { entries: [], problem: NOT_LIST };
+  const entries = raw.map((entry): TextPlando => {
+    const blank: TextPlando = { at: '', text: [], percentage: null, extra: {}, editable: false, raw: entry };
+    if (!isRecord(entry)) return blank;
+    const text = entry['text'];
+    const lines = text === undefined ? [] : typeof text === 'string' ? [text] : isStrings(text) ? [...text] : null;
+    const percentage = entry['percentage'];
+    const editable = typeof entry['at'] === 'string' && lines !== null && (percentage === undefined || (typeof percentage === 'number' && Number.isInteger(percentage)));
+    if (!editable) return blank;
+    return { at: entry['at'] as string, text: lines!, percentage: typeof percentage === 'number' ? percentage : null, extra: extraOf(entry, TEXT_KEYS), editable: true, raw: entry };
+  });
+  return { entries, problem: null };
+}
+
+export function textPlandoToPlain(entry: TextPlando): unknown {
+  if (!entry.editable) return entry.raw;
+  const out: Record<string, unknown> = { at: entry.at, text: entry.text.length === 1 ? entry.text[0] : entry.text };
+  if (entry.percentage !== null) out['percentage'] = entry.percentage;
+  for (const [key, value] of Object.entries(entry.extra)) out[key] = value;
+  return out;
+}
+
+export function newTextPlando(at = ''): TextPlando {
+  return { at, text: [''], percentage: null, extra: {}, editable: true, raw: null };
 }

@@ -17,7 +17,7 @@ from typing import Any
 
 KINDS = (
     "toggle", "choice", "text_choice", "range", "named_range", "free_text",
-    "set", "list", "dict", "counter", "plando_items", "plando_connections", "other",
+    "set", "list", "dict", "counter", "plando_items", "plando_connections", "plando_texts", "other",
 )
 
 
@@ -47,6 +47,7 @@ def kind_of(option: type) -> str:
     ordered = (
         (O.PlandoItems, "plando_items"),
         (O.PlandoConnections, "plando_connections"),
+        (O.PlandoTexts, "plando_texts"),
         (O.NamedRange, "named_range"),
         (O.Range, "range"),
         (O.TextChoice, "text_choice"),
@@ -120,6 +121,9 @@ def option_to_dict(key: str, option: type) -> dict[str, Any]:
             out["domain"] = "locations"
         elif issubclass(option, O.ItemSet) or issubclass(option, O.ItemDict):
             out["domain"] = "items"
+        if kind == "plando_texts":
+            # The places a text may be put (case matters), for the one game that has text plando.
+            out["validKeys"] = sorted(str(key) for key in getattr(option, "_valid_keys", ()))
         if kind == "plando_connections":
             # The names Archipelago accepts (it compares them without regard to capitals, so they are listed in lower case).
             out["entrances"] = sorted(str(name) for name in getattr(option, "entrances", ()))

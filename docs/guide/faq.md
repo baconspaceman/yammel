@@ -66,7 +66,7 @@ If you choose to use OpenRouter, the key is stored in a separate file, encrypted
 
 ### Which games does it support?
 
-All 80 games bundled with Archipelago 0.6.7, with every option of every game. The data ships inside the app. See [Editing options](editing-options.md).
+All 82 games bundled with Archipelago 0.6.8, with every option of every game. The data ships inside the app. See [Editing options](editing-options.md).
 
 ### Can I add my own games?
 

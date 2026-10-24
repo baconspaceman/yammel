@@ -14,11 +14,11 @@
   <a href="https://github.com/baconspaceman/yammel/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/baconspaceman/yammel?include_prereleases&label=release"></a>
   <a href="LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-8aa0ff"></a>
   <img alt="Platform: Windows" src="https://img.shields.io/badge/platform-Windows-3550d6">
-  <img alt="Works with Archipelago 0.6.7" src="https://img.shields.io/badge/Archipelago-0.6.7-5ad48a">
+  <img alt="Works with Archipelago 0.6.8" src="https://img.shields.io/badge/Archipelago-0.6.8-5ad48a">
 </p>
 
 <p align="center">
-  <img src="docs/images/03-editor-overview.jpg" alt="The editor: option cards on the left, the YAML writing itself on the right, a check count of 259, a difficulty of 4.4 and the message 'No problems found'" width="900">
+  <img src="docs/images/29-simple-view.jpg" alt="The simple view: each option has a status word (Default, Changed, Random or Chances set) and one clear control, with the YAML being written on the right" width="900">
 </p>
 
 Yammel is a free, open-source desktop app for making the player files (YAMLs) that
@@ -30,8 +30,32 @@ with an error, and it can even make a test seed to prove the file works.
 (a live check count, seed making, custom worlds) use your own copy of Archipelago, and the AI helpers are off until you
 switch them on.
 
+## What's new in 0.4.0
+
+0.4.0 is finished in the source code but **not released yet**. The newest download is 0.3.1. To try the new version now,
+run it from source (see [Run it from source](#run-it-from-source)). On Windows, double-click `scripts\run-yammel.cmd`.
+
+- **Simple view by default.** Every option has a plain status word: **Default**, **Changed**, **Random** or **Chances
+  set**. Each card shows one clear control: a switch, a drop-down, a number box or a text box. Click **Advanced view: off**
+  beside the search box to show the chances of weighted values, **Roll now** and **Lock** as well.
+- **Any YAML opens.** A YAML for a game Yammel has no data for (a custom world you have not added, or one that cannot be
+  read) opens with every option read from the file itself, and its comments are kept.
+- **Custom worlds, including ones still in development.** Yammel finds a custom world by its game name, loads it through
+  Archipelago's own loader and remembers the result. Worlds written for Python 3.12 or later load when the scan uses
+  Python 3.13. Custom games get a live check count too.
+- **The command line and agent tools work with any world.** `apyaml` finds shipped, custom and template-only games by
+  name. It has a simple default and an advanced mode for developers, and it uses the source folder and Python you chose
+  in Yammel's Settings.
+- **Game data for Archipelago 0.6.8:** 82 games, including the two new ones (Gauntlet Legends and Yu-Gi-Oh! Forbidden
+  Memories).
+- **Fixes:** warnings about values Archipelago never picks (such as a weight of 0) are gone. Changing one weight no
+  longer reorders a whole list or drops its notes. Templates are read more accurately.
+
+The full list is in the [changelog](CHANGELOG.md).
+
 ## Contents
 
+- [What's new in 0.4.0](#whats-new-in-040)
 - [Download](#download)
 - [Quick start](#quick-start)
 - [What it can do](#what-it-can-do)
@@ -59,6 +83,9 @@ Get the latest version from the **[Releases page](https://github.com/baconspacem
 > repository and the releases are built by [GitHub Actions](.github/workflows/release.yml) from a tagged commit, so you
 > can check what you are running, or build it yourself ([instructions](docs/development/building-and-running.md)).
 
+The downloads above are the latest **released** version (0.3.1). The changes listed under
+[What's new in 0.4.0](#whats-new-in-040) are in the source code until 0.4.0 is released.
+
 Windows is the supported platform. The code is cross-platform Electron, and it may run elsewhere from source, but that is
 not tested.
 
@@ -75,20 +102,21 @@ New here? Read **[Getting started](docs/guide/getting-started.md)**. It takes ab
 
 ### Make a YAML
 
-<img src="docs/images/05-weighted-option-card.jpg" alt="An option card with weighted values and their percentages" align="right" width="360">
+<img src="docs/images/05-weighted-option-card.jpg" alt="The Advanced view: an option card with weighted values and their percentages" align="right" width="360">
 
-- **Every option of every bundled game** (80 games) as a switch, choice, number or text box, with the game's own
+- **Every option of every bundled game** (82 games) as a switch, choice, number or text box, with the game's own
   descriptions, grouped and searchable, and a live YAML preview.
 - **Open, edit and save** existing YAMLs safely. Undo and redo for every change. Recent files on the start screen.
-- **Weighted values with percentages**, item and location pickers that use the game's real names, **mixing several
-  games** in one YAML, and a **Raw tab** for everything else (your comments are kept).
+- **Weighted values** (in the Advanced view, with each value's chance as a percentage), item and location pickers that
+  use the game's real names, **mixing several games** in one YAML, and a **Raw tab** for everything else (your comments
+  are kept).
 - **Presets**: each game's own presets (for example Stardew Valley's Easy to Maxsanity) and your own named presets.
 - **Files with several players** (`---` between them) ask which player to edit, or split into one file each.
 - **Groups of games**: besides pairs, Games to mix can find groups of three to eight games that suit each other, with must-include and leave-out choices and the weakest pair named.
 - **Triggers and plando**: a **Triggers** tab ("when this option rolls this value, change those") and a **Plando** tab (place items where you want them, choose which door leads where, or replace a text in A Link to the Past), with the game's real item, location and entrance names, a note when Archipelago's `host.yaml` has item plando switched off, and checks confirmed against Archipelago's own code.
 - **Custom worlds**: point it at a folder of `.apworld` files and those games appear like any other, each with a
-  starter YAML.
-- **Any YAML opens**: a YAML for a game Yammel has no data for (a custom world you have not scanned, or one that cannot be scanned) still opens, with every option read from the file itself and its comments kept.
+  starter YAML. **Any YAML opens**, even for a game Yammel has no data for: its options are read from the file itself,
+  and its comments are kept.
 
 Guides: [Editing options](docs/guide/editing-options.md), [Files and saving](docs/guide/files-and-saving.md),
 [Ideas and shortcuts](docs/guide/ideas-and-shortcuts.md), [Triggers and plando](docs/guide/triggers-and-plando.md), [Custom worlds](docs/guide/custom-worlds.md).
@@ -151,7 +179,7 @@ The editor itself needs nothing. These extras need something you may already hav
 | Editing, saving, problem checker, randomize, roulette, games to mix, presets, difficulty gauge, built-in helper | Nothing | Works |
 | Live check count | An Archipelago **source** folder with its Python environment, chosen in Settings | The count says it is unavailable; everything else works |
 | Make a seed | The same, or an installed Archipelago (with its `host.yaml`) | The Seed tab explains what is missing |
-| Custom worlds scan | The same source folder and Python | The Settings section explains what is missing |
+| Custom worlds scan | The same source folder and Python. Worlds written for Python 3.12 or later need a Python 3.13 chosen under **Python program** | The Settings section explains what is missing |
 | Edit `host.yaml` | An installed Archipelago or a source folder that has a `host.yaml` | The page says none was found |
 | AI helpers | Your own Claude Code or Codex login, or an OpenRouter key | The built-in guide still works |
 
@@ -202,24 +230,30 @@ npm run dev
 | `npm run typecheck` | TypeScript check |
 | `npm run dist` | Builds the Windows installer and the portable exe into `dist/` |
 | `npm run cli:build` | Builds the command line tool |
+| `scripts\run-yammel.cmd` | Windows: builds, then opens the app. Double-click it |
 
 More in [Building and running](docs/development/building-and-running.md) and [Testing](docs/development/testing.md).
 
 ## Command line and agent tools
 
 The same logic that powers the app is available without opening a window, as the `apyaml` command line tool and an MCP
-server, so scripts and AI coding agents can make, vary, check and rate YAMLs. This is handy when you are building an
-Archipelago world and need many test YAMLs.
+server, so scripts and AI coding agents can make, vary, check and rate YAMLs. It works with shipped games, custom worlds
+and worlds still in development. This is handy when you are building an Archipelago world and need many test YAMLs.
 
 ```bash
 npm run cli:build
-node out/cli/apyaml.mjs games                     # list the games
+node out/cli/apyaml.mjs games                                   # list the games
+node out/cli/apyaml.mjs options "A Link to the Past"            # its options
 node out/cli/apyaml.mjs new "A Link to the Past" --out lttp.yaml
-node out/cli/apyaml.mjs mcp                       # run as an MCP server
+node out/cli/apyaml.mjs new "Balatro" --randomize --seed 7      # a custom world, found by its name
+node out/cli/apyaml.mjs worlds --advanced --scan                # developers: every world file and whether it loaded
+node out/cli/apyaml.mjs mcp                                     # run as an MCP server
 ```
 
-Every command prints one line of JSON and sets an exit code. All randomness is seeded and reported, so any result can be
-reproduced. Full reference: [Command line and MCP](docs/reference/command-line-and-mcp.md).
+Simple mode is the default and needs no setup. `--advanced` adds diagnostics and the developer options (extra world
+folders, a template YAML to read the options from, and rescans). Every command prints one line of JSON and sets an exit
+code. All randomness is seeded and reported, so any result can be reproduced. Full reference:
+[Command line and MCP](docs/reference/command-line-and-mcp.md).
 
 ## Privacy and safety
 
@@ -239,7 +273,7 @@ Found a security problem? Please report it privately: see [SECURITY.md](SECURITY
 Bug reports, ideas, new game ratings and code are all welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first. The
 project has one hard rule: **nothing may become required.** No account, key, login or extra program.
 
-The project has over 980 unit tests and over 160 end-to-end tests that drive the real app, including checks that every
+The project has over 1,200 unit tests and about 190 end-to-end tests that drive the real app, including checks that every
 screen has no overlapping text and passes an accessibility audit in both looks.
 
 ## Credits and disclaimer
@@ -249,7 +283,7 @@ screen has no overlapping text and passes an accessibility audit in both looks.
 - This is an independent tool. It is **not affiliated with, endorsed by or part of the Archipelago project**.
   "Archipelago" and the names of games and worlds belong to their owners.
 - It reads Archipelago's own option definitions (Archipelago is MIT licensed) so that what you edit matches what the
-  generator will accept. The bundled option data was extracted from Archipelago 0.6.7.
+  generator will accept. The bundled option data was extracted from Archipelago 0.6.8.
 - Built with [Electron](https://www.electronjs.org), [React](https://react.dev), [Vite](https://vite.dev) and
   [yaml](https://eemeli.org/yaml/). The logo is original artwork.
 

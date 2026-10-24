@@ -76,6 +76,8 @@ npm run bundle
 npm start
 ```
 
+To open the app from this folder without a terminal, double-click `scripts\run-yammel.cmd`. It builds first, then starts Yammel. If the build fails, its window stays open and shows the error.
+
 `npm run bundle` writes `out/main/index.cjs`, `out/preload/index.cjs` and the renderer under `out/renderer/`. `package.json` points `main` at `./out/main/index.cjs`, and the Playwright tests launch the app from the project folder, so a fresh `npm run bundle` is what they test.
 
 ## Command line tool

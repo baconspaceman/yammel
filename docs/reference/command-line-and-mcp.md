@@ -6,10 +6,11 @@ Contents:
 
 1. Running it
 2. Output, flags and exit codes
-3. Commands: games, options, new, fuzz, count, rate, schema-refresh
+3. Commands: games, options, new, fuzz, count, rate, worlds, schema-refresh
 4. Seeds and reproducible randomness
 5. The MCP server
 6. Environment variables the tool reads
+7. Custom worlds, development worlds, and simple and advanced mode
 
 ## 1. Running it
 
@@ -62,7 +63,7 @@ apyaml games
 apyaml games --hidden
 ```
 
-Prints `ok`, `apVersion`, `count`, and `games`: a list of `{name, hidden, options, randomizable, rating}` sorted by name. `options` is the option count, `randomizable` the number of options that can be randomized, `rating` the source of the difficulty rating for the game (the `source` field of the rating).
+Prints `ok`, `apVersion`, `count`, `customCount`, and `games`: a list sorted by name. A shipped game is `{name, source: "bundled", hidden, options, randomizable, rating}`; a custom world found in a usual folder is `{name, source: "custom", file, loaded}` (named from its `.apworld` manifest and not loaded yet, so listing is quick; see section 7). `options` is the option count, `randomizable` the number of options that can be randomized, `rating` the source of the difficulty rating for the game (the `source` field of the rating).
 
 ### options
 
@@ -239,6 +240,39 @@ The server speaks plain newline-delimited JSON on stdio, so any client that laun
 |---|---|
 | `APYAML_ROOT` | The project folder. Default: two levels above `apyaml.mjs`, that is the folder holding `out/`. |
 | `ARCHIPELAGO_YAML_SCHEMA` | Path to the game schema file. Default: `<project folder>/data/schema.json`. |
-| `ARCHIPELAGO_AP_ROOT` | The Archipelago source folder, for `schema-refresh` and for finding the check engine. See [settings and files](settings-and-files.md). |
+| `ARCHIPELAGO_AP_ROOT` | The Archipelago source folder, for `schema-refresh`, for loading custom worlds and for finding the check engine. See [settings and files](settings-and-files.md). |
+| `APYAML_WORLDS` | Extra folders of `.apworld` files to search in simple mode too (a list, separated like `PATH`). |
+| `APYAML_TEMPLATES` | Extra folders of template YAMLs to read for the fallback (a list). |
+| `APYAML_CACHE` | Where the loaded custom worlds are cached. Default: `%APPDATA%\Yammel\apyaml`. |
+| `APYAML_NO_CUSTOM` | Set to `1` to search no custom world or template folder unless one is given (used by the tests). |
+| `APYAML_PYTHON` | The Python that loads custom worlds and runs the check engine. Default: the **Python program** chosen in the app's Settings, else the source folder's own `.venv`. A world written for Python 3.12 or later needs a Python that new. |
+| `YAMMEL_USER_DATA` | The Yammel app's data folder, whose saved Settings and custom-world scan the tool reuses. Default: `%APPDATA%\Yammel`. |
+| `APYAML_NO_APP_SETTINGS` | Set to `1` to ignore the app's saved Settings and its scan (used by the tests). |
 
 The same environment variables and the Archipelago detection described in [settings and files](settings-and-files.md) apply to the check engine. The command line tool does not read the app's saved settings; it builds its engine spec from the environment variables and the project folder only.
+
+## 7. Custom worlds, development worlds, and simple and advanced mode
+
+`apyaml` works with the worlds that ship with Archipelago, with custom worlds (`.apworld` files), and with worlds still in development. Ask for a game by name and it tries these in order:
+
+1. **The game data that ships with Yammel.**
+2. **A custom world.** A game the Yammel app already loaded in its last custom-world scan is taken from that scan straight away (unless its file changed since). Otherwise it looks in Archipelago's `custom_worlds` folders (`C:\ProgramData\Archipelago\custom_worlds`, the `custom_worlds` folder of the Archipelago source folder, and anything in `APYAML_WORLDS`). Each `.apworld` is a zip file with a manifest that names its game, so only the one file for the game you asked for is loaded, through Archipelago's own loader. The result is cached (see `APYAML_CACHE`) until the file changes. The check engine is given the same file, so `count` and `fuzz --check` work for it too.
+3. **A template YAML.** If the world cannot be loaded (for example it was written for a newer Python than the source folder's) or no world file exists, the options are read from a template YAML: the one Archipelago wrote into `Players/Templates` for that game (the launcher's "Generate Template Options"), or one you name. Every option in the template gets its choices, range and description. These games can have YAMLs made and edited; their checks cannot be counted and they have no difficulty estimate, because there is no world behind them.
+4. **Otherwise** a plain error says what was tried and what to do.
+
+Every result that names a game says where it came from: `gameFrom` is `bundled`, `custom` or `template`, and a template game adds a `gameNote` that says why (for example the loader's error).
+
+**Simple mode** is the default and needs no setup: the usual folders are searched by themselves, results stay short, and nothing in the shipped game data or in any Archipelago folder is changed.
+
+**Advanced mode** is for people who build and test worlds. Add `--advanced` (MCP: `advanced: true`) to get a `diagnostics` block (what was tried, which file, the cache file) and to use:
+
+| Flag | Meaning |
+|---|---|
+| `--worlds <folder>` | Search this folder of `.apworld` files too (repeatable). |
+| `--template <file>` | Read the game's options from this template YAML (a world still in development, or one that cannot be loaded). |
+| `--rescan` | Load the world file again even if it was loaded before. |
+| `--no-auto` | Search only the folders given with `--worlds`. |
+
+These four are refused without `--advanced`. The `worlds` command (advanced only) lists the folders searched, every `.apworld` found with its game, and whether it loaded or why not; `--scan` loads them all now (the first time takes a while for a large folder).
+
+Limits of the template fallback: the options are only what the template shows (a template lists the choices of each option, so this is complete for a generated template; a hand-written YAML with plain values gives text and number boxes); item and location names cannot be checked; and `rate` has no profile for the game.

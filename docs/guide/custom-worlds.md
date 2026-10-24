@@ -41,7 +41,7 @@ A custom game has the same options, checks and Raw view as any other game. A cus
 
 A file that cannot be loaded does not stop the others. It is listed under **Files that could not be added** with a plain reason:
 
-- **"Written for a newer Python than the one used to scan (3.12 or later)".** The world uses Python syntax that the scanning Python cannot read.
+- **"Written for a newer Python than the one used to scan (3.12 or later)".** The world uses Python syntax that the scanning Python cannot read. The installed Archipelago runs on Python 3.13, so many custom worlds are written for it. To read them, choose a Python 3.13 (with Archipelago's requirements installed) under **Python program** in Check counts, then scan again.
 - **"Needs something that is not installed for the scanning Python"**, naming the missing library. Install it into the Python the scan uses (the source folder's `.venv`, or the Python you chose in Settings), then scan again.
 - **"Needs a newer Archipelago"** or **"Made for an older Archipelago"**, with the version range the world supports.
 - **"It did not add a game (it may be a tool rather than a world)."**
@@ -54,7 +54,8 @@ A file that cannot be loaded does not stop the others. It is listed under **File
 - **Loading a world runs that world's own code.** That is what Archipelago's launcher does too. Only choose a folder you trust.
 - **The folder is only read.** The app never changes it.
 - **Unzipped world folders are not scanned yet.** Only `.apworld` files count.
-- **The live check count and Make a seed need the world in Archipelago's own folder.** Both use Archipelago itself, and Archipelago only knows a custom game if its `.apworld` is also in Archipelago's `custom_worlds` folder. If it is not there, the check says the game is unknown. The Seed tab says this when a custom game is open.
+- **The live check count works for every scanned custom game.** The first count of a custom game loads its `.apworld` into the check engine, so it can take a few seconds longer.
+- **Make a seed needs the world in Archipelago's own folder.** It runs Archipelago's generator, which only knows a custom game if its `.apworld` is also in the source folder's `custom_worlds` folder. The Seed tab says this when a custom game is open.
 - **Scanning needs a source folder with its Python.** An installed-only Archipelago cannot scan custom worlds.
 
 ## A game Yammel has no data for

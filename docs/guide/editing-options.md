@@ -19,7 +19,7 @@ Contents:
 
 The editor has four main parts:
 
-- **The toolbar** across the top. It has **New**, **Open**, **Save**, **Save as**, **Undo**, **Redo**, the file name, **Show preview** or **Hide preview**, **Helper**, a **Look** button that switches between Auto, Light and Dark, and **Settings**.
+- **The toolbar** across the top. It has **New**, **Open**, **Save**, **Save as**, **Undo**, **Redo**, the file name, **Show preview** or **Hide preview**, **Helper**, a **Look** button that switches between Auto, Light and Dark, an **Advanced view: off** or **Advanced view: on** button (see [how a value is decided](#how-a-value-is-decided)), and **Settings**.
 - **Groups** on the left. This list shows the option groups for the game. Click a group to jump to it.
 - **The option cards** in the middle. Each option of the game is a card. A search box, **Search options in** the game name, sits above them. If nothing matches, the editor says **No options match** and the word you searched for.
 - **The side panel** on the right. Its tabs are **YAML**, **Helper**, **Raw**, **Presets** and **Seed**.
@@ -30,7 +30,11 @@ The editor has four main parts:
 
 Each card shows:
 
-- The option's name, and a **Changed** badge when your value differs from the default.
+- The option's name, and a status word beside it:
+  - **Default**: the option is not written in your YAML, so the game's default applies.
+  - **Changed**: you have set a value that differs from the default.
+  - **Random**: the value is decided by a random rule when the seed is made.
+  - **Chances set**: the file gives this option weighted values. See [weighted values](#weighted-values).
 - A short description. Long descriptions have a **Show more** button, and **Show less** to fold them again.
 - The control you use to set the value.
 - **Default:** followed by the game's default, so you can see what you would get without a change.
@@ -48,16 +52,20 @@ The control depends on the kind of option:
 
 ## How a value is decided
 
-Every option card has a row under the value. It holds:
+Every option card has a row under the value with one drop-down, **How the option is decided**:
+
+- **Fixed value**. You choose the value, and it is the same every time.
+- **Random**. Archipelago picks any of the choices when the seed is made.
+- **Random, leaning low**, **Random, leaning middle** and **Random, leaning high**. These are for numbers. Archipelago picks a number and leans toward the low, middle or high part of the range.
+- **Random between two numbers**. This is for numbers, and you type a **from** and a **to** number. It is not offered for options that can go below zero, because Archipelago cannot read a random range with a minus sign.
+
+The **Simple view** (the default) shows only that drop-down. The **Advanced view** also shows:
 
 - **Roll now**. This picks a real value at random right now and writes it into your YAML. Use it when you want to try a value. Your YAML keeps the value it picked, not a random rule.
-- **How the option is decided**, a drop-down with these choices:
-  - **Fixed value**. You choose the value, and it is the same every time.
-  - **Random**. Archipelago picks any of the choices when the seed is made.
-  - **Random, leaning low**, **Random, leaning middle** and **Random, leaning high**. These are for numbers. Archipelago picks a number and leans toward the low, middle or high part of the range.
-  - **Random between two numbers**. This is for numbers, and you type a **from** and a **to** number. It is not offered for options that can go below zero, because Archipelago cannot read a random range with a minus sign.
-  - **Weighted values**. You give each value a weight. See the next section.
 - **Lock**. A locked option is kept out of **Randomize everything**, so it keeps its value.
+- **Weighted values**, with the chances of each value (see below).
+
+Switch between the two with the **Advanced view: off** or **Advanced view: on** button in the toolbar. The choice is remembered on this computer. Nothing in your YAML depends on it.
 
 If the option holds a random form the editor cannot show, the drop-down says **Other (edit it in the Raw tab)**. Use the Raw tab for those.
 
@@ -67,7 +75,11 @@ The random rules are for the seed. The app shows a plain sentence under the valu
 
 ![A weighted option card with the values and their percentages](../images/05-weighted-option-card.jpg)
 
-Weighted values let you say which values are more likely. Choose **Weighted values** in the how-decided drop-down.
+Weighted values let you say which values are more likely. They are edited in the **Advanced view** only.
+
+In the **Simple view**, a card whose file has weighted values says **Chances set** and lists the chances in words, such as "Easy 50%, Hard 50%". Yammel keeps them exactly as they are in the file. Switch to the Advanced view to change them.
+
+In the Advanced view:
 
 - The card explains: when the seed is made, one of these is picked, and a bigger weight is more likely.
 - Each value has a weight box. Weights are numbers of zero or more.
@@ -75,6 +87,7 @@ Weighted values let you say which values are more likely. Choose **Weighted valu
 - Use **Add a value…** to add another value to the list.
 - A weight of 0 means that value is never picked.
 - At least one value must have a weight above 0. If none do, the checker reports that the option has no values to pick from.
+
 ## Lists and pickers
 
 Some options take a list of names, such as items or locations from the game. For these, the card shows a picker:

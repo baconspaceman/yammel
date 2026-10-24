@@ -30,10 +30,10 @@ with an error, and it can even make a test seed to prove the file works.
 (a live check count, seed making, custom worlds) use your own copy of Archipelago, and the AI helpers are off until you
 switch them on.
 
-## What's new in 0.4.0
+## What's new in 0.5.0
 
-0.4.0 is finished in the source code but **not released yet**. The newest download is 0.3.1. To try the new version now,
-run it from source (see [Run it from source](#run-it-from-source)). On Windows, double-click `scripts\run-yammel.cmd`.
+0.5.0 is the current release. Download it from the [Releases page](https://github.com/baconspaceman/yammel/releases/latest).
+If you build from source, double-click `scripts\run-yammel.cmd` on Windows (see [Run it from source](#run-it-from-source)).
 
 - **Simple view by default.** Every option has a plain status word: **Default**, **Changed**, **Random** or **Chances
   set**. Each card shows one clear control: a switch, a drop-down, a number box or a text box. Click **Advanced view: off**
@@ -55,7 +55,7 @@ The full list is in the [changelog](CHANGELOG.md).
 
 ## Contents
 
-- [What's new in 0.4.0](#whats-new-in-040)
+- [What's new in 0.5.0](#whats-new-in-050)
 - [Download](#download)
 - [Quick start](#quick-start)
 - [What it can do](#what-it-can-do)
@@ -82,9 +82,6 @@ Get the latest version from the **[Releases page](https://github.com/baconspacem
 > certificate costs money every year. Choose **More info**, then **Run anyway**. The whole source code is in this
 > repository and the releases are built by [GitHub Actions](.github/workflows/release.yml) from a tagged commit, so you
 > can check what you are running, or build it yourself ([instructions](docs/development/building-and-running.md)).
-
-The downloads above are the latest **released** version (0.3.1). The changes listed under
-[What's new in 0.4.0](#whats-new-in-040) are in the source code until 0.4.0 is released.
 
 Windows is the supported platform. The code is cross-platform Electron, and it may run elsewhere from source, but that is
 not tested.

@@ -2,7 +2,7 @@
 
 All notable changes to this project are written here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
-## [0.4.0] - in progress
+## [0.5.0] - 2026-10-24
 
 - **The `apyaml` tool (command line and MCP) works with any world.** Ask for a game by name and it tries the game data that ships with Yammel, then a custom world (the `.apworld` in Archipelago's `custom_worlds` folders, found by the game name in its manifest and loaded through Archipelago's own loader, cached until the file changes), then a template YAML (so a world that cannot be loaded, or is still in development, still works). Every result says where the game came from (`gameFrom`). The check engine loads the same custom world file, so `count` and `fuzz --check` work for custom worlds without copying anything into Archipelago.
 - **Simple mode (default)** needs no setup. **Advanced mode** (`--advanced`) adds diagnostics, extra world folders (`--worlds`), `--template`, `--rescan`, `--no-auto` and a `worlds` command that lists every world file and whether it loaded.

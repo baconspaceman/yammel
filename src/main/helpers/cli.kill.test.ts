@@ -13,6 +13,13 @@ const alive = (pid: number): boolean => {
   }
 };
 
+/** Stopping a tree runs taskkill in the background, so it may take a moment (longer when the machine is busy). */
+async function stoppedWithin(pid: number, ms: number): Promise<boolean> {
+  const until = Date.now() + ms;
+  while (alive(pid) && Date.now() < until) await new Promise((resolve) => setTimeout(resolve, 200));
+  return !alive(pid);
+}
+
 describe('stopping a program also stops what it started', () => {
   it('a timeout ends a launcher and the program it launched (as a Python launcher does on Windows)', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'kill-'));
@@ -22,10 +29,9 @@ describe('stopping a program also stops what it started', () => {
     const run = await runCli({ command: process.execPath, args: ['-e', parent], cwd: process.cwd(), env: cleanEnv(process.env), timeoutMs: 1500 });
     expect(run).toMatchObject({ ok: false, reason: 'timeout' });
     const pid = Number(await readFile(pidFile, 'utf8'));
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    expect(alive(pid)).toBe(false);
+    expect(await stoppedWithin(pid, 15_000)).toBe(true);
     await rm(dir, { recursive: true, force: true });
-  }, 20_000);
+  }, 40_000);
 
   it('an abort signal stops the run at once and says it was stopped', async () => {
     const controller = new AbortController();

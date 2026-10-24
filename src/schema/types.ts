@@ -47,6 +47,11 @@ export interface OptionSchema {
   max?: number;
   /** named_range: name -> number */
   specialNames?: Record<string, number>;
+  /**
+   * range, named_range: words the option also accepts whose number is not known (read from a template, where a world lists a word such as
+   * "individually-randomized" next to its numbers). They are accepted as they are.
+   */
+  extraWords?: string[];
   /** set, list, dict, counter: which name list the values come from */
   domain?: 'items' | 'locations';
   /** plando_connections: the entrance and exit names Archipelago accepts (lower case; it ignores capitals). */

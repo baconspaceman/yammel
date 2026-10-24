@@ -71,6 +71,25 @@ export function parseOptionValue(option: OptionSchema, text: string): ValueParse
     }
     case 'free_text':
       return safeText(option, value);
+    case 'set': {
+      // JSON arrays preserve spaces and commas in names and can express an empty set.
+      let entries: unknown;
+      try { entries = JSON.parse(value); } catch {
+        return fail(`${option.key}: use a JSON array of names, for example ["Crabs","Races"].`);
+      }
+      if (!Array.isArray(entries) || !entries.every((entry) => typeof entry === 'string')) {
+        return fail(`${option.key}: expected a JSON array containing only strings.`);
+      }
+      const names = entries as string[];
+      for (const name of names) {
+        const safe = safeText(option, name);
+        if (!safe.ok) return safe;
+        if (option.validKeys?.length && !option.validKeys.includes(name)) {
+          return fail(`${option.key}: "${name}" is not an allowed name (${option.validKeys.join(', ')}).`);
+        }
+      }
+      return { ok: true, value: [...new Set(names)] };
+    }
     default:
       return fail(`${option.key}: a ${option.kind} option cannot be set from the command line yet (Advanced mode covers it).`);
   }

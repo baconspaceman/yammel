@@ -67,6 +67,7 @@ function checkRange(option: OptionSchema, value: unknown): Problem | null {
       return { message: `${value} is not a whole number. This option takes whole numbers${bounds ? ` from ${bounds}` : ''}.`, suggestion: { label: `Use ${Math.round(value)}`, value: Math.round(value) } };
     }
     if (option.kind === 'named_range' && Object.values(option.specialNames ?? {}).includes(value)) return null; // a name's own number is always allowed, even outside the range
+    if (value === option.default) return null; // the world's own default is allowed even when it lies outside the range it states (Ape Escape 3)
     if (min !== undefined && value < min) return { message: `${value} is below the lowest allowed value, ${min}.`, suggestion: { label: `Use ${min}`, value: min } };
     if (max !== undefined && value > max) return { message: `${value} is above the highest allowed value, ${max}.`, suggestion: { label: `Use ${max}`, value: max } };
     return null;
@@ -81,9 +82,10 @@ function checkRange(option: OptionSchema, value: unknown): Problem | null {
   if (word === 'high' || word === 'low' || word === 'default') return null;
   const special = Object.keys(option.specialNames ?? {}).find((name) => name.toLowerCase() === word);
   if (option.kind === 'named_range' && special !== undefined) return null;
+  if (option.extraWords?.some((extra) => extra.toLowerCase() === word)) return null;
   if ((word === 'true' || word === 'false') && min === 0 && option.default !== 0) return null;
   if (/^[+-]?\d+$/.test(word)) return checkRange(option, Number(word));
-  const names = [...Object.keys(option.specialNames ?? {}), 'high', 'low'];
+  const names = [...Object.keys(option.specialNames ?? {}), ...(option.extraWords ?? []), 'high', 'low'];
   const near = closest(word, names);
   return {
     message: `"${value}" is not a number${option.kind === 'named_range' ? ' or one of this option\'s names' : ''}.`,
@@ -245,7 +247,9 @@ function validateOption(out: Collector, game: GameSchema, option: OptionSchema, 
       } else if (weight > 0) {
         positive = true;
       }
-      const problem = checkValue(option, key);
+      // Archipelago reads only the value it picks, and a value with weight 0 is never picked, so it cannot cause a problem
+      // (Archipelago's own templates list such values, for example a negative random range).
+      const problem = weight === 0 ? null : checkValue(option, key);
       if (problem !== null) {
         const fixes: Fix[] = [];
         const target = problem.suggestion !== undefined && typeof problem.suggestion.value !== 'object' ? String(problem.suggestion.value) : null;
@@ -315,7 +319,8 @@ function validateGameLine(out: Collector, doc: YamlDocument, schema: SchemaFile)
   const raw = doc.toObject()['game'];
   const names = doc.games();
   if (names.length === 0) {
-    out.add('NO_GAME', 'error', null, null, 'This YAML does not say which game it is for. It needs a "game:" line.');
+    const meta = 'meta_description' in doc.toObject();
+    out.add('NO_GAME', 'error', null, null, meta ? 'This is a meta file (meta.yaml), not a player YAML, so it has no "game:" line. Archipelago reads it from the Players folder for every player.' : 'This YAML does not say which game it is for. It needs a "game:" line.');
     return [];
   }
   if (isRecord(raw)) {

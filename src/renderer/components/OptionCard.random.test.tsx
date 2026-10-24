@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { setAdvancedView } from '../state/viewMode';
 import { TEST_GAME } from '../../difficulty/testGame';
 import type { OptionSchema } from '../../schema/types';
 import { OptionCard } from './OptionCard';
@@ -31,6 +32,10 @@ function show(option: OptionSchema, raw: unknown, extra: { locked?: boolean; onT
 afterEach(() => vi.restoreAllMocks());
 
 describe('OptionCard random controls', () => {
+  // These are the Advanced view's controls (Roll now, Lock, chances); the Simple view has its own tests.
+  beforeEach(() => setAdvancedView(true));
+  afterEach(() => setAdvancedView(false));
+
   it('offers Roll now, a way to decide the value, and a lock on options that can be random', () => {
     show(toggle, undefined);
     expect(screen.getByRole('button', { name: 'Roll now: Death Link' })).toBeTruthy();

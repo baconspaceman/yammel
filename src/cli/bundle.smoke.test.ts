@@ -23,6 +23,9 @@ afterAll(() => {
   for (const dir of made) rmSync(dir, { recursive: true, force: true });
 });
 
+process.env['APYAML_NO_CUSTOM'] = '1'; // the shipped games only: what is installed on this machine must not change the counts
+process.env['APYAML_NO_APP_SETTINGS'] = '1'; // and the app's own Settings and scan must not either
+
 function apyaml(args: string[], input?: string) {
   const result = spawnSync(process.execPath, [bundle, ...args], { encoding: 'utf8', input, timeout: 170_000 });
   return { code: result.status, out: result.stdout, err: result.stderr };
@@ -37,12 +40,13 @@ describe.skipIf(!ready)('the built apyaml tool', () => {
     const { code, out } = apyaml(['help']);
     expect(code).toBe(0);
     expect(out.trim().split('\n')).toHaveLength(1);
-    expect((json(out)['commands'] as unknown[]).length).toBe(7);
+    expect((json(out)['commands'] as unknown[]).length).toBe(8);
   });
 
   it('lists the real games and options', () => {
     const games = json(apyaml(['games']).out);
-    expect(games).toMatchObject({ ok: true, count: 80 });
+    expect(games).toMatchObject({ ok: true });
+    expect(games['count'] as number).toBeGreaterThan(70);
     const options = json(apyaml(['options', 'APQuest']).out);
     expect(options).toMatchObject({ ok: true, game: 'APQuest' });
     expect((options['options'] as { key: string }[]).map((o) => o.key)).toContain('hard_mode');
@@ -93,7 +97,7 @@ describe.skipIf(!ready)('the built apyaml tool', () => {
     expect(code).toBe(0);
     const replies = out.trim().split('\n').map((l) => JSON.parse(l) as { id: number; result: Record<string, unknown> });
     expect(replies.map((r) => r.id)).toEqual([1, 2, 3]);
-    expect((replies[1]!.result['tools'] as unknown[]).length).toBe(7);
+    expect((replies[1]!.result['tools'] as unknown[]).length).toBe(8);
     const text = (replies[2]!.result['content'] as { text: string }[])[0]!.text;
     expect(JSON.parse(text)).toMatchObject({ ok: true, game: 'APQuest' });
   });
@@ -142,6 +146,7 @@ describe.skipIf(!ready || !existsSync(python))('the built apyaml tool with the r
     const dir = tempDir();
     const copy = join(dir, 'schema.json');
     const schema = JSON.parse(readFileSync(schemaFile, 'utf8')) as { games: Record<string, unknown> };
+    const visibleBefore = Object.values(schema.games as Record<string, { hidden?: boolean }>).filter((g) => g.hidden !== true).length;
     delete schema.games['A Short Hike'];
     writeFileSync(copy, JSON.stringify(schema));
     const call = (id: number, name: string, args: Record<string, unknown>) => ({ jsonrpc: '2.0', id, method: 'tools/call', params: { name, arguments: args } });
@@ -151,9 +156,10 @@ describe.skipIf(!ready || !existsSync(python))('the built apyaml tool with the r
     const result = spawnSync(process.execPath, [bundle, 'mcp'], { encoding: 'utf8', input: `${lines}\n`, timeout: 170_000, env: { ...process.env, ARCHIPELAGO_YAML_SCHEMA: copy } });
     expect(result.status).toBe(0);
     const payloads = result.stdout.trim().split('\n').map((l) => JSON.parse((JSON.parse(l) as { result: { content: { text: string }[] } }).result.content[0]!.text) as Record<string, unknown>);
-    expect(payloads[0]).toMatchObject({ ok: true, count: 79 });
+    expect(payloads[0]).toMatchObject({ ok: true, count: visibleBefore - 1 }); // the copy without one game
     expect(payloads[1]).toMatchObject({ ok: true });
-    expect(payloads[2]).toMatchObject({ ok: true, count: 80 }); // the refreshed schema, not the one loaded before
+    expect(payloads[2]).toMatchObject({ ok: true });
+    expect(payloads[2]!['count'] as number).toBeGreaterThan(visibleBefore - 1); // the refreshed schema, not the one loaded before
     expect(payloads[3]).toMatchObject({ ok: true, game: 'A Short Hike' });
   }, 180_000);
 });

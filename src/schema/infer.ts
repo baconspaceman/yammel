@@ -92,14 +92,26 @@ function inferOption(info: TemplateOption): OptionSchema {
   }
 
   if (isRecord(value) && Object.keys(value).length > 0) {
-    const entries = Object.entries(value);
+    // In file order: plain data would move number-like keys ('2', '10') in front of the others.
+    const order = (info.keys ?? []).filter((word) => Object.prototype.hasOwnProperty.call(value, word));
+    const ordered = order.length === Object.keys(value).length ? order : Object.keys(value);
+    const entries: [string, unknown][] = ordered.map((word) => [word, value[word]]);
     const words = entries.map(([word]) => word);
     const ranged = words.find((word) => RANGE_KEY.test(word));
     const numeric = words.filter((word) => INTEGER.test(word));
     const named = words.filter((word) => !INTEGER.test(word) && !RANDOM_WORD.test(word));
     const onlyWeights = entries.every(([, weight]) => typeof weight === 'number');
 
-    if (onlyWeights && (ranged !== undefined || numeric.length > 0)) {
+    const randoms = words.filter((word) => RANDOM_WORD.test(word));
+    // A map of counts (trap weights, a start inventory, filler weights), not weighted choices: its names have spaces (item names do,
+    // option values cannot), or every number is 0 (a template always gives the default value of a weighted option a weight above 0).
+    if (onlyWeights && randoms.length === 0 && (words.some((word) => /\s/.test(word)) || entries.every(([, weight]) => weight === 0))) {
+      return { ...base, kind: 'counter', default: {}, supportsWeighting: false };
+    }
+    // A number option says so: a random-range entry, the template's "Minimum value is" lines, or numbers only.
+    const limits = limitsFrom(info.description);
+    const saysNumbers = ranged !== undefined || limits.min !== undefined || limits.max !== undefined || (numeric.length > 0 && named.length === 0);
+    if (onlyWeights && saysNumbers) {
       return rangeOption(base, info, ranged, numeric, named, entries);
     }
     if (onlyWeights && words.length >= 1 && words.every((word) => isBoolWord(word) || RANDOM_WORD.test(word)) && words.some(isBoolWord)) {
@@ -151,10 +163,19 @@ function rangeOption(
   if (limits.min !== undefined) min = limits.min;
   if (limits.max !== undefined) max = limits.max;
   const specialNames: Record<string, number> = {};
+  const extraWords: string[] = [];
   for (const word of named) {
     const note = info.notes[word] ?? '';
-    const found = /(?:equivalent to|equals?|is)\s+(-?\d+)/i.exec(note);
+    const found = /(?:equivalent to|equals?|is)\s+(-?\d+)\s*$/i.exec(note);
     if (found) specialNames[word] = Number(found[1]);
+    else extraWords.push(word); // a word the world accepts whose number the template does not give ("individually-randomized")
+  }
+  // The world's own values in the template are always allowed, even when the template's limits leave them out.
+  for (const [word, weight] of entries) {
+    if (INTEGER.test(word) && typeof weight === 'number' && weight > 0) {
+      min = Math.min(min, Number(word));
+      max = Math.max(max, Number(word));
+    }
   }
   const heavy = heaviest(entries.filter(([word]) => !RANDOM_WORD.test(word)));
   let chosen: number = min;
@@ -162,7 +183,7 @@ function rangeOption(
     if (INTEGER.test(heavy)) chosen = Number(heavy);
     else if (specialNames[heavy] !== undefined) chosen = specialNames[heavy]!;
   }
-  const hasNames = Object.keys(specialNames).length > 0;
+  const hasNames = Object.keys(specialNames).length > 0 || extraWords.length > 0;
   return {
     ...base,
     kind: hasNames ? 'named_range' : 'range',
@@ -171,6 +192,7 @@ function rangeOption(
     min,
     max,
     ...(hasNames ? { specialNames } : {}),
+    ...(extraWords.length > 0 ? { extraWords } : {}),
   };
 }
 

@@ -6,7 +6,8 @@ import { isRollable, rollValue } from '../../randomize/roll';
 import type { OptionSchema } from '../../schema/types';
 import { describeOption, formatDefault, resetOption, setOption, summarizeValue } from '../state/options';
 import { OptionControl } from './controls/OptionControl';
-import { initialWeights, canWeigh, setWeightsEdit, weightsOf } from '../state/weights';
+import { initialWeights, canWeigh, percentages, setWeightsEdit, valueLabel, weightsOf } from '../state/weights';
+import { useAdvancedView } from '../state/viewMode';
 import { entriesOf, isNameListKind, nameEdit } from '../state/namelist';
 import { NameListEditor } from './NameListEditor';
 import { WeightsEditor } from './WeightsEditor';
@@ -70,17 +71,47 @@ function specFor(mode: Exclude<ModeChoice, 'fixed' | 'weighted'>, option: Option
   return { type: 'random', bias: mode === 'random' ? 'any' : (mode.slice('random-'.length) as 'low' | 'middle' | 'high') };
 }
 
+/**
+ * In the Simple view, a weighted value with only one value above weight 0 is shown as that value: Archipelago always picks it, so
+ * the card says what the option is. The file itself is not changed until the person edits the option.
+ */
+function settledValue(option: OptionSchema, raw: unknown): unknown {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw) || !canWeigh(option)) return raw;
+  const positive = Object.entries(raw as Record<string, unknown>).filter(([, weight]) => typeof weight === 'number' && weight > 0);
+  if (positive.length !== 1) return raw;
+  return heaviest(option, Object.fromEntries(positive) as Record<string, number>);
+}
+
+const STATUS_LABEL = { default: 'Default', changed: 'Changed', random: 'Random', chances: 'Chances set' } as const;
+
+/** Plain words for the chances a weighted value has in the file, so a simple-view person can see them without an editor. */
+function ChancesNote({ option, weights }: { option: OptionSchema; weights: Record<string, number> }) {
+  const odds = percentages(weights);
+  // Only the values with a weight above 0 can be picked, so only those are named.
+  const parts = Object.keys(weights)
+    .filter((key) => weights[key]! > 0)
+    .map((key) => `${valueLabel(option, key)} ${odds[key]}%`);
+  return (
+    <p className="chances-note">
+      The file has chances set for this option: {parts.join(', ')}. Yammel picks one when the seed is made. To change the chances, use the Advanced view (top right).
+    </p>
+  );
+}
+
 function OptionCardView({ game, option, raw, onEdit, locked, onToggleLock, issues = [], names }: OptionCardProps) {
   const uid = useId();
   const controlId = `control-${uid}`;
   const titleId = `title-${uid}`;
   // Bumped when an edit is refused so the control remounts from the real value.
   const [resync, setResync] = useState(0);
-  const state = describeOption(option, raw);
+  const advanced = useAdvancedView();
+  // The Advanced view shows the file as it is; the Simple view shows what each option settles to (see settledValue).
+  const shown = advanced ? raw : settledValue(option, raw);
+  const state = describeOption(option, shown);
   const defaultText = formatDefault(option);
-  const spec = parseRandom(option, raw);
-  const weights = weightsOf(option, raw);
-  const entries = isNameListKind(option) ? entriesOf(option, raw) : null;
+  const spec = parseRandom(option, shown);
+  const weights = weightsOf(option, shown);
+  const entries = isNameListKind(option) ? entriesOf(option, shown) : null;
   const withGroups = option.kind === 'set' || option.kind === 'list';
   const pool = useMemo(() => {
     if (option.domain === undefined || names === undefined || entries === null) return null;
@@ -88,6 +119,9 @@ function OptionCardView({ game, option, raw, onEdit, locked, onToggleLock, issue
     const groups = option.domain === 'items' ? names.itemGroups : names.locationGroups;
     return withGroups ? [...plain, ...groups] : plain;
   }, [option.domain, names, withGroups, entries === null]);
+  const status = spec !== null ? 'random' : weights !== null ? 'chances' : state.changed ? 'changed' : 'default';
+  // The chances of a weighted value are edited only in the Advanced view. In the Simple view they stay as they are in the file.
+  const chancesHidden = weights !== null && !advanced;
 
   return (
     <article
@@ -98,6 +132,7 @@ function OptionCardView({ game, option, raw, onEdit, locked, onToggleLock, issue
       data-locked={locked}
       data-random={spec !== null}
       data-weighted={weights !== null}
+      data-status={status}
     >
       <header className="option__head">
         <div className="option__titles">
@@ -106,14 +141,18 @@ function OptionCardView({ game, option, raw, onEdit, locked, onToggleLock, issue
           </h3>
           <code className="option__key">{option.key}</code>
         </div>
-        {state.changed && <span className="badge">Changed</span>}
+        <span className={`option__status option__status--${status}`}>{STATUS_LABEL[status]}</span>
       </header>
 
       <Description text={option.description} />
 
       <div className="option__control">
         {weights !== null ? (
-          <WeightsEditor key={resync} option={option} weights={weights} onChange={(next) => { if (!onEdit([setWeightsEdit(game, option, next)])) setResync((n) => n + 1); }} />
+          advanced ? (
+            <WeightsEditor key={resync} option={option} weights={weights} onChange={(next) => { if (!onEdit([setWeightsEdit(game, option, next)])) setResync((n) => n + 1); }} />
+          ) : (
+            <ChancesNote option={option} weights={weights} />
+          )
         ) : entries !== null ? (
           <NameListEditor key={resync} option={option} pool={pool} entries={entries} onChange={(next) => { if (!onEdit([nameEdit(game, option, next)])) setResync((n) => n + 1); }} />
         ) : spec !== null ? (
@@ -135,12 +174,13 @@ function OptionCardView({ game, option, raw, onEdit, locked, onToggleLock, issue
         )}
       </div>
 
-      {(acceptsRandom(option) || canWeigh(option)) && (
+      {!chancesHidden && (acceptsRandom(option) || canWeigh(option)) && (
         <RandomControls
           option={option}
           spec={spec}
+          simple={!advanced}
           weighted={weights !== null}
-          canWeigh={canWeigh(option)}
+          canWeigh={canWeigh(option) && advanced}
           custom={spec === null && weights === null && !state.editable}
           locked={locked}
           canRoll={isRollable(option)}

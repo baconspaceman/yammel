@@ -10,6 +10,8 @@ export interface TemplateOption {
   description: string;
   /** The short comment after an entry of a weighted map, by entry name. */
   notes: Record<string, string>;
+  /** The keys of a map value in file order (plain data puts number-like keys first, so order is kept here). */
+  keys?: string[];
   /** The title of the section banner just above this option, when there is one. */
   heading?: string;
 }
@@ -153,11 +155,13 @@ export class YamlDocument {
       const heading = bannerTitle(keyBefore) ?? (index === 0 ? bannerTitle(block.commentBefore) : undefined);
       let description = '';
       const notes: Record<string, string> = {};
+      const keys: string[] = [];
       if (isMap(value) && value.items.length > 0) {
         const first = value.items[0]!;
         description = clean(isNode(first.key) ? first.key.commentBefore : undefined) || clean(value.commentBefore);
         for (const entry of value.items) {
           if (!isScalar(entry.key)) continue;
+          keys.push(String(entry.key.value));
           const note = isNode(entry.value) ? clean(entry.value.comment) : '';
           if (note !== '') notes[String(entry.key.value)] = note;
         }
@@ -165,7 +169,7 @@ export class YamlDocument {
         description = clean(value.commentBefore);
       }
       const plain = isNode(value) ? value.toJS(this.doc) : value;
-      out.push({ key, value: plain, description, notes, ...(heading === undefined ? {} : { heading }) });
+      out.push({ key, value: plain, description, notes, ...(keys.length > 0 ? { keys } : {}), ...(heading === undefined ? {} : { heading }) });
     });
     return out;
   }
@@ -289,6 +293,46 @@ function removeValue(doc: Document, game: string, option: string): void {
   doc.deleteIn([game, option]);
 }
 
+/**
+ * Writes a flat map (weights: value -> number) into the map that is already there, entry by entry, so the file keeps its order,
+ * its quoting and the note after each line ("# equivalent to 50"). Rebuilding the map would sort number-like keys first and
+ * drop those notes. Returns false (and changes nothing) when the new value is not a flat map.
+ */
+function mergeFlatMap(doc: Document, existing: YAMLMap, value: unknown): boolean {
+  let entries: { key: unknown; text: string; value: unknown }[];
+  const flat = (v: unknown) => v === null || ['string', 'number', 'boolean'].includes(typeof v);
+  if (value instanceof YAMLMap) {
+    entries = [];
+    for (const pair of value.items) {
+      const key = isScalar(pair.key) ? pair.key.value : pair.key;
+      const v = isScalar(pair.value) ? pair.value.value : pair.value;
+      if (!flat(key) || !flat(v)) return false;
+      entries.push({ key: pair.key, text: String(key), value: v });
+    }
+  } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    entries = Object.entries(value as Record<string, unknown>).map(([key, v]) => ({ key, text: key, value: v }));
+    if (!entries.every((entry) => flat(entry.value))) return false;
+  } else {
+    return false;
+  }
+  if (entries.length === 0) return false;
+  if (!existing.items.every((pair) => isScalar(pair.key) && (pair.value === null || isScalar(pair.value)))) return false;
+  const wanted = new Map(entries.map((entry) => [entry.text, entry]));
+  const kept: typeof existing.items = [];
+  for (const pair of existing.items) {
+    const text = String((pair.key as Scalar).value);
+    const entry = wanted.get(text);
+    if (entry === undefined) continue;
+    wanted.delete(text);
+    if (isScalar(pair.value)) pair.value.value = entry.value;
+    else pair.value = doc.createNode(entry.value);
+    kept.push(pair);
+  }
+  for (const entry of wanted.values()) kept.push(doc.createPair(entry.key, entry.value) as (typeof existing.items)[number]);
+  existing.items = kept;
+  return true;
+}
+
 function writeValue(doc: Document, game: string, option: string, value: unknown): void {
   if (doc.contents === null) doc.contents = doc.createNode({});
   if (!isMap(doc.contents)) throw new EditError('The top level of the YAML must be a map of settings.');
@@ -301,6 +345,7 @@ function writeValue(doc: Document, game: string, option: string, value: unknown)
   }
 
   const existing = doc.getIn([game, option], true);
+  if (isMap(existing) && mergeFlatMap(doc, existing, value)) return;
   const next = doc.createNode(value);
   if (isNode(existing)) {
     next.comment = existing.comment; // keep "# why I chose this" notes

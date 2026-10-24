@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import time
@@ -71,6 +72,35 @@ class Engine:
         self._call_all = call_all
         self._worlds = AutoWorldRegister.world_types
         self.ap_version = Utils.__version__
+
+    def load_apworld(self, path: Path) -> tuple[list[str], str | None]:
+        """
+        Loads one .apworld file the way Archipelago's launcher does, so a custom world can be counted without being copied into
+        Archipelago's own folder. Returns (games added, problem). A world that is already loaded is left alone (the bundled copy wins).
+        """
+        import importlib.abc
+        import zipimport
+        from worlds import AutoWorldRegister, WorldSource, failed_world_loads
+
+        module = f"worlds.{path.stem}"
+        if module in sys.modules:
+            return [], None
+        spec = zipimport.zipimporter(str(path)).find_spec(module)
+
+        class Finder(importlib.abc.MetaPathFinder):
+            def find_spec(self, fullname: str, _path: Any = None, _target: Any = None) -> Any:
+                return spec if fullname == module else None
+
+        sys.meta_path.insert(0, Finder())
+        before = set(AutoWorldRegister.world_types)
+        failed_world_loads.pop(path.stem, None)
+        ok = WorldSource(str(path), is_zip=True, relative=False).load()
+        added = sorted(set(AutoWorldRegister.world_types) - before)
+        if not ok or not added:
+            reason = failed_world_loads.pop(path.stem, "")
+            last = [line for line in reason.strip().splitlines() if line.strip()]
+            return [], last[-1] if last else "It did not add a game."
+        return added, None
 
     def visible_games(self) -> list[str]:
         return sorted(name for name, world in self._worlds.items() if not getattr(world, "hidden", False))
@@ -237,10 +267,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--ap-root", required=True, type=Path)
     parser.add_argument("--scan-all", type=Path, metavar="OUT", help="scan every world, write the facts to OUT as JSON, and exit")
+    parser.add_argument("--custom-world", type=Path, action="append", default=[], metavar="FILE", help="also load this .apworld file (repeatable)")
     args = parser.parse_args()
 
-    protocol = sys.stdout
-    sys.stdout = sys.stderr  # worlds print; keep the protocol stream clean
+    # Keep the protocol stream clean. Worlds print, and Archipelago may start programs of its own (its module updater runs
+    # pip when a world's requirements are missing); those write to file descriptor 1 directly. So the protocol gets a private
+    # copy of the real stdout, and descriptor 1 itself is pointed at stderr for everything else.
+    sys.stdout.flush()
+    protocol = os.fdopen(os.dup(1), "w", encoding="utf-8", newline="\n")
+    os.dup2(2, 1)
+    sys.stdout = sys.stderr
     sys.stdin.reconfigure(encoding="utf-8", errors="replace")  # the app sends UTF-8, not the Windows code page
 
     def send(message: dict[str, Any]) -> None:
@@ -248,6 +284,13 @@ def main() -> int:
         protocol.flush()
 
     engine = Engine(args.ap_root.resolve())
+    for custom in args.custom_world:
+        try:
+            _, problem = engine.load_apworld(custom.resolve())
+        except Exception as exc:  # noqa: BLE001 - a world that will not load must not stop the engine for the others
+            problem = f"{type(exc).__name__}: {exc}"
+        if problem is not None:
+            print(f"custom world {custom.name} was not loaded: {problem}", file=sys.stderr)
     if args.scan_all is not None:
         from datetime import datetime, timezone
 

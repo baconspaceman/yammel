@@ -16,7 +16,7 @@ export interface Launched {
 
 /** Starts the built app with its own throwaway user-data folder, so tests never touch real settings or backups. */
 export async function launch(
-  options: { schema?: string; userData?: string; env?: Record<string, string> } = {},
+  options: { schema?: string; userData?: string; env?: Record<string, string>; view?: 'simple' | 'advanced' } = {},
 ): Promise<Launched> {
   const userData = options.userData ?? mkdtempSync(join(tmpdir(), 'yamled-ud-'));
   const env: Record<string, string> = {};
@@ -26,6 +26,18 @@ export async function launch(
   Object.assign(env, options.env ?? {});
   const app = await electron.launch({ args: ['.', `--user-data-dir=${userData}`], env, cwd: ROOT });
   const page = await app.firstWindow();
+  await page.waitForLoadState('domcontentloaded');
+  // The Advanced view is what most of these tests were written against; the Simple view has its own tests (simpleView.spec.ts).
+  // The choice is read when the page starts, so it is set and the page reloaded once.
+  const view = options.view ?? 'advanced';
+  await page.evaluate((value) => {
+    try {
+      window.localStorage.setItem('yammel.advanced', value);
+    } catch {
+      // no storage: the default view is used
+    }
+  }, view === 'advanced' ? '1' : '0');
+  await page.reload();
   await page.waitForLoadState('domcontentloaded');
   return { app, page, userData };
 }

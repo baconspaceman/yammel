@@ -36,7 +36,7 @@ test('"Use these games" opens a YAML that mixes both games', async ({ page }) =>
   await expect(page.locator('.yaml')).toContainText(`${a}: 50`);
   await expect(page.locator('.yaml')).toContainText(`${b}: 50`);
   // The editor lets the person move between the two games.
-  await expect(page.getByRole('combobox').filter({ hasText: a })).toBeVisible();
+  await expect(page.getByLabel('Game', { exact: true })).toContainText(a);
 });
 
 test('remembers dismissals and never shows the same ten again soon, across app starts', async ({ userData }) => {

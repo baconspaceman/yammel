@@ -1,6 +1,7 @@
 import type { DifficultyProfile } from '../difficulty/types';
 import type { CountResult } from '../shared/api';
 import type { SchemaFile } from '../schema/types';
+import type { Worlds } from './worlds';
 
 /**
  * What every command returns. `data` is plain JSON. `code` is the process exit code a failure should use:
@@ -35,6 +36,10 @@ export interface FilePort {
 
 export interface Ctx {
   schema: SchemaFile;
+  /** Finds games the shipped data does not have: custom worlds, then template YAMLs. */
+  worlds: Worlds;
+  /** Where the custom-world cache lives (shown in advanced diagnostics). */
+  cacheFile: string;
   profiles: ReadonlyMap<string, DifficultyProfile>;
   files: FilePort;
   /** Starts (lazily) and returns the engine; the caller stops it when the command is done. */

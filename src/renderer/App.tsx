@@ -42,6 +42,7 @@ import { Toolbar } from './components/Toolbar';
 import { YamlPreview } from './components/YamlPreview';
 import { CheckCounter } from './state/checkCounter';
 import { EditorSession } from './state/session';
+import { setAdvancedView, useAdvancedView } from './state/viewMode';
 import { simpleGroups } from './state/options';
 import { countKey, engineOptionsFor } from './state/seedOptions';
 import { useSessionVersion } from './state/useSessionVersion';
@@ -84,6 +85,7 @@ export default function App() {
   /** Bumped when the games available changed (custom worlds scanned or forgotten), to read the schema again. */
   const [schemaTick, setSchemaTick] = useState(0);
   const [session, setSession] = useState<EditorSession | null>(null);
+  const advancedView = useAdvancedView();
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
@@ -670,6 +672,12 @@ export default function App() {
       message: 'Nothing has been changed. Fix the problems below in a text editor, then open the file again.',
       details: doc.issues.map((issue) => `Line ${issue.line}: ${issue.message}`),
     };
+  } else if (doc !== null && activeGame === null && 'meta_description' in doc.toObject()) {
+    problem = {
+      title: 'This is a meta file, not a player YAML',
+      message:
+        'A meta.yaml sets options for every player in a multiworld, so it has no "game:" line. This editor edits player YAMLs; change a meta file in a text editor. The file has not been changed.',
+    };
   } else if (doc !== null && activeGame === null) {
     problem = {
       title: 'This YAML does not say which game it is for',
@@ -927,6 +935,9 @@ export default function App() {
                   onClick={() => setRandomizeOpen((value) => !value)}
                 >
                   Randomize…
+                </button>
+                <button type="button" className="button" aria-pressed={advancedView} onClick={() => setAdvancedView(!advancedView)} title="Simple view shows one clear control per option. Advanced view also shows the chances of weighted values, Roll now and Lock.">
+                  {advancedView ? 'Advanced view: on' : 'Advanced view: off'}
                 </button>
                 <span className="searchbar__count" aria-live="polite">
                   {optionCount} {optionCount === 1 ? 'option' : 'options'}

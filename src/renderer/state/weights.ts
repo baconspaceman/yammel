@@ -51,7 +51,7 @@ export function addableValues(option: OptionSchema, weights: Record<string, numb
   if (option.kind === 'choice' || option.kind === 'text_choice') {
     return (option.choices ?? []).filter((choice) => !have.has(choice.key.toLowerCase())).map((choice) => ({ key: choice.key, label: choice.label }));
   }
-  return Object.keys(option.specialNames ?? {})
+  return [...Object.keys(option.specialNames ?? {}), ...(option.extraWords ?? [])]
     .filter((name) => !have.has(name.toLowerCase()))
     .map((name) => ({ key: name, label: name }));
 }

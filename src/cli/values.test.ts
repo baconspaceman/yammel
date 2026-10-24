@@ -75,7 +75,18 @@ describe('parseOptionValue', () => {
   it('takes free text as it is, and refuses kinds it cannot set yet', () => {
     expect(parseOptionValue(notes, 'hello world')).toEqual(ok('hello world'));
     const result = parseOptionValue(setKind, 'a,b');
-    expect(!result.ok && result.message).toBe('items: a set option cannot be set from the command line yet (Advanced mode covers it).');
+    expect(!result.ok && result.message).toContain('use a JSON array of names');
+  });
+
+  it('reads OptionSet arrays, preserving names, validating keys and removing duplicates', () => {
+    const exclusions = { ...setKind, validKeys: ['Crabs', 'Hover Blasters'] };
+    expect(parseOptionValue(exclusions, '["Crabs","Hover Blasters","Crabs"]')).toEqual(ok(['Crabs', 'Hover Blasters']));
+    expect(parseOptionValue(exclusions, '[]')).toEqual(ok([]));
+    expect(parseOptionValue(exclusions, '["Not a minigame"]').ok).toBe(false);
+    expect(parseOptionValue(exclusions, '[1]').ok).toBe(false);
+    expect(parseOptionValue(exclusions, '{}').ok).toBe(false);
+    expect(parseOptionValue(setKind, '["a\\u0000b"]').ok).toBe(false);
+    expect(parseOptionValue(setKind, '["a,b"]').ok).toBe(true);
   });
 
   it('refuses text containing characters PyYAML reads as line breaks or controls, which would change or break the YAML', () => {

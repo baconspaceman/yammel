@@ -7,7 +7,8 @@ import type { CountFailure } from '../shared/api';
 import type { GameSchema, OptionSchema, SchemaFile } from '../schema/types';
 import { acceptsRandom } from '../randomize/randomSpec';
 import { buildYaml, parseBand, validPlayerName } from './build';
-import type { CommandDef, CommandResult, Ctx } from './types';
+import type { CommandDef, CommandResult, Ctx, FlagSpec } from './types';
+import type { GameSource, ResolveOptions } from './worlds';
 import { parseAssignments } from './values';
 
 export const MAX_FUZZ = 200;
@@ -48,6 +49,70 @@ export function findGame(schema: SchemaFile, name: string): GameFind {
   const near = (partial.length > 0 ? partial : games.filter((g) => wanted !== '' && wanted.includes(g.name.toLowerCase().slice(0, 4)))).slice(0, 8);
   const hint = near.length > 0 ? ` Did you mean: ${near.map((g) => `"${g.name}"`).join(', ')}?` : ' Run "games" to list them.';
   return { ok: false, message: `No game called "${name}" in the schema (Archipelago ${schema.apVersion}).${hint}` };
+}
+
+/** The flags that choose where a game comes from. The first is the mode switch; the others only work with it (advanced mode). */
+export const worldFlags: FlagSpec[] = [
+  { name: 'advanced', type: 'boolean', description: 'Advanced mode, for developers: also say where the game was found and what was tried, and allow --worlds, --template, --rescan and --no-auto.' },
+  { name: 'worlds', type: 'list', description: '(advanced) An extra folder of .apworld files to search (repeatable).' },
+  { name: 'template', type: 'string', description: "(advanced) A template YAML to read the game's options from, for a world that cannot be loaded or is still in development." },
+  { name: 'rescan', type: 'boolean', description: '(advanced) Load the world file again even if it was loaded before.' },
+  { name: 'no-auto', type: 'boolean', description: '(advanced) Search only the folders given with --worlds, not the usual ones.' },
+];
+
+type WorldInput = { ok: true; options: ResolveOptions; advanced: boolean } | { ok: false; message: string };
+
+/** Reads the mode and the world-search flags. The developer flags are refused unless --advanced is given, so simple mode stays simple. */
+export function readWorldInput(input: Record<string, unknown>): WorldInput {
+  const advanced = input['advanced'] === true;
+  const folders = list(input, 'worlds');
+  const template = str(input, 'template');
+  const used = [
+    ...(folders.length > 0 ? ['--worlds'] : []),
+    ...(template !== undefined ? ['--template'] : []),
+    ...(input['rescan'] === true ? ['--rescan'] : []),
+    ...(input['noAuto'] === true ? ['--no-auto'] : []),
+  ];
+  if (!advanced && used.length > 0) {
+    return { ok: false, message: `${used.join(', ')} ${used.length === 1 ? 'is an advanced option' : 'are advanced options'}. Add --advanced to use ${used.length === 1 ? 'it' : 'them'}.` };
+  }
+  const options: ResolveOptions = {};
+  if (folders.length > 0) options.folders = folders.map((f) => resolve(f));
+  if (template !== undefined) options.template = resolve(template);
+  if (input['rescan'] === true) options.rescan = true;
+  if (input['noAuto'] === true) options.noAuto = true;
+  return { ok: true, options, advanced };
+}
+
+/** What a result says about where its game came from: always the source, plus the diagnostics in advanced mode. */
+type GameMeta = { gameFrom: GameSource; gameNote?: string; diagnostics?: Record<string, unknown> };
+
+async function resolveGame(
+  ctx: Ctx,
+  input: Record<string, unknown>,
+  name: string,
+): Promise<{ ok: true; game: GameSchema; meta: GameMeta } | { ok: false; result: CommandResult }> {
+  const world = readWorldInput(input);
+  if (!world.ok) return { ok: false, result: bad(world.message) };
+  const found = await ctx.worlds.resolve(ctx.schema, name, world.options);
+  if (!found.ok) return { ok: false, result: bad(found.message, world.advanced ? { diagnostics: { tried: found.tried, cache: ctx.cacheFile } } : undefined) };
+  const meta: GameMeta = { gameFrom: found.source };
+  if (found.note !== undefined) meta.gameNote = found.note;
+  if (world.advanced) {
+    meta.diagnostics = { tried: found.tried, ...(found.file === undefined ? {} : { file: found.file }), cache: ctx.cacheFile, inferred: found.game.inferred === true };
+  }
+  return { ok: true, game: found.game, meta };
+}
+
+/** A game whose options came from a template has no world behind it, so the check engine cannot count it. */
+function noEngineFor(game: GameSchema): CommandResult | null {
+  if (game.inferred !== true) return null;
+  return {
+    ok: false,
+    code: 3,
+    message: `The checks of "${game.name}" cannot be counted: its options were read from a template, and no world file could be loaded for the check engine. The YAML itself can still be made and edited.`,
+    data: { game: game.name, reason: 'template-only' },
+  };
 }
 
 function str(input: Record<string, unknown>, key: string): string | undefined {
@@ -101,7 +166,12 @@ async function readDocument(ctx: Ctx, file: string): Promise<{ ok: true; doc: Ya
   return { ok: true, doc };
 }
 
-function pickGameIn(doc: YamlDocument, ctx: Ctx, wanted: string | undefined): { ok: true; game: GameSchema } | { ok: false; result: CommandResult } {
+async function pickGameIn(
+  doc: YamlDocument,
+  ctx: Ctx,
+  input: Record<string, unknown>,
+  wanted: string | undefined,
+): Promise<{ ok: true; game: GameSchema; meta: GameMeta } | { ok: false; result: CommandResult }> {
   const names = doc.games();
   if (names.length === 0) return { ok: false, result: bad('The YAML does not say which game it is for (no "game:" line).') };
   let name = wanted;
@@ -109,9 +179,7 @@ function pickGameIn(doc: YamlDocument, ctx: Ctx, wanted: string | undefined): { 
     if (names.length > 1) return { ok: false, result: bad(`The YAML names several games (${names.join(', ')}); choose one with --game.`) };
     name = names[0]!;
   }
-  const found = findGame(ctx.schema, name);
-  if (!found.ok) return { ok: false, result: bad(found.message) };
-  return { ok: true, game: found.game };
+  return resolveGame(ctx, input, name);
 }
 
 const common = {
@@ -127,31 +195,44 @@ export const COMMANDS: CommandDef[] = [
   {
     name: 'games',
     summary: 'List the games in the schema, with how many options each has and whether it has a difficulty rating.',
-    flags: [{ name: 'hidden', type: 'boolean', description: 'Also list games that hide themselves from menus (worlds under development often do).' }],
+    flags: [{ name: 'hidden', type: 'boolean', description: 'Also list games that hide themselves from menus (worlds under development often do).' }, ...worldFlags],
     async run(input, ctx) {
-      const games = Object.values(ctx.schema.games)
+      const world = readWorldInput(input);
+      if (!world.ok) return bad(world.message);
+      const shipped = Object.values(ctx.schema.games)
         .filter((g) => input['hidden'] === true || !g.hidden)
         .map((g) => ({
           name: g.name,
+          source: 'bundled' as GameSource,
           hidden: g.hidden,
           options: Object.keys(g.options).length,
           randomizable: randomizableOptions(g).length,
           rating: rateGame(g, ctx.schema.apVersion, {}, ctx.profiles).source,
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name));
-      return { ok: true, data: { apVersion: ctx.schema.apVersion, count: games.length, games } };
+        }));
+      // custom worlds found in the usual folders: named from each file's manifest, loaded only when one is asked for
+      const custom = (await ctx.worlds.listCustom(world.options, ctx.schema)).map((c) => ({
+        name: c.name,
+        source: 'custom' as GameSource,
+        file: c.file,
+        loaded: c.loaded,
+        ...(c.problem === undefined ? {} : { problem: c.problem }),
+      }));
+      const games = [...shipped, ...custom].sort((a, b) => a.name.localeCompare(b.name));
+      const data: Record<string, unknown> = { apVersion: ctx.schema.apVersion, count: games.length, customCount: custom.length, games };
+      if (world.advanced) data['diagnostics'] = { folders: ctx.worlds.folders(world.options), cache: ctx.cacheFile };
+      return { ok: true, data };
     },
   },
   {
     name: 'options',
     summary: "List one game's options: kind, default, choices or range, and whether each can be random.",
     positional: { name: 'game', description: 'the game name', required: true },
-    flags: [],
+    flags: [...worldFlags],
     async run(input, ctx) {
-      const found = findGame(ctx.schema, str(input, 'game') ?? '');
-      if (!found.ok) return bad(found.message);
+      const found = await resolveGame(ctx, input, str(input, 'game') ?? '');
+      if (!found.ok) return found.result;
       const options = Object.values(found.game.options).map(describeKind);
-      return { ok: true, data: { game: found.game.name, count: options.length, options } };
+      return { ok: true, data: { game: found.game.name, ...found.meta, count: options.length, options } };
     },
   },
   {
@@ -167,10 +248,11 @@ export const COMMANDS: CommandDef[] = [
       common.band,
       { name: 'out', type: 'string', description: 'Write the YAML to this file (otherwise it is returned in the result).' },
       common.force,
+      ...worldFlags,
     ],
     async run(input, ctx) {
-      const found = findGame(ctx.schema, str(input, 'game') ?? '');
-      if (!found.ok) return bad(found.message);
+      const found = await resolveGame(ctx, input, str(input, 'game') ?? '');
+      if (!found.ok) return found.result;
       const game = found.game;
       const sets = parseAssignments(game, list(input, 'set'));
       if (!sets.ok) return bad(sets.message);
@@ -197,6 +279,7 @@ export const COMMANDS: CommandDef[] = [
       if (!result.ok) return bad(result.message);
       const data: Record<string, unknown> = {
         game: game.name,
+        ...found.meta,
         name: str(input, 'name') ?? 'Player',
         seed,
         rolled: result.rolled,
@@ -225,10 +308,11 @@ export const COMMANDS: CommandDef[] = [
       common.lock,
       common.band,
       common.force,
+      ...worldFlags,
     ],
     async run(input, ctx) {
-      const found = findGame(ctx.schema, str(input, 'game') ?? '');
-      if (!found.ok) return bad(found.message);
+      const found = await resolveGame(ctx, input, str(input, 'game') ?? '');
+      if (!found.ok) return found.result;
       const game = found.game;
       const count = typeof input['count'] === 'number' ? input['count'] : 5;
       if (!Number.isInteger(count) || count < 1 || count > MAX_FUZZ) return bad(`--count must be a whole number from 1 to ${MAX_FUZZ}.`);
@@ -272,6 +356,8 @@ export const COMMANDS: CommandDef[] = [
       let unavailable = 0;
       let unavailableMessage = '';
       const check = input['check'] === true;
+      const blocked = check ? noEngineFor(game) : null;
+      if (blocked !== null) return blocked;
       const engine = check ? ctx.engine() : null;
       try {
         for (const item of built) {
@@ -301,6 +387,7 @@ export const COMMANDS: CommandDef[] = [
 
       const data = {
         game: game.name,
+        ...found.meta,
         seed: baseSeed,
         count,
         out,
@@ -315,20 +402,22 @@ export const COMMANDS: CommandDef[] = [
     name: 'count',
     summary: "Count a YAML's checks with the real engine (builds the world's locations; a world error means the YAML was refused).",
     positional: { name: 'file', description: 'path to the player YAML', required: true },
-    flags: [{ name: 'game', type: 'string', description: 'Which game, when the YAML names several.' }],
+    flags: [{ name: 'game', type: 'string', description: 'Which game, when the YAML names several.' }, ...worldFlags],
     async run(input, ctx) {
       const file = str(input, 'file') ?? '';
       const read = await readDocument(ctx, file);
       if (!read.ok) return read.result;
-      const picked = pickGameIn(read.doc, ctx, str(input, 'game'));
+      const picked = await pickGameIn(read.doc, ctx, input, str(input, 'game'));
       if (!picked.ok) return picked.result;
+      const blocked = noEngineFor(picked.game);
+      if (blocked !== null) return blocked;
       const engine = ctx.engine();
       try {
         const counted = await engine.count(picked.game.name, engineOptionsFor(read.doc, picked.game.name, picked.game));
         if (!counted.ok) {
           return { ok: false, code: isWorldRefusal(counted) ? 2 : 3, message: counted.message, data: { file, game: picked.game.name, reason: counted.reason } };
         }
-        const data = { file, game: picked.game.name, checks: counted.checks, items: counted.items, unresolved: counted.unresolved, invalid: counted.invalid, ms: counted.ms };
+        const data = { file, game: picked.game.name, ...picked.meta, checks: counted.checks, items: counted.items, unresolved: counted.unresolved, invalid: counted.invalid, ms: counted.ms };
         return counted.invalid.length > 0 ? { ok: true, data, exitCode: 2 } : { ok: true, data };
       } finally {
         engine.stop();
@@ -339,12 +428,12 @@ export const COMMANDS: CommandDef[] = [
     name: 'rate',
     summary: 'Estimate the difficulty of a YAML (0 to 10), saying where the number comes from and what moved it.',
     positional: { name: 'file', description: 'path to the player YAML', required: true },
-    flags: [{ name: 'game', type: 'string', description: 'Which game, when the YAML names several.' }],
+    flags: [{ name: 'game', type: 'string', description: 'Which game, when the YAML names several.' }, ...worldFlags],
     async run(input, ctx) {
       const file = str(input, 'file') ?? '';
       const read = await readDocument(ctx, file);
       if (!read.ok) return read.result;
-      const picked = pickGameIn(read.doc, ctx, str(input, 'game'));
+      const picked = await pickGameIn(read.doc, ctx, input, str(input, 'game'));
       if (!picked.ok) return picked.result;
       const rating = rateGame(picked.game, ctx.schema.apVersion, engineOptionsFor(read.doc, picked.game.name, picked.game), ctx.profiles);
       return {
@@ -352,6 +441,7 @@ export const COMMANDS: CommandDef[] = [
         data: {
           file,
           game: picked.game.name,
+          ...picked.meta,
           source: rating.source,
           status: rating.status,
           score: rating.score === null ? null : Math.round(rating.score * 10) / 10,
@@ -359,6 +449,29 @@ export const COMMANDS: CommandDef[] = [
           moved: rating.contributions.slice(0, 10).map((c) => ({ option: c.key, value: c.valueText, delta: c.delta })),
           approximated: rating.approximated,
           note: rating.note,
+        },
+      };
+    },
+  },
+  {
+    name: 'worlds',
+    summary: 'Advanced mode, for developers: show the folders searched for custom worlds, every .apworld found there and whether it loaded (or why not). With --scan, load them all now.',
+    flags: [{ name: 'scan', type: 'boolean', description: 'Load every world file the shipped data does not have (slow the first time; cached afterwards).' }, ...worldFlags],
+    async run(input, ctx) {
+      if (input['advanced'] !== true) return bad('"worlds" is an advanced command. Add --advanced. (Simple mode needs no setup: custom worlds are found automatically when you ask for a game by name.)');
+      const world = readWorldInput(input);
+      if (!world.ok) return bad(world.message);
+      const scan = input['scan'] === true ? await ctx.worlds.loadAll(world.options, ctx.schema) : null;
+      const files = await ctx.worlds.status(world.options);
+      const count = (state: string) => files.filter((f) => f.state === state).length;
+      return {
+        ok: true,
+        data: {
+          folders: ctx.worlds.folders(world.options),
+          cache: ctx.cacheFile,
+          summary: { files: files.length, loaded: count('loaded'), problems: count('problem'), notLoaded: count('not-loaded') },
+          ...(scan === null ? {} : { scanned: scan }),
+          files: files.map(({ path: _path, ...rest }) => rest),
         },
       };
     },

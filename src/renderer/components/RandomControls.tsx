@@ -9,6 +9,8 @@ export interface RandomControlsProps {
   option: OptionSchema;
   /** The random value the option has now, or null when it holds a fixed value. */
   spec: RandomSpec | null;
+  /** Simple view: only the choice between a fixed value and random (no Roll now, no Lock). */
+  simple?: boolean;
   locked: boolean;
   /** Roll now has something to pick from. */
   canRoll: boolean;
@@ -28,7 +30,7 @@ export interface RandomControlsProps {
 }
 
 /** The row under an option: Roll now, how the value is decided (fixed or random), and a lock for Randomize everything. */
-export function RandomControls({ option, spec, locked, canRoll, custom, weighted, canWeigh, onRoll, onMode, onRange, onToggleLock }: RandomControlsProps) {
+export function RandomControls({ option, spec, simple = false, locked, canRoll, custom, weighted, canWeigh, onRoll, onMode, onRange, onToggleLock }: RandomControlsProps) {
   const uid = useId();
   const name = option.displayName;
   const modes = randomModes(option);
@@ -38,9 +40,11 @@ export function RandomControls({ option, spec, locked, canRoll, custom, weighted
 
   return (
     <div className="option__tools" role="group" aria-label={`Randomize ${name}`}>
-      <button type="button" className="button button--small" aria-label={`Roll now: ${name}`} disabled={!canRoll} onClick={onRoll}>
-        Roll now
-      </button>
+      {!simple && (
+        <button type="button" className="button button--small" aria-label={`Roll now: ${name}`} disabled={!canRoll} onClick={onRoll}>
+          Roll now
+        </button>
+      )}
       <select
         className="select select--small"
         aria-label={`How ${name} is decided`}
@@ -67,15 +71,17 @@ export function RandomControls({ option, spec, locked, canRoll, custom, weighted
           <NumberField id={`${uid}-to`} label={`${name}: random to`} value={spec.to} min={Math.min(max, spec.from)} max={max} onCommit={(v) => onRange(spec.from, v)} />
         </span>
       )}
-      <button
-        type="button"
-        className={`button button--small${locked ? ' button--on' : ''}`}
-        aria-pressed={locked}
-        aria-label={`Lock ${name}`}
-        onClick={onToggleLock}
-      >
-        Lock
-      </button>
+      {!simple && (
+        <button
+          type="button"
+          className={`button button--small${locked ? ' button--on' : ''}`}
+          aria-pressed={locked}
+          aria-label={`Lock ${name}`}
+          onClick={onToggleLock}
+        >
+          Lock
+        </button>
+      )}
     </div>
   );
 }

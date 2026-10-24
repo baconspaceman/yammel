@@ -123,7 +123,7 @@ export function describeOption(option: OptionSchema, raw: unknown): OptionState 
       if (typeof raw === 'number' && Number.isInteger(raw)) {
         const special = specialNameFor(option, raw);
         if (special !== undefined) return finish(option, raw, special);
-        const outside = (option.min !== undefined && raw < option.min) || (option.max !== undefined && raw > option.max);
+        const outside = raw !== option.default && ((option.min !== undefined && raw < option.min) || (option.max !== undefined && raw > option.max));
         return finish(
           option,
           raw,

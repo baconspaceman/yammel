@@ -103,8 +103,14 @@ def option_to_dict(key: str, option: type) -> dict[str, Any]:
         out["aliases"] = {
             alias: option.name_lookup[value] for alias, value in sorted(option.aliases.items())
         }
+        keys = {choice["key"] for choice in out["choices"]}
         if isinstance(default, int) and default in option.name_lookup:
             out["default"] = option.name_lookup[default]
+        elif kind == "choice" and isinstance(default, str) and default.lower() in keys:
+            # Archipelago ignores capitals in choice names; a world may write its default as "Starchips".
+            out["default"] = default.lower()
+        elif kind == "choice" and isinstance(default, str) and default.lower() in option.aliases:
+            out["default"] = option.name_lookup[option.aliases[default.lower()]]
         else:
             out["default"] = _jsonable(default)
     elif kind in ("range", "named_range"):
@@ -112,15 +118,26 @@ def option_to_dict(key: str, option: type) -> dict[str, Any]:
         out["max"] = option.range_end
         out["default"] = _jsonable(default)
         if kind == "named_range":
-            out["specialNames"] = {
-                str(name): int(value) for name, value in option.special_range_names.items()
-            }
+            # Most names stand for a number; some worlds also give a name that stands for a word of their own
+            # (Final Fantasy Tactics Advance: "individually-randomized"). Those are kept as accepted words.
+            numbers: dict[str, int] = {}
+            words: list[str] = []
+            for name, value in option.special_range_names.items():
+                try:
+                    numbers[str(name)] = int(value)
+                except (TypeError, ValueError):
+                    words.append(str(name))
+            out["specialNames"] = numbers
+            if words:
+                out["extraWords"] = sorted(words)
     else:
         out["default"] = _jsonable(default)
         if issubclass(option, O.LocationSet):
             out["domain"] = "locations"
         elif issubclass(option, O.ItemSet) or issubclass(option, O.ItemDict):
             out["domain"] = "items"
+        if kind in ("set", "list") and getattr(option, "valid_keys", None):
+            out["validKeys"] = sorted(str(key) for key in option.valid_keys)
         if kind == "plando_texts":
             # The places a text may be put (case matters), for the one game that has text plando.
             out["validKeys"] = sorted(str(key) for key in getattr(option, "_valid_keys", ()))
@@ -196,12 +213,13 @@ def _short(exc: BaseException) -> str:
     return f"{type(exc).__name__}: {first}"
 
 
-def load_custom_worlds(folder: Path) -> tuple[dict[str, str], list[dict[str, str]]]:
+def load_custom_worlds(folder: Path, include_loaded: bool = False) -> tuple[dict[str, str], list[dict[str, str]]]:
     """
     Loads each .apworld in `folder` on its own, the way Archipelago's launcher does, but one at a time so a world
     written for a newer Python or missing a library is reported instead of stopping everything.
     Returns ({game: file name} for the games that loaded, [{file, error}] for the ones that did not).
-    Worlds whose game is already loaded are skipped quietly (the bundled copy wins, as in Archipelago).
+    Worlds whose game is already loaded are skipped quietly (the bundled copy wins, as in Archipelago), unless `include_loaded` is set:
+    then the game is still reported as coming from this file, so a world that is also sitting in the Archipelago folder can be read by file.
     """
     import importlib.abc
     import zipimport
@@ -234,6 +252,8 @@ def load_custom_worlds(folder: Path) -> tuple[dict[str, str], list[dict[str, str
                 problems.append({"file": path.name, "error": f"Made for an older Archipelago (up to {'.'.join(map(str, container.maximum_ap_version))})."})
                 continue
             if container.game and container.game in AutoWorldRegister.world_types:
+                if include_loaded:
+                    loaded[container.game] = path.name
                 continue
             module = f"worlds.{path.stem}"
             if module in sys.modules:
@@ -255,7 +275,13 @@ def load_custom_worlds(folder: Path) -> tuple[dict[str, str], list[dict[str, str
     return loaded, problems
 
 
-def extract(ap_root: Path, custom_worlds: Path | None = None, only_custom: bool = False) -> dict[str, Any]:
+def extract(
+    ap_root: Path,
+    custom_worlds: Path | None = None,
+    only_custom: bool = False,
+    include_loaded: bool = False,
+    skip_apworlds: bool = False,
+) -> dict[str, Any]:
     warnings.filterwarnings("ignore")
     sys.path.insert(0, str(ap_root))
     import settings
@@ -268,13 +294,15 @@ def extract(ap_root: Path, custom_worlds: Path | None = None, only_custom: bool 
     custom_games: dict[str, str] = {}
     custom_problems: list[dict[str, str]] = []
     if custom_worlds is not None:
-        custom_games, custom_problems = load_custom_worlds(custom_worlds)
+        custom_games, custom_problems = load_custom_worlds(custom_worlds, include_loaded)
 
     games: dict[str, Any] = {}
     errors: list[dict[str, str]] = []
     for name, world in sorted(AutoWorldRegister.world_types.items()):
         if only_custom and name not in custom_games:
             continue
+        if skip_apworlds and getattr(world, "zip_path", None):
+            continue  # loaded from an .apworld in the source folder (a custom world someone added), not part of Archipelago itself
         try:
             games[name] = game_to_dict(name, world)
             if name in custom_games:
@@ -300,10 +328,12 @@ def main() -> int:
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--custom-worlds", type=Path, default=None, help="a folder of .apworld files to load as well")
     parser.add_argument("--only-custom", action="store_true", help="write only the games that came from --custom-worlds")
+    parser.add_argument("--skip-apworlds", action="store_true", help="leave out worlds loaded from .apworld files (for the data that ships with the app)")
+    parser.add_argument("--include-loaded", action="store_true", help="with --only-custom, also write a world that Archipelago already had loaded (it is then read from this file)")
     args = parser.parse_args()
 
     custom = args.custom_worlds.resolve() if args.custom_worlds is not None else None
-    result = extract(args.ap_root.resolve(), custom, args.only_custom)
+    result = extract(args.ap_root.resolve(), custom, args.only_custom, args.include_loaded, args.skip_apworlds)
     if custom is not None and args.only_custom:
         # A scan that finds nothing is still a valid answer: write it so the app can say so.
         args.out.parent.mkdir(parents=True, exist_ok=True)

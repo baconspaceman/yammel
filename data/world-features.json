@@ -1,5 +1,5 @@
 {
- "apVersion": "0.6.7",
+ "apVersion": "0.6.8",
  "failed": {},
  "games": {
   "A Hat in Time": {
@@ -178,9 +178,16 @@
   },
   "Final Fantasy Mystic Quest": {
    "checks": 251,
-   "earlyOpen": 13,
+   "earlyOpen": 10,
    "items": 251,
    "needsFile": false,
+   "systems": []
+  },
+  "Gauntlet Legends": {
+   "checks": 1686,
+   "earlyOpen": 44,
+   "items": 1684,
+   "needsFile": true,
    "systems": []
   },
   "Heretic": {
@@ -287,7 +294,7 @@
   },
   "Mega Man 3": {
    "checks": 64,
-   "earlyOpen": 2,
+   "earlyOpen": 3,
    "items": 64,
    "needsFile": true,
    "systems": [
@@ -433,9 +440,9 @@
    "systems": []
   },
   "Stardew Valley": {
-   "checks": 471,
-   "earlyOpen": 33,
-   "items": 471,
+   "checks": 472,
+   "earlyOpen": 31,
+   "items": 472,
    "needsFile": false,
    "systems": []
   },
@@ -481,7 +488,7 @@
    "checks": 302,
    "earlyOpen": 107,
    "items": 302,
-   "needsFile": false,
+   "needsFile": true,
    "systems": []
   },
   "Terraria": {
@@ -570,6 +577,13 @@
     "GBA"
    ]
   },
+  "Yu-Gi-Oh! Forbidden Memories": {
+   "checks": 678,
+   "earlyOpen": 252,
+   "items": 672,
+   "needsFile": false,
+   "systems": []
+  },
   "Zillion": {
    "checks": 147,
    "earlyOpen": 34,
@@ -585,5 +599,5 @@
    "systems": []
   }
  },
- "scannedAt": "2026-10-13T22:17:14.035067+00:00"
+ "scannedAt": "2026-10-24T03:30:20.759784+00:00"
 }

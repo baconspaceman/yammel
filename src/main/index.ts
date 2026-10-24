@@ -14,7 +14,7 @@ import {
   type SaveResult,
 } from '../shared/api';
 import { parseCountRequest } from './countRequest';
-import { resolveEngineSpec, SeedEngine } from './engine';
+import { resolveEngineSpec, SeedEngine, type EngineSpec } from './engine';
 import { FileError, MAX_YAML_BYTES, readYamlFile, saveTextSafely } from './files';
 import { parseFolderFiles, writeYamlFolder } from './folderSave';
 import { detectArchipelago } from './detect';
@@ -38,6 +38,22 @@ let mainWindow: BrowserWindow | null = null;
 
 /** The check-counting engine. Starts on the first request and stops again when idle (see engine.ts). */
 let engine: SeedEngine | null = null;
+/** Custom world files the check engine has been asked to load (a custom game is counted from its own .apworld). */
+let engineCustomFiles: string[] = [];
+
+/** How to start the engine: the chosen source folder and Python, plus the custom world files counted so far. */
+function engineSpec(): EngineSpec {
+  const spec = resolveEngineSpec(process.env, app.getAppPath(), existsSync, settingsStore!.value);
+  return 'unavailable' in spec ? spec : { ...spec, args: [...spec.args, ...engineCustomFiles.flatMap((file) => ['--custom-world', file])] };
+}
+
+/** The .apworld file a scanned custom game came from, or null for a game Archipelago itself has. */
+async function customWorldFile(game: string): Promise<string | null> {
+  const folder = settingsStore?.value.archipelago.customWorldsDir ?? null;
+  const summary = await readSummary(app.getPath('userData'), folder);
+  const found = summary?.games.find((g) => g.name === game);
+  return found !== undefined && folder !== null ? join(folder, found.file) : null;
+}
 
 /** Saved settings (the Archipelago folder and the optional extras). Loaded before the window opens. */
 let settingsStore: SettingsStore | null = null;
@@ -166,7 +182,7 @@ function settingsView(): SettingsView {
 function registerIpc(): void {
   const idleMs = Number(process.env['ARCHIPELAGO_ENGINE_IDLE_MS']);
   engine = new SeedEngine(
-    resolveEngineSpec(process.env, app.getAppPath(), existsSync, settingsStore!.value),
+    engineSpec(),
     Number.isFinite(idleMs) && idleMs > 0 ? { idleMs } : {},
   );
 
@@ -193,7 +209,8 @@ function registerIpc(): void {
       } catch {
         return { ok: false, message: 'The settings could not be saved.' };
       }
-      engine!.reconfigure(resolveEngineSpec(process.env, app.getAppPath(), existsSync, settingsStore!.value));
+      if (next.archipelago.customWorldsDir !== before.archipelago.customWorldsDir) engineCustomFiles = [];
+      engine!.reconfigure(engineSpec());
       // The window's own "prefers dark" follows this, so the whole page restyles without any page code.
       nativeTheme.themeSource = next.appearance.theme;
       // A different (or removed) custom worlds folder makes the old scan wrong, so it is dropped.
@@ -418,6 +435,12 @@ function registerIpc(): void {
     if (!fromOurWindow(event) || engine === null) return { ok: false, reason: 'failed', message: 'Request refused.' };
     const parsed = parseCountRequest(request);
     if (parsed === null) return { ok: false, reason: 'failed', message: 'That request was not valid.' };
+    // A custom game is counted from its own .apworld: the first count of one restarts the engine with that file added.
+    const file = await customWorldFile(parsed.game);
+    if (file !== null && !engineCustomFiles.includes(file)) {
+      engineCustomFiles = [...engineCustomFiles, file];
+      engine.reconfigure(engineSpec());
+    }
     return engine.count(parsed.game, parsed.options);
   });
 

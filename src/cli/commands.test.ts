@@ -18,8 +18,8 @@ function okData(result: CommandResult): Record<string, unknown> {
 }
 
 describe('the command table', () => {
-  it('has the seven commands, each with a summary, and flag names that are unique', () => {
-    expect(COMMANDS.map((c) => c.name)).toEqual(['games', 'options', 'new', 'fuzz', 'count', 'rate', 'schema-refresh']);
+  it('has the eight commands, each with a summary, and flag names that are unique', () => {
+    expect(COMMANDS.map((c) => c.name)).toEqual(['games', 'options', 'new', 'fuzz', 'count', 'rate', 'worlds', 'schema-refresh']);
     for (const command of COMMANDS) {
       expect(command.summary.length).toBeGreaterThan(20);
       const names = command.flags.map((f) => f.name);
@@ -58,7 +58,7 @@ describe('games and options', () => {
     const normal = okData(await run('games', {}, ctx));
     expect((normal['games'] as { name: string }[]).map((g) => g.name)).toEqual(['Test Game', 'Test Game Two']);
     expect(normal).toMatchObject({ apVersion: '0.6.7', count: 2 });
-    expect((normal['games'] as Record<string, unknown>[])[0]).toEqual({ name: 'Test Game', hidden: false, options: 5, randomizable: 4, rating: 'rated' });
+    expect((normal['games'] as Record<string, unknown>[])[0]).toEqual({ name: 'Test Game', source: 'bundled', hidden: false, options: 5, randomizable: 4, rating: 'rated' });
     const all = okData(await run('games', { hidden: true }, ctx));
     expect(all['count']).toBe(3);
   });

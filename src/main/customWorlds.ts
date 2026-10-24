@@ -21,7 +21,7 @@ export function customFiles(userData: string): CustomFiles {
 export function plainProblem(error: string): string {
   const text = error.trim();
   if (/f-string|unterminated string literal|invalid syntax|expected an indented|typing.*override|'override'/i.test(text)) {
-    return 'Written for a newer Python than the one used to scan (3.12 or later), so it could not be read.';
+    return 'Written for a newer Python than the one used to scan (3.12 or later), so it could not be read. Choose a Python 3.13 under Check counts and scan again.';
   }
   const missing = /No module named '([^']+)'/.exec(text) ?? /cannot import name '([^']+)'/.exec(text);
   if (/ModuleNotFoundError|ImportError/.test(text) && missing !== null) {
@@ -91,7 +91,7 @@ export async function scanCustomWorlds(deps: ScanDeps): Promise<ScanResult> {
   const part = `${files.schema}.part`;
   const run = await runCli({
     command: deps.finding.python,
-    args: ['-B', '-X', 'utf8', '-W', 'ignore', deps.script, '--ap-root', deps.finding.sourceRoot, '--custom-worlds', deps.folder, '--only-custom', '--out', part],
+    args: ['-B', '-X', 'utf8', '-W', 'ignore', deps.script, '--ap-root', deps.finding.sourceRoot, '--custom-worlds', deps.folder, '--only-custom', '--include-loaded', '--out', part],
     cwd: deps.finding.sourceRoot,
     env: { ...cleanEnv(deps.env), PYTHONIOENCODING: 'utf-8' },
     timeoutMs: deps.timeoutMs ?? 15 * 60_000,

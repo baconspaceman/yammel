@@ -16,7 +16,7 @@ function text(response: Awaited<ReturnType<typeof call>>): Record<string, unknow
 
 describe('listTools', () => {
   it('has one tool per command, with names like apyaml_schema_refresh', () => {
-    expect(listTools().map((t) => t.name)).toEqual(['apyaml_games', 'apyaml_options', 'apyaml_new', 'apyaml_fuzz', 'apyaml_count', 'apyaml_rate', 'apyaml_schema_refresh']);
+    expect(listTools().map((t) => t.name)).toEqual(['apyaml_games', 'apyaml_options', 'apyaml_new', 'apyaml_fuzz', 'apyaml_count', 'apyaml_rate', 'apyaml_worlds', 'apyaml_schema_refresh']);
     expect(COMMANDS.map(toolName)).toEqual(listTools().map((t) => t.name));
   });
 
@@ -52,7 +52,7 @@ describe('handleMessage', () => {
   it('answers ping and tools/list, and stays silent for notifications', async () => {
     expect(await handleMessage({ jsonrpc: '2.0', id: 2, method: 'ping' }, () => makeCtx().ctx)).toEqual({ jsonrpc: '2.0', id: 2, result: {} });
     const list = await handleMessage({ jsonrpc: '2.0', id: 3, method: 'tools/list' }, () => makeCtx().ctx);
-    expect((list?.result as { tools: unknown[] }).tools).toHaveLength(7);
+    expect((list?.result as { tools: unknown[] }).tools).toHaveLength(8);
     expect(await handleMessage({ jsonrpc: '2.0', method: 'notifications/initialized' }, () => makeCtx().ctx)).toBeNull();
     expect(await handleMessage({ jsonrpc: '2.0', method: 'something/else' }, () => makeCtx().ctx)).toBeNull();
   });
@@ -99,7 +99,7 @@ describe('handleMessage', () => {
   });
 
   it('checks the arguments before running anything', async () => {
-    expect(text(await call('apyaml_new', { game: 'Test Game', speed: 3 }))['error']).toBe('Unknown argument "speed". Arguments: game, name, seed, randomize, set, lock, band, out, force.');
+    expect(text(await call('apyaml_new', { game: 'Test Game', speed: 3 }))['error']).toBe('Unknown argument "speed". Arguments: game, name, seed, randomize, set, lock, band, out, force, advanced, worlds, template, rescan, noAuto.');
     expect(text(await call('apyaml_new', { game: 3 }))['error']).toBe('Argument "game" must be a string.');
     expect(text(await call('apyaml_new', { game: 'Test Game', seed: 'x' }))['error']).toBe('Argument "seed" must be a number.');
     expect(text(await call('apyaml_new', { game: 'Test Game', set: 'lives=3' }))['error']).toBe('Argument "set" must be a list of strings.');

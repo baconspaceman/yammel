@@ -401,6 +401,22 @@
     "exploration"
    ]
   },
+  "Gauntlet Legends": {
+   "genre": "action-adventure",
+   "pace": 4,
+   "length": 2,
+   "tones": [
+    "heroic",
+    "energetic"
+   ],
+   "era": "mid",
+   "families": [],
+   "activities": [
+    "combat",
+    "collecting",
+    "exploration"
+   ]
+  },
   "Heretic": {
    "genre": "shooter",
    "pace": 5,
@@ -1270,6 +1286,23 @@
    "activities": [
     "cards",
     "strategy",
+    "grinding"
+   ]
+  },
+  "Yu-Gi-Oh! Forbidden Memories": {
+   "genre": "card",
+   "pace": 2,
+   "length": 4,
+   "tones": [
+    "mysterious"
+   ],
+   "era": "mid",
+   "families": [
+    "yugioh"
+   ],
+   "activities": [
+    "cards",
+    "collecting",
     "grinding"
    ]
   },

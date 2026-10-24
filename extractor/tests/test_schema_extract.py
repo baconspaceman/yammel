@@ -73,7 +73,28 @@ class OddChoice(O.Choice):
     default = 0
 
 
+class WordedRange(O.NamedRange):
+    """A named range with one name that stands for a word, not a number (Final Fantasy Tactics Advance does this)."""
+    range_start = 0
+    range_end = 100
+    default = 10
+    special_range_names = {"none": 0, "individually-randomized": "individually-randomized"}
+
+
 class OptionToDictTests(unittest.TestCase):
+    def test_named_range_keeps_word_names_apart_instead_of_failing(self):
+        out = S.option_to_dict("gil", WordedRange)
+        self.assertEqual(out["kind"], "named_range")
+        self.assertEqual(out["specialNames"], {"none": 0})
+        self.assertEqual(out["extraWords"], ["individually-randomized"])
+
+    def test_option_set_exports_allowed_names(self):
+        class Minigames(O.OptionSet):
+            valid_keys = {"Crabs", "Hover Blasters"}
+        out = S.option_to_dict("excluded", Minigames)
+        self.assertEqual(out["kind"], "set")
+        self.assertEqual(out["validKeys"], ["Crabs", "Hover Blasters"])
+
     def test_choice_with_a_non_int_value_does_not_crash(self):
         out = S.option_to_dict("speed", OddChoice)
         self.assertEqual({c["key"] for c in out["choices"]}, {"slow", "fast"})

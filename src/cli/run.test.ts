@@ -32,7 +32,7 @@ describe('runCli', () => {
       expect(code).toBe(0);
       expect(json['ok']).toBe(true);
       expect(json['exitCodes']).toEqual(EXIT_CODES);
-      expect((json['commands'] as { name: string }[]).map((c) => c.name)).toEqual(['games', 'options', 'new', 'fuzz', 'count', 'rate', 'schema-refresh']);
+      expect((json['commands'] as { name: string }[]).map((c) => c.name)).toEqual(['games', 'options', 'new', 'fuzz', 'count', 'rate', 'worlds', 'schema-refresh']);
     }
     const fuzz = (helpPayload()['commands'] as { name: string; flags: { name: string }[]; argument?: { name: string } }[]).find((c) => c.name === 'fuzz')!;
     expect(fuzz.argument).toEqual({ name: 'game', description: 'the game name', required: true });
@@ -58,7 +58,7 @@ describe('runCli', () => {
   it('says exactly what is wrong for an unknown command, an unknown flag, a missing argument and a bad value', async () => {
     const unknown = await run(['frobnicate']);
     expect(unknown.code).toBe(1);
-    expect(unknown.json['error']).toBe('Unknown command "frobnicate". Commands: games, options, new, fuzz, count, rate, schema-refresh.');
+    expect(unknown.json['error']).toBe('Unknown command "frobnicate". Commands: games, options, new, fuzz, count, rate, worlds, schema-refresh.');
     expect((await run(['new', 'Test Game', '--speed', '3'])).json['error']).toContain('Unknown flag --speed');
     expect((await run(['new'])).json['error']).toBe('"new" needs a game: the game name.');
     const badValue = await run(['new', 'Test Game', '--set', 'lives=99']);
